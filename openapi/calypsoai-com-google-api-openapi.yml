@@ -66,34 +66,6 @@ paths:
       - Google
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    PostGoogleGenerateContentBody:
-      additionalProperties: true
-      properties:
-        contents:
-          items:
-            additionalProperties: true
-            type: object
-          title: Contents
-          type: array
-      required:
-      - contents
-      title: PostGoogleGenerateContentBody
-      type: object
-    GoogleGenerateContentMethod:
-      enum:
-      - generateContent
-      - streamGenerateContent
-      title: GoogleGenerateContentMethod
-      type: string
     ValidationError:
       properties:
         ctx:
@@ -119,6 +91,34 @@ components:
       - msg
       - type
       title: ValidationError
+      type: object
+    GoogleGenerateContentMethod:
+      enum:
+      - generateContent
+      - streamGenerateContent
+      title: GoogleGenerateContentMethod
+      type: string
+    PostGoogleGenerateContentBody:
+      additionalProperties: true
+      properties:
+        contents:
+          items:
+            additionalProperties: true
+            type: object
+          title: Contents
+          type: array
+      required:
+      - contents
+      title: PostGoogleGenerateContentBody
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
       type: object
   securitySchemes:
     HTTPBearer:

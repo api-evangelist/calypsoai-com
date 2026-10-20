@@ -403,14 +403,65 @@ components:
           uniqueItems: true
       title: ScannerAvailability
       type: object
-    Dataset:
+    GetDatasetResponse:
       properties:
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        createdBy:
-          title: Createdby
+        dataset:
+          $ref: '#/components/schemas/Dataset'
+      required:
+      - dataset
+      title: GetDatasetResponse
+      type: object
+    GetDatasetsResponse:
+      properties:
+        datasetRuns:
+          additionalProperties:
+            $ref: '#/components/schemas/DatasetRun'
+          default: {}
+          description: Map of dataset run IDs to runs.
+          propertyNames:
+            format: uuid
+          title: Datasetruns
+          type: object
+        datasets:
+          description: Array of datasets.
+          items:
+            $ref: '#/components/schemas/Dataset'
+          title: Datasets
+          type: array
+        scannerPackages:
+          additionalProperties:
+            $ref: '#/components/schemas/ScannerPackage'
+          default: {}
+          description: Map of guardrail version IDs to guardrails.
+          propertyNames:
+            format: uuid
+          title: Scannerpackages
+          type: object
+        scanners:
+          additionalProperties:
+            $ref: '#/components/schemas/Scanner'
+          default: {}
+          description: Map of guardrail version IDs to guardrails.
+          propertyNames:
+            format: uuid
+          title: Scanners
+          type: object
+        users:
+          additionalProperties:
+            $ref: '#/components/schemas/User'
+          default: {}
+          description: Map of user IDs to users.
+          title: Users
+          type: object
+      required:
+      - datasets
+      title: GetDatasetsResponse
+      type: object
+    DatasetRun:
+      properties:
+        datasetId:
+          format: uuid
+          title: Datasetid
           type: string
         fileId:
           anyOf:
@@ -418,32 +469,166 @@ components:
             type: string
           - type: 'null'
           title: Fileid
-        filename:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Filename
         id:
           format: uuid
           title: Id
           type: string
-        name:
-          title: Name
-          type: string
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/DatasetScores'
+          - type: 'null'
+        scannerId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Scannerid
         scannerPackageId:
           anyOf:
           - format: uuid
             type: string
           - type: 'null'
           title: Scannerpackageid
+        scannerVersionId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Scannerversionid
+        status:
+          $ref: '#/components/schemas/RunStatus'
       required:
       - id
-      - createdBy
-      - createdAt
-      - fileId
-      - filename
-      - name
-      title: Dataset
+      - datasetId
+      - status
+      title: DatasetRun
+      type: object
+    KeywordScannerConfig:
+      properties:
+        type:
+          const: keyword
+          default: keyword
+          title: Type
+          type: string
+        words:
+          description: Words to check for in the prompt or response. Case insensitive. Empty strings will be removed.
+          items:
+            type: string
+          title: Words
+          type: array
+      required:
+      - words
+      title: KeywordScannerConfig
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    DatasetScores:
+      properties:
+        accuracy:
+          title: Accuracy
+          type: number
+        f1Score:
+          title: F1Score
+          type: number
+        falseNegative:
+          title: Falsenegative
+          type: integer
+        falsePositive:
+          title: Falsepositive
+          type: integer
+        trueNegative:
+          title: Truenegative
+          type: integer
+        truePositive:
+          title: Truepositive
+          type: integer
+      required:
+      - f1Score
+      - accuracy
+      - falseNegative
+      - truePositive
+      - trueNegative
+      - falsePositive
+      title: DatasetScores
+      type: object
+    ZipScannerSource:
+      properties:
+        type:
+          const: zip
+          default: zip
+          title: Type
+          type: string
+      title: ZipScannerSource
+      type: object
+    InternalScannerSource:
+      properties:
+        type:
+          const: internal
+          default: internal
+          title: Type
+          type: string
+      title: InternalScannerSource
+      type: object
+    RemediationScannerSource:
+      properties:
+        sourceId:
+          format: uuid
+          title: Sourceid
+          type: string
+        type:
+          const: remediation
+          default: remediation
+          title: Type
+          type: string
+      required:
+      - sourceId
+      title: RemediationScannerSource
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
       type: object
     ScannerVersionMeta:
       properties:
@@ -494,122 +679,84 @@ components:
       - published
       title: ScannerVersionMeta
       type: object
-    RunStatus:
-      enum:
-      - in_progress
-      - complete
-      - error
-      title: RunStatus
-      type: string
-    User:
-      properties:
-        admin:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Admin
-        blocked:
-          default: false
-          title: Blocked
-          type: boolean
-        createdAt:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Createdat
-        email:
-          format: password
-          title: Email
-          type: string
-          writeOnly: true
-        id:
-          title: Id
-          type: string
-        lastInvitationSentAt:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Lastinvitationsentat
-        machine:
-          default: false
-          title: Machine
-          type: boolean
-        name:
-          format: password
-          title: Name
-          type: string
-          writeOnly: true
-        org:
-          title: Org
-          type: string
-        permissions:
-          default: []
-          items:
-            type: string
-          title: Permissions
-          type: array
-          uniqueItems: true
-        roleIds:
-          default: []
-          items:
-            format: uuid
-            type: string
-          title: Roleids
-          type: array
-        roles:
-          default: []
-          items:
-            type: string
-          title: Roles
-          type: array
-        social:
-          default: false
-          title: Social
-          type: boolean
-        teams:
-          default: []
-          items:
-            type: string
-          title: Teams
-          type: array
-        verified:
-          default: true
-          title: Verified
-          type: boolean
-      required:
-      - id
-      - name
-      - email
-      - org
-      title: User
+    LegacyScannerConfig:
+      additionalProperties: true
+      properties: {}
+      title: LegacyScannerConfig
       type: object
-    ValidationError:
+    GenAIScannerConfig:
       properties:
-        ctx:
-          title: Context
-          type: object
         input:
+          default: ''
           title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
+          type: string
+        scanContext:
+          default: directional
+          description: 'Describes the context that is provided to the scanner
+
+            individual: Scan only the latest message
+
+            directional: Scan all messages in the conversation in the same direction as the latest message'
+          enum:
+          - individual
+          - directional
+          title: Scancontext
           type: string
         type:
-          title: Error Type
+          default: custom
+          enum:
+          - genai
+          - custom
+          title: Type
           type: string
+      title: GenAIScannerConfig
+      type: object
+    GetDatasetRunResponse:
+      properties:
+        dataset:
+          anyOf:
+          - $ref: '#/components/schemas/Dataset'
+          - type: 'null'
+        run:
+          $ref: '#/components/schemas/DatasetRun'
+        scanner:
+          anyOf:
+          - $ref: '#/components/schemas/Scanner'
+          - type: 'null'
+        scannerPackage:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerPackage'
+          - type: 'null'
+        user:
+          anyOf:
+          - $ref: '#/components/schemas/User'
+          - type: 'null'
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - run
+      title: GetDatasetRunResponse
+      type: object
+    VendorScannerSource:
+      properties:
+        type:
+          const: vendor
+          default: vendor
+          title: Type
+          type: string
+      title: VendorScannerSource
+      type: object
+    ScannerDatasetResult:
+      properties:
+        datasetRunId:
+          format: uuid
+          title: Datasetrunid
+          type: string
+        f1Score:
+          title: F1Score
+          type: number
+      required:
+      - datasetRunId
+      - f1Score
+      title: ScannerDatasetResult
       type: object
     GetDatasetRunsResponse:
       properties:
@@ -655,197 +802,6 @@ components:
       required:
       - datasetRuns
       title: GetDatasetRunsResponse
-      type: object
-    DatasetScores:
-      properties:
-        accuracy:
-          title: Accuracy
-          type: number
-        f1Score:
-          title: F1Score
-          type: number
-        falseNegative:
-          title: Falsenegative
-          type: integer
-        falsePositive:
-          title: Falsepositive
-          type: integer
-        trueNegative:
-          title: Truenegative
-          type: integer
-        truePositive:
-          title: Truepositive
-          type: integer
-      required:
-      - f1Score
-      - accuracy
-      - falseNegative
-      - truePositive
-      - trueNegative
-      - falsePositive
-      title: DatasetScores
-      type: object
-    MLTextScannerConfig:
-      properties:
-        type:
-          const: ml_text
-          default: ml_text
-          title: Type
-          type: string
-      required: []
-      title: MLTextScannerConfig
-      type: object
-    ScannerPackage:
-      properties:
-        availability:
-          $ref: '#/components/schemas/ScannerAvailability'
-          default:
-            global: false
-            projectIds: []
-        direction:
-          $ref: '#/components/schemas/ScannerDirection'
-        id:
-          format: uuid
-          title: Id
-          type: string
-        name:
-          title: Name
-          type: string
-        performanceScannerIds:
-          anyOf:
-          - items:
-              format: uuid
-              type: string
-            type: array
-          - type: 'null'
-          title: Performancescannerids
-        projectId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Projectid
-        scannerCounts:
-          additionalProperties:
-            type: integer
-          default: {}
-          title: Scannercounts
-          type: object
-        scannerIds:
-          items:
-            format: uuid
-            type: string
-          title: Scannerids
-          type: array
-        source:
-          discriminator:
-            mapping:
-              internal: '#/components/schemas/InternalScannerSource'
-              remediation: '#/components/schemas/RemediationScannerSource'
-              vendor: '#/components/schemas/VendorScannerSource'
-              zip: '#/components/schemas/ZipScannerSource'
-            propertyName: type
-          oneOf:
-          - $ref: '#/components/schemas/InternalScannerSource'
-          - $ref: '#/components/schemas/ZipScannerSource'
-          - $ref: '#/components/schemas/VendorScannerSource'
-          - $ref: '#/components/schemas/RemediationScannerSource'
-          title: Source
-        vendored:
-          anyOf:
-          - type: boolean
-          - items:
-              type: string
-            type: array
-          default: false
-          title: Vendored
-      required:
-      - id
-      - name
-      - source
-      - direction
-      - scannerIds
-      title: ScannerPackage
-      type: object
-    RegexScannerConfig:
-      properties:
-        pattern:
-          description: Python Flavored Regular Expression (RegEx) to check for in the prompt or response. Case insensitive.
-          title: Pattern
-          type: string
-        type:
-          const: regex
-          default: regex
-          title: Type
-          type: string
-      required:
-      - pattern
-      title: RegexScannerConfig
-      type: object
-    ZipScannerSource:
-      properties:
-        type:
-          const: zip
-          default: zip
-          title: Type
-          type: string
-      title: ZipScannerSource
-      type: object
-    GetDatasetRunResponse:
-      properties:
-        dataset:
-          anyOf:
-          - $ref: '#/components/schemas/Dataset'
-          - type: 'null'
-        run:
-          $ref: '#/components/schemas/DatasetRun'
-        scanner:
-          anyOf:
-          - $ref: '#/components/schemas/Scanner'
-          - type: 'null'
-        scannerPackage:
-          anyOf:
-          - $ref: '#/components/schemas/ScannerPackage'
-          - type: 'null'
-        user:
-          anyOf:
-          - $ref: '#/components/schemas/User'
-          - type: 'null'
-      required:
-      - run
-      title: GetDatasetRunResponse
-      type: object
-    GetDatasetResponse:
-      properties:
-        dataset:
-          $ref: '#/components/schemas/Dataset'
-      required:
-      - dataset
-      title: GetDatasetResponse
-      type: object
-    RemediationScannerSource:
-      properties:
-        sourceId:
-          format: uuid
-          title: Sourceid
-          type: string
-        type:
-          const: remediation
-          default: remediation
-          title: Type
-          type: string
-      required:
-      - sourceId
-      title: RemediationScannerSource
-      type: object
-    VendorScannerSource:
-      properties:
-        type:
-          const: vendor
-          default: vendor
-          title: Type
-          type: string
-      title: VendorScannerSource
       type: object
     Scanner:
       properties:
@@ -941,56 +897,14 @@ components:
       - versionMeta
       title: Scanner
       type: object
-    LegacyScannerConfig:
-      additionalProperties: true
-      properties: {}
-      title: LegacyScannerConfig
-      type: object
-    InternalScannerSource:
+    Dataset:
       properties:
-        type:
-          const: internal
-          default: internal
-          title: Type
+        createdAt:
+          format: date-time
+          title: Createdat
           type: string
-      title: InternalScannerSource
-      type: object
-    KeywordScannerConfig:
-      properties:
-        type:
-          const: keyword
-          default: keyword
-          title: Type
-          type: string
-        words:
-          description: Words to check for in the prompt or response. Case insensitive. Empty strings will be removed.
-          items:
-            type: string
-          title: Words
-          type: array
-      required:
-      - words
-      title: KeywordScannerConfig
-      type: object
-    ScannerDatasetResult:
-      properties:
-        datasetRunId:
-          format: uuid
-          title: Datasetrunid
-          type: string
-        f1Score:
-          title: F1Score
-          type: number
-      required:
-      - datasetRunId
-      - f1Score
-      title: ScannerDatasetResult
-      type: object
-    DatasetRun:
-      properties:
-        datasetId:
-          format: uuid
-          title: Datasetid
+        createdBy:
+          title: Createdby
           type: string
         fileId:
           anyOf:
@@ -998,94 +912,32 @@ components:
             type: string
           - type: 'null'
           title: Fileid
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
         id:
           format: uuid
           title: Id
           type: string
-        result:
-          anyOf:
-          - $ref: '#/components/schemas/DatasetScores'
-          - type: 'null'
-        scannerId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Scannerid
+        name:
+          title: Name
+          type: string
         scannerPackageId:
           anyOf:
           - format: uuid
             type: string
           - type: 'null'
           title: Scannerpackageid
-        scannerVersionId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Scannerversionid
-        status:
-          $ref: '#/components/schemas/RunStatus'
       required:
       - id
-      - datasetId
-      - status
-      title: DatasetRun
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    GetDatasetsResponse:
-      properties:
-        datasetRuns:
-          additionalProperties:
-            $ref: '#/components/schemas/DatasetRun'
-          default: {}
-          description: Map of dataset run IDs to runs.
-          propertyNames:
-            format: uuid
-          title: Datasetruns
-          type: object
-        datasets:
-          description: Array of datasets.
-          items:
-            $ref: '#/components/schemas/Dataset'
-          title: Datasets
-          type: array
-        scannerPackages:
-          additionalProperties:
-            $ref: '#/components/schemas/ScannerPackage'
-          default: {}
-          description: Map of guardrail version IDs to guardrails.
-          propertyNames:
-            format: uuid
-          title: Scannerpackages
-          type: object
-        scanners:
-          additionalProperties:
-            $ref: '#/components/schemas/Scanner'
-          default: {}
-          description: Map of guardrail version IDs to guardrails.
-          propertyNames:
-            format: uuid
-          title: Scanners
-          type: object
-        users:
-          additionalProperties:
-            $ref: '#/components/schemas/User'
-          default: {}
-          description: Map of user IDs to users.
-          title: Users
-          type: object
-      required:
-      - datasets
-      title: GetDatasetsResponse
+      - createdBy
+      - createdAt
+      - fileId
+      - filename
+      - name
+      title: Dataset
       type: object
     ScannerDirection:
       enum:
@@ -1094,45 +946,193 @@ components:
       - response
       title: ScannerDirection
       type: string
-    PostSuccessMessage:
-      description: Contains the ID of an object after a successful POST operation.
+    RunStatus:
+      enum:
+      - in_progress
+      - complete
+      - error
+      title: RunStatus
+      type: string
+    User:
       properties:
+        admin:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Admin
+        blocked:
+          default: false
+          title: Blocked
+          type: boolean
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        email:
+          format: password
+          title: Email
+          type: string
+          writeOnly: true
         id:
+          title: Id
+          type: string
+        lastInvitationSentAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Lastinvitationsentat
+        machine:
+          default: false
+          title: Machine
+          type: boolean
+        name:
+          format: password
+          title: Name
+          type: string
+          writeOnly: true
+        org:
+          title: Org
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+          uniqueItems: true
+        roleIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Roleids
+          type: array
+        roles:
+          default: []
+          items:
+            type: string
+          title: Roles
+          type: array
+        social:
+          default: false
+          title: Social
+          type: boolean
+        teams:
+          default: []
+          items:
+            type: string
+          title: Teams
+          type: array
+        verified:
+          default: true
+          title: Verified
+          type: boolean
+      required:
+      - id
+      - name
+      - email
+      - org
+      title: User
+      type: object
+    MLTextScannerConfig:
+      properties:
+        type:
+          const: ml_text
+          default: ml_text
+          title: Type
+          type: string
+      required: []
+      title: MLTextScannerConfig
+      type: object
+    RegexScannerConfig:
+      properties:
+        pattern:
+          description: Python Flavored Regular Expression (RegEx) to check for in the prompt or response. Case insensitive.
+          title: Pattern
+          type: string
+        type:
+          const: regex
+          default: regex
+          title: Type
+          type: string
+      required:
+      - pattern
+      title: RegexScannerConfig
+      type: object
+    ScannerPackage:
+      properties:
+        availability:
+          $ref: '#/components/schemas/ScannerAvailability'
+          default:
+            global: false
+            projectIds: []
+        direction:
+          $ref: '#/components/schemas/ScannerDirection'
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        performanceScannerIds:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          title: Performancescannerids
+        projectId:
           anyOf:
           - format: uuid
             type: string
-          - type: string
-          title: Id
+          - type: 'null'
+          title: Projectid
+        scannerCounts:
+          additionalProperties:
+            type: integer
+          default: {}
+          title: Scannercounts
+          type: object
+        scannerIds:
+          items:
+            format: uuid
+            type: string
+          title: Scannerids
+          type: array
+        source:
+          discriminator:
+            mapping:
+              internal: '#/components/schemas/InternalScannerSource'
+              remediation: '#/components/schemas/RemediationScannerSource'
+              vendor: '#/components/schemas/VendorScannerSource'
+              zip: '#/components/schemas/ZipScannerSource'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/InternalScannerSource'
+          - $ref: '#/components/schemas/ZipScannerSource'
+          - $ref: '#/components/schemas/VendorScannerSource'
+          - $ref: '#/components/schemas/RemediationScannerSource'
+          title: Source
+        vendored:
+          anyOf:
+          - type: boolean
+          - items:
+              type: string
+            type: array
+          default: false
+          title: Vendored
       required:
       - id
-      title: PostSuccessMessage
-      type: object
-    GenAIScannerConfig:
-      properties:
-        input:
-          default: ''
-          title: Input
-          type: string
-        scanContext:
-          default: directional
-          description: 'Describes the context that is provided to the scanner
-
-            individual: Scan only the latest message
-
-            directional: Scan all messages in the conversation in the same direction as the latest message'
-          enum:
-          - individual
-          - directional
-          title: Scancontext
-          type: string
-        type:
-          default: custom
-          enum:
-          - genai
-          - custom
-          title: Type
-          type: string
-      title: GenAIScannerConfig
+      - name
+      - source
+      - direction
+      - scannerIds
+      title: ScannerPackage
       type: object
   securitySchemes:
     HTTPBearer:

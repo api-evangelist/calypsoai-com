@@ -298,17 +298,14 @@ paths:
       - Auth
 components:
   schemas:
-    PatchAuthRolePermissionsBody:
+    GetAuthRoleResponse:
       properties:
-        permissions:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          description: Permissions to add to the existing role permission set.
-          title: Permissions
-      title: PatchAuthRolePermissionsBody
+        role:
+          $ref: '#/components/schemas/Role'
+          description: The requested role.
+      required:
+      - role
+      title: GetAuthRoleResponse
       type: object
     GetAuthRolesResponse:
       properties:
@@ -334,56 +331,6 @@ components:
       - roles
       title: GetAuthRolesResponse
       type: object
-    PostSuccessMessage:
-      description: Contains the ID of an object after a successful POST operation.
-      properties:
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: string
-          title: Id
-      required:
-      - id
-      title: PostSuccessMessage
-      type: object
-    DeleteAuthRoleBody:
-      properties:
-        reassignToRoleId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: string
-          - type: 'null'
-          title: Reassigntoroleid
-      title: DeleteAuthRoleBody
-      type: object
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-      type: object
     DeleteAuthRolePermissionsBody:
       properties:
         permissions:
@@ -396,63 +343,27 @@ components:
           title: Permissions
       title: DeleteAuthRolePermissionsBody
       type: object
-    GetAuthRoleDefaultResponse:
+    PatchAuthRolePermissionsBody:
       properties:
-        role:
-          $ref: '#/components/schemas/Role'
-          description: The requested role.
-      required:
-      - role
-      title: GetAuthRoleDefaultResponse
-      type: object
-    Role:
-      properties:
-        id:
-          format: uuid
-          title: Id
-          type: string
-        isDefault:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          default: false
-          title: Isdefault
-        memberCount:
-          title: Membercount
-          type: integer
-        name:
-          title: Name
-          type: string
         permissions:
-          default: []
-          items:
-            type: string
-          title: Permissions
-          type: array
-        projectId:
           anyOf:
-          - format: uuid
-            type: string
+          - items:
+              type: string
+            type: array
           - type: 'null'
-          title: Projectid
-        system:
-          title: System
-          type: boolean
-      required:
-      - id
-      - name
-      - system
-      - memberCount
-      title: Role
+          description: Permissions to add to the existing role permission set.
+          title: Permissions
+      title: PatchAuthRolePermissionsBody
       type: object
-    GetAuthRoleResponse:
+    SuccessMessage:
+      description: Confirms a successful operation.
       properties:
-        role:
-          $ref: '#/components/schemas/Role'
-          description: The requested role.
+        message:
+          title: Message
+          type: string
       required:
-      - role
-      title: GetAuthRoleResponse
+      - message
+      title: SuccessMessage
       type: object
     HTTPValidationError:
       properties:
@@ -495,15 +406,104 @@ components:
       - permissions
       title: PostAuthRolesBody
       type: object
-    SuccessMessage:
-      description: Confirms a successful operation.
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
       properties:
-        message:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    Role:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        isDefault:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          default: false
+          title: Isdefault
+        memberCount:
+          title: Membercount
+          type: integer
+        name:
+          title: Name
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        system:
+          title: System
+          type: boolean
+      required:
+      - id
+      - name
+      - system
+      - memberCount
+      title: Role
+      type: object
+    GetAuthRoleDefaultResponse:
+      properties:
+        role:
+          $ref: '#/components/schemas/Role'
+          description: The requested role.
+      required:
+      - role
+      title: GetAuthRoleDefaultResponse
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
           title: Message
           type: string
+        type:
+          title: Error Type
+          type: string
       required:
-      - message
-      title: SuccessMessage
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    DeleteAuthRoleBody:
+      properties:
+        reassignToRoleId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          - type: 'null'
+          title: Reassigntoroleid
+      title: DeleteAuthRoleBody
       type: object
     PatchAuthRoleBody:
       properties:

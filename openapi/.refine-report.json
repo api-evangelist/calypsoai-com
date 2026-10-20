@@ -1,7 +1,7 @@
 {
   "provider": "calypsoai-com",
   "sources": [
-    "calypsoai-com-openapi.json"
+    "_original/calypsoai-com-openapi.json"
   ],
   "outputs": [
     "calypsoai-com-admin-api-openapi.yml",
@@ -33,12 +33,11 @@
     "calypsoai-com-tokens-api-openapi.yml",
     "calypsoai-com-users-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/calypsoai-com-openapi.json"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "calypsoai-com-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "calypsoai-com-openapi.json: declared missing tag: Admin",
     "calypsoai-com-openapi.json: declared missing tag: Agent-Sessions",
@@ -68,7 +67,36 @@
     "calypsoai-com-openapi.json: declared missing tag: Secrets",
     "calypsoai-com-openapi.json: declared missing tag: Tokens",
     "calypsoai-com-openapi.json: declared missing tag: Users",
-    "apis.yml register: written (+28 apis, 28 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "calypsoai-com-admin-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-agent-sessions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-anthropic-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-audit-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-branding-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-campaign-runs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-campaign-schedules-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-campaigns-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-chats-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-datasets-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-files-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-generations-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-google-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-license-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-openai-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-org-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-project-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-projects-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-prompts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-providers-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-refusal-catalogs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-scanner-packages-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-scanners-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-scans-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-secrets-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-tokens-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "calypsoai-com-users-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

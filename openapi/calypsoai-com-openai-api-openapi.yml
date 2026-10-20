@@ -148,15 +148,6 @@ paths:
       - Openai
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
     ValidationError:
       properties:
         ctx:
@@ -183,6 +174,27 @@ components:
       - type
       title: ValidationError
       type: object
+    PostChatCompletionBody:
+      additionalProperties: true
+      properties:
+        messages:
+          items:
+            additionalProperties: true
+            type: object
+          title: Messages
+          type: array
+        model:
+          title: Model
+          type: string
+        stream:
+          default: false
+          title: Stream
+          type: boolean
+      required:
+      - model
+      - messages
+      title: PostChatCompletionBody
+      type: object
     PostOpenAIResponsesBody:
       additionalProperties: true
       properties:
@@ -206,26 +218,14 @@ components:
       - input
       title: PostOpenAIResponsesBody
       type: object
-    PostChatCompletionBody:
-      additionalProperties: true
+    HTTPValidationError:
       properties:
-        messages:
+        detail:
           items:
-            additionalProperties: true
-            type: object
-          title: Messages
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
           type: array
-        model:
-          title: Model
-          type: string
-        stream:
-          default: false
-          title: Stream
-          type: boolean
-      required:
-      - model
-      - messages
-      title: PostChatCompletionBody
+      title: HTTPValidationError
       type: object
   securitySchemes:
     HTTPBearer:

@@ -2,7 +2,18 @@ generated: '2026-10-20'
 method: derived
 generator: derive-problem-types.py
 source:
-- openapi/calypsoai-com-openapi.json
+- openapi/calypsoai-com-admin-api-openapi.yml
+- openapi/calypsoai-com-agent-sessions-api-openapi.yml
+- openapi/calypsoai-com-anthropic-api-openapi.yml
+- openapi/calypsoai-com-audit-api-openapi.yml
+- openapi/calypsoai-com-auth-api-openapi.yml
+- openapi/calypsoai-com-branding-api-openapi.yml
+- openapi/calypsoai-com-campaign-runs-api-openapi.yml
+- openapi/calypsoai-com-campaign-schedules-api-openapi.yml
+- openapi/calypsoai-com-campaigns-api-openapi.yml
+- openapi/calypsoai-com-chats-api-openapi.yml
+- openapi/calypsoai-com-datasets-api-openapi.yml
+- openapi/calypsoai-com-files-api-openapi.yml
 format: custom
 envelope:
   media_type: application/json

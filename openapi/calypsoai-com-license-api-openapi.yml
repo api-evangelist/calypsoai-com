@@ -55,6 +55,45 @@ paths:
       - License
 components:
   schemas:
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    LicenseStatus:
+      properties:
+        expiry:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Expiry
+        hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hash
+        status:
+          title: Status
+          type: string
+      required:
+      - status
+      title: LicenseStatus
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
     PatchLicenseBody:
       properties:
         license:
@@ -99,45 +138,6 @@ components:
       required:
       - license
       title: GetLicenseResponse
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    SuccessMessage:
-      description: Confirms a successful operation.
-      properties:
-        message:
-          title: Message
-          type: string
-      required:
-      - message
-      title: SuccessMessage
-      type: object
-    LicenseStatus:
-      properties:
-        expiry:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Expiry
-        hash:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Hash
-        status:
-          title: Status
-          type: string
-      required:
-      - status
-      title: LicenseStatus
       type: object
   securitySchemes:
     HTTPBearer:

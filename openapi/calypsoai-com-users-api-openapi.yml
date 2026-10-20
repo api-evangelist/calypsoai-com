@@ -434,70 +434,81 @@ paths:
       - Users
 components:
   schemas:
-    PatchUserBody:
+    PostVerificationTokenResponse:
       properties:
-        blocked:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          description: Whether the user should be blocked.
-          title: Blocked
-        name:
-          anyOf:
-          - maxLength: 255
-            minLength: 1
-            type: string
-          - type: 'null'
-          description: New name for the user.
-          title: Name
-      title: PatchUserBody
-      type: object
-    UserRole:
-      enum:
-      - owner
-      - super_admin
-      - basic
-      title: UserRole
-      type: string
-    PostUserBody:
-      properties:
-        email:
-          description: Email for the new user.
-          format: email
-          maxLength: 255
-          title: Email
+        token:
+          title: Token
           type: string
-        name:
-          description: Name for the new user.
-          maxLength: 255
-          minLength: 1
-          title: Name
-          type: string
-        roleIds:
-          default: []
-          description: Roles to assign to the user.
-          items:
-            format: uuid
-            type: string
-          title: Roleids
-          type: array
-        roles:
-          default:
-          - basic
-          description: Deprecated
-          items:
-            $ref: '#/components/schemas/UserRole'
-          title: Roles
-          type: array
-        sendInvite:
-          default: true
-          description: Whether or not to send an invite email, if possible.
-          title: Sendinvite
-          type: boolean
       required:
-      - email
-      - name
-      title: PostUserBody
+      - token
+      title: PostVerificationTokenResponse
+      type: object
+    GetUsersResponse:
+      properties:
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+        roles:
+          additionalProperties:
+            $ref: '#/components/schemas/Role'
+          default: {}
+          description: All roles that are held by user's in the response, if requested.
+          propertyNames:
+            format: uuid
+          title: Roles
+          type: object
+        users:
+          description: Users matching the given filter criteria.
+          items:
+            $ref: '#/components/schemas/User'
+          title: Users
+          type: array
+      required:
+      - users
+      title: GetUsersResponse
+      type: object
+    PostUserResponse:
+      properties:
+        emailSent:
+          description: If an email was sent to invite the user
+          title: Emailsent
+          type: boolean
+        id:
+          description: ID of the created user
+          title: Id
+          type: string
+      required:
+      - id
+      - emailSent
+      title: PostUserResponse
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    GetUsersMeResponse:
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+          description: The currently authenticated user.
+      required:
+      - user
+      title: GetUsersMeResponse
       type: object
     User:
       properties:
@@ -598,82 +609,79 @@ components:
       - password
       title: PostUsersVerificationBody
       type: object
-    PostVerificationTokenResponse:
+    HTTPValidationError:
       properties:
-        token:
-          title: Token
-          type: string
-      required:
-      - token
-      title: PostVerificationTokenResponse
-      type: object
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
           type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: HTTPValidationError
       type: object
-    GetUsersResponse:
+    GetUserResponse:
       properties:
-        next:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the next page, if any.
-          title: Next
-        prev:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the previous page, if any.
-          title: Prev
         roles:
           additionalProperties:
             $ref: '#/components/schemas/Role'
           default: {}
-          description: All roles that are held by user's in the response, if requested.
+          description: The user's roles if requested
           propertyNames:
             format: uuid
           title: Roles
           type: object
-        users:
-          description: Users matching the given filter criteria.
-          items:
-            $ref: '#/components/schemas/User'
-          title: Users
-          type: array
-      required:
-      - users
-      title: GetUsersResponse
-      type: object
-    GetUsersMeResponse:
-      properties:
         user:
           $ref: '#/components/schemas/User'
-          description: The currently authenticated user.
+          description: Requested user object.
       required:
       - user
-      title: GetUsersMeResponse
+      title: GetUserResponse
+      type: object
+    UserRole:
+      enum:
+      - owner
+      - super_admin
+      - basic
+      title: UserRole
+      type: string
+    PostUserBody:
+      properties:
+        email:
+          description: Email for the new user.
+          format: email
+          maxLength: 255
+          title: Email
+          type: string
+        name:
+          description: Name for the new user.
+          maxLength: 255
+          minLength: 1
+          title: Name
+          type: string
+        roleIds:
+          default: []
+          description: Roles to assign to the user.
+          items:
+            format: uuid
+            type: string
+          title: Roleids
+          type: array
+        roles:
+          default:
+          - basic
+          description: Deprecated
+          items:
+            $ref: '#/components/schemas/UserRole'
+          title: Roles
+          type: array
+        sendInvite:
+          default: true
+          description: Whether or not to send an invite email, if possible.
+          title: Sendinvite
+          type: boolean
+      required:
+      - email
+      - name
+      title: PostUserBody
       type: object
     Role:
       properties:
@@ -715,57 +723,49 @@ components:
       - memberCount
       title: Role
       type: object
-    PostUserResponse:
+    ValidationError:
       properties:
-        emailSent:
-          description: If an email was sent to invite the user
-          title: Emailsent
-          type: boolean
-        id:
-          description: ID of the created user
-          title: Id
-          type: string
-      required:
-      - id
-      - emailSent
-      title: PostUserResponse
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    GetUserResponse:
-      properties:
-        roles:
-          additionalProperties:
-            $ref: '#/components/schemas/Role'
-          default: {}
-          description: The user's roles if requested
-          propertyNames:
-            format: uuid
-          title: Roles
+        ctx:
+          title: Context
           type: object
-        user:
-          $ref: '#/components/schemas/User'
-          description: Requested user object.
-      required:
-      - user
-      title: GetUserResponse
-      type: object
-    SuccessMessage:
-      description: Confirms a successful operation.
-      properties:
-        message:
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
           title: Message
           type: string
+        type:
+          title: Error Type
+          type: string
       required:
-      - message
-      title: SuccessMessage
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    PatchUserBody:
+      properties:
+        blocked:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Whether the user should be blocked.
+          title: Blocked
+        name:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          description: New name for the user.
+          title: Name
+      title: PatchUserBody
       type: object
   securitySchemes:
     HTTPBearer:

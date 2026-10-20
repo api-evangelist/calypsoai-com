@@ -250,153 +250,101 @@ paths:
       - Tokens
 components:
   schemas:
-    TokenScope:
-      enum:
-      - personal
-      - organization
-      - project
-      title: TokenScope
-      type: string
-    ProjectType:
-      enum:
-      - app
-      - bot
-      - chat
-      - global
-      - agentic
-      - red_team
-      title: ProjectType
-      type: string
-    ProjectDeploymentStatus:
-      enum:
-      - live
-      - draft
-      title: ProjectDeploymentStatus
-      type: string
-    PostBulkDeleteBody:
+    ProjectConfigScanner:
       properties:
-        tokenIds:
-          items:
-            format: uuid
-            type: string
-          maxItems: 100
-          minItems: 1
-          title: Tokenids
-          type: array
-      required:
-      - tokenIds
-      title: PostBulkDeleteBody
-      type: object
-    User:
-      properties:
-        admin:
+        blocking:
           anyOf:
           - type: boolean
           - type: 'null'
-          title: Admin
-        blocked:
-          default: false
-          title: Blocked
-          type: boolean
-        createdAt:
+          title: Blocking
+        direction:
           anyOf:
-          - format: date-time
+          - $ref: '#/components/schemas/ScannerDirection'
+          - const: ''
             type: string
           - type: 'null'
-          title: Createdat
-        email:
-          format: password
-          title: Email
-          type: string
-          writeOnly: true
+          title: Direction
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+        flagMessage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Flagmessage
+        force:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Force
         id:
+          format: uuid
           title: Id
           type: string
-        lastInvitationSentAt:
+        mode:
           anyOf:
+          - $ref: '#/components/schemas/ScanMode'
+          - type: 'null'
+        version:
+          anyOf:
+          - format: uuid
+            type: string
           - format: date-time
             type: string
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
           - type: 'null'
-          title: Lastinvitationsentat
-        machine:
-          default: false
-          title: Machine
-          type: boolean
-        name:
-          format: password
-          title: Name
-          type: string
-          writeOnly: true
-        org:
-          title: Org
-          type: string
-        permissions:
-          default: []
-          items:
-            type: string
-          title: Permissions
-          type: array
-          uniqueItems: true
-        roleIds:
-          default: []
-          items:
-            format: uuid
-            type: string
-          title: Roleids
-          type: array
-        roles:
-          default: []
-          items:
-            type: string
-          title: Roles
-          type: array
-        social:
-          default: false
-          title: Social
-          type: boolean
-        teams:
-          default: []
-          items:
-            type: string
-          title: Teams
-          type: array
-        verified:
-          default: true
-          title: Verified
-          type: boolean
+          title: Version
       required:
       - id
-      - name
-      - email
-      - org
-      title: User
+      title: ProjectConfigScanner
       type: object
-    ValidationError:
+    GetTokensResponse:
       properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+        projects:
+          default: []
           items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
+            $ref: '#/components/schemas/Project'
+          title: Projects
           type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
+        tokens:
+          items:
+            $ref: '#/components/schemas/Token'
+          title: Tokens
+          type: array
+        users:
+          additionalProperties:
+            $ref: '#/components/schemas/User'
+          default: {}
+          title: Users
+          type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - tokens
+      title: GetTokensResponse
       type: object
+    ScanMode:
+      enum:
+      - block
+      - audit
+      - redact
+      title: ScanMode
+      type: string
     TokenStatus:
       enum:
       - active
@@ -404,47 +352,6 @@ components:
       - revoked
       title: TokenStatus
       type: string
-    SuccessMessage:
-      description: Confirms a successful operation.
-      properties:
-        message:
-          title: Message
-          type: string
-      required:
-      - message
-      title: SuccessMessage
-      type: object
-    ProjectConfig:
-      properties:
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Id
-        packages:
-          default: []
-          description: Packages configured for the project
-          items:
-            $ref: '#/components/schemas/ProjectConfigScanner'
-          title: Packages
-          type: array
-        providers:
-          default: []
-          description: Providers available to the project
-          items:
-            $ref: '#/components/schemas/ProjectConfigProvider'
-          title: Providers
-          type: array
-        scanners:
-          default: []
-          description: Guardrails configured for the project
-          items:
-            $ref: '#/components/schemas/ProjectConfigScanner'
-          title: Scanners
-          type: array
-      title: ProjectConfig
-      type: object
     ProjectConfigProvider:
       properties:
         capabilities:
@@ -484,6 +391,70 @@ components:
       required:
       - enabled
       title: ProjectConfigProvider
+      type: object
+    TokenScope:
+      enum:
+      - personal
+      - organization
+      - project
+      title: TokenScope
+      type: string
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    ProjectConfig:
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        packages:
+          default: []
+          description: Packages configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Packages
+          type: array
+        providers:
+          default: []
+          description: Providers available to the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigProvider'
+          title: Providers
+          type: array
+        scanners:
+          default: []
+          description: Guardrails configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Scanners
+          type: array
+      title: ProjectConfig
       type: object
     Token:
       properties:
@@ -536,47 +507,79 @@ components:
       - status
       title: Token
       type: object
-    TokenSearchSortBy:
+    PostBulkDeleteBody:
+      properties:
+        tokenIds:
+          items:
+            format: uuid
+            type: string
+          maxItems: 100
+          minItems: 1
+          title: Tokenids
+          type: array
+      required:
+      - tokenIds
+      title: PostBulkDeleteBody
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ProjectType:
       enum:
-      - name
-      - expires_at
-      - status
-      - id
-      title: TokenSearchSortBy
-      type: string
-    ProviderCapability:
-      enum:
+      - app
+      - bot
       - chat
+      - global
+      - agentic
       - red_team
-      - siem
-      - openai_chat
-      - openai_responses
-      - anthropic_messages
-      - google_generate_content
-      title: ProviderCapability
+      title: ProjectType
       type: string
-    PostTokensBody:
+    PostTokensMachineBody:
       properties:
         expiresAt:
           description: Datetime in the future when the api key will no longer be valid
           format: date-time
           title: Expiresat
           type: string
+        machine:
+          const: true
+          description: Can not be set to False
+          title: Machine
+          type: boolean
         name:
           description: Name of the api token
           title: Name
           type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: If an id of a user group is past in, will create machine token for that user group
+          title: Projectid
       required:
       - name
       - expiresAt
-      title: PostTokensBody
+      - machine
+      title: PostTokensMachineBody
       type: object
-    ScanMode:
+    ChatbotType:
       enum:
-      - block
-      - audit
-      - redact
-      title: ScanMode
+      - teams
+      - slack
+      title: ChatbotType
+      type: string
+    ProjectDeploymentStatus:
+      enum:
+      - live
+      - draft
+      title: ProjectDeploymentStatus
       type: string
     Project:
       properties:
@@ -677,6 +680,17 @@ components:
       - scannerCount
       title: Project
       type: object
+    ProviderCapability:
+      enum:
+      - chat
+      - red_team
+      - siem
+      - openai_chat
+      - openai_responses
+      - anthropic_messages
+      - google_generate_content
+      title: ProviderCapability
+      type: string
     PostTokensResponse:
       properties:
         token:
@@ -686,56 +700,6 @@ components:
       - token
       title: PostTokensResponse
       type: object
-    GetTokensResponse:
-      properties:
-        next:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the next page, if any.
-          title: Next
-        prev:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the previous page, if any.
-          title: Prev
-        projects:
-          default: []
-          items:
-            $ref: '#/components/schemas/Project'
-          title: Projects
-          type: array
-        tokens:
-          items:
-            $ref: '#/components/schemas/Token'
-          title: Tokens
-          type: array
-        users:
-          additionalProperties:
-            $ref: '#/components/schemas/User'
-          default: {}
-          title: Users
-          type: object
-      required:
-      - tokens
-      title: GetTokensResponse
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    ChatbotType:
-      enum:
-      - teams
-      - slack
-      title: ChatbotType
-      type: string
     ScannerDirection:
       enum:
       - both
@@ -743,88 +707,124 @@ components:
       - response
       title: ScannerDirection
       type: string
-    PostTokensMachineBody:
+    PostTokensBody:
       properties:
         expiresAt:
           description: Datetime in the future when the api key will no longer be valid
           format: date-time
           title: Expiresat
           type: string
-        machine:
-          const: true
-          description: Can not be set to False
-          title: Machine
-          type: boolean
         name:
           description: Name of the api token
           title: Name
           type: string
-        projectId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          description: If an id of a user group is past in, will create machine token for that user group
-          title: Projectid
       required:
       - name
       - expiresAt
-      - machine
-      title: PostTokensMachineBody
+      title: PostTokensBody
       type: object
-    ProjectConfigScanner:
+    SuccessMessage:
+      description: Confirms a successful operation.
       properties:
-        blocking:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Blocking
-        direction:
-          anyOf:
-          - $ref: '#/components/schemas/ScannerDirection'
-          - const: ''
-            type: string
-          - type: 'null'
-          title: Direction
-        enabled:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Enabled
-        flagMessage:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Flagmessage
-        force:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Force
-        id:
-          format: uuid
-          title: Id
+        message:
+          title: Message
           type: string
-        mode:
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    User:
+      properties:
+        admin:
           anyOf:
-          - $ref: '#/components/schemas/ScanMode'
+          - type: boolean
           - type: 'null'
-        version:
+          title: Admin
+        blocked:
+          default: false
+          title: Blocked
+          type: boolean
+        createdAt:
           anyOf:
-          - format: uuid
-            type: string
           - format: date-time
             type: string
-          - maxLength: 100
-            minLength: 1
-            pattern: ^[a-zA-Z0-9-_]+$
+          - type: 'null'
+          title: Createdat
+        email:
+          format: password
+          title: Email
+          type: string
+          writeOnly: true
+        id:
+          title: Id
+          type: string
+        lastInvitationSentAt:
+          anyOf:
+          - format: date-time
             type: string
           - type: 'null'
-          title: Version
+          title: Lastinvitationsentat
+        machine:
+          default: false
+          title: Machine
+          type: boolean
+        name:
+          format: password
+          title: Name
+          type: string
+          writeOnly: true
+        org:
+          title: Org
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+          uniqueItems: true
+        roleIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Roleids
+          type: array
+        roles:
+          default: []
+          items:
+            type: string
+          title: Roles
+          type: array
+        social:
+          default: false
+          title: Social
+          type: boolean
+        teams:
+          default: []
+          items:
+            type: string
+          title: Teams
+          type: array
+        verified:
+          default: true
+          title: Verified
+          type: boolean
       required:
       - id
-      title: ProjectConfigScanner
+      - name
+      - email
+      - org
+      title: User
       type: object
+    TokenSearchSortBy:
+      enum:
+      - name
+      - expires_at
+      - status
+      - id
+      title: TokenSearchSortBy
+      type: string
   securitySchemes:
     HTTPBearer:
       scheme: bearer

@@ -73,473 +73,92 @@ components:
           uniqueItems: true
       title: ScannerAvailability
       type: object
-    ScannerVersionMeta:
+    ProjectConfigScanner:
       properties:
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        createdBy:
+        blocking:
           anyOf:
-          - type: string
+          - type: boolean
           - type: 'null'
-          title: Createdby
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
+          title: Blocking
         direction:
           anyOf:
           - $ref: '#/components/schemas/ScannerDirection'
+          - const: ''
+            type: string
           - type: 'null'
-        f1Score:
+          title: Direction
+        enabled:
           anyOf:
-          - type: number
+          - type: boolean
           - type: 'null'
-          title: F1Score
+          title: Enabled
+        flagMessage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Flagmessage
+        force:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Force
         id:
           format: uuid
           title: Id
           type: string
-        latestDatasetResult:
+        mode:
           anyOf:
-          - $ref: '#/components/schemas/ScannerDatasetResult'
+          - $ref: '#/components/schemas/ScanMode'
           - type: 'null'
-        name:
-          maxLength: 100
-          minLength: 1
-          pattern: ^[a-zA-Z0-9-_]+$
-          title: Name
-          type: string
-        published:
-          title: Published
-          type: boolean
-      required:
-      - id
-      - createdAt
-      - name
-      - published
-      title: ScannerVersionMeta
-      type: object
-    ProjectType:
-      enum:
-      - app
-      - bot
-      - chat
-      - global
-      - agentic
-      - red_team
-      title: ProjectType
-      type: string
-    ProjectDeploymentStatus:
-      enum:
-      - live
-      - draft
-      title: ProjectDeploymentStatus
-      type: string
-    ScannerVersionInputModel:
-      properties:
-        description:
+        version:
           anyOf:
-          - type: string
-          - type: 'null'
-          description: Description of the changes in the new version.
-          title: Description
-        name:
-          anyOf:
+          - format: uuid
+            type: string
+          - format: date-time
+            type: string
           - maxLength: 100
             minLength: 1
             pattern: ^[a-zA-Z0-9-_]+$
             type: string
           - type: 'null'
-          description: Name for the new version.
-          title: Name
-        published:
-          default: true
-          description: If the version should be published.
-          title: Published
-          type: boolean
-        push:
-          default: false
-          description: 'If the version should be pushed to all projects using the guardrail.
-
-            Only has an effect if the version is published.'
-          title: Push
-          type: boolean
-      title: ScannerVersionInputModel
-      type: object
-    APIScopeOutputs:
-      patternProperties:
-        ^[a-zA-Z_][a-zA-Z0-9_]*$:
-          type: string
-      template: true
-      title: APIScopeOutputs
-      type: object
-    ProviderAvailability:
-      properties:
-        global:
-          default: false
-          description: If True provider can be used by all projects
-          title: Global
-          type: boolean
-        projectIds:
-          default: []
-          items:
-            format: uuid
-            type: string
-          title: Projectids
-          type: array
-          uniqueItems: true
-      title: ProviderAvailability
-      type: object
-    APIWorkflowBlock:
-      properties:
-        outputs:
-          $ref: '#/components/schemas/APIScopeOutputs'
-          default: {}
-        stages:
-          items:
-            discriminator:
-              mapping:
-                request: '#/components/schemas/APIRequestBlock'
-                retry: '#/components/schemas/APIRetryBlock'
-                workflow: '#/components/schemas/APIWorkflowBlock'
-              propertyName: type
-            oneOf:
-            - $ref: '#/components/schemas/APIRequestBlock'
-            - $ref: '#/components/schemas/APIRetryBlock'
-            - $ref: '#/components/schemas/APIWorkflowBlock'
-          template: true
-          title: Stages
-          type: array
-        type:
-          const: workflow
-          default: workflow
-          title: Type
-          type: string
-      required:
-      - stages
-      title: APIWorkflowBlock
-      type: object
-    Role:
-      properties:
-        id:
-          format: uuid
-          title: Id
-          type: string
-        isDefault:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          default: false
-          title: Isdefault
-        memberCount:
-          title: Membercount
-          type: integer
-        name:
-          title: Name
-          type: string
-        permissions:
-          default: []
-          items:
-            type: string
-          title: Permissions
-          type: array
-        projectId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Projectid
-        system:
-          title: System
-          type: boolean
-      required:
-      - id
-      - name
-      - system
-      - memberCount
-      title: Role
-      type: object
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-      type: object
-    MLTextScannerConfig:
-      properties:
-        type:
-          const: ml_text
-          default: ml_text
-          title: Type
-          type: string
-      required: []
-      title: MLTextScannerConfig
-      type: object
-    ProviderType:
-      enum:
-      - ibm
-      - openai
-      - azure
-      - cohere
-      - ai21
-      - custom
-      - anthropic
-      - groq
-      - openai-compatible
-      - huggingface
-      - siem
-      - google
-      - bedrock
-      title: ProviderType
-      type: string
-    ScannerPackage:
-      properties:
-        availability:
-          $ref: '#/components/schemas/ScannerAvailability'
-          default:
-            global: false
-            projectIds: []
-        direction:
-          $ref: '#/components/schemas/ScannerDirection'
-        id:
-          format: uuid
-          title: Id
-          type: string
-        name:
-          title: Name
-          type: string
-        performanceScannerIds:
-          anyOf:
-          - items:
-              format: uuid
-              type: string
-            type: array
-          - type: 'null'
-          title: Performancescannerids
-        projectId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Projectid
-        scannerCounts:
-          additionalProperties:
-            type: integer
-          default: {}
-          title: Scannercounts
-          type: object
-        scannerIds:
-          items:
-            format: uuid
-            type: string
-          title: Scannerids
-          type: array
-        source:
-          discriminator:
-            mapping:
-              internal: '#/components/schemas/InternalScannerSource'
-              remediation: '#/components/schemas/RemediationScannerSource'
-              vendor: '#/components/schemas/VendorScannerSource'
-              zip: '#/components/schemas/ZipScannerSource'
-            propertyName: type
-          oneOf:
-          - $ref: '#/components/schemas/InternalScannerSource'
-          - $ref: '#/components/schemas/ZipScannerSource'
-          - $ref: '#/components/schemas/VendorScannerSource'
-          - $ref: '#/components/schemas/RemediationScannerSource'
-          title: Source
-        vendored:
-          anyOf:
-          - type: boolean
-          - items:
-              type: string
-            type: array
-          default: false
-          title: Vendored
-      required:
-      - id
-      - name
-      - source
-      - direction
-      - scannerIds
-      title: ScannerPackage
-      type: object
-    RegexScannerConfig:
-      properties:
-        pattern:
-          description: Python Flavored Regular Expression (RegEx) to check for in the prompt or response. Case insensitive.
-          title: Pattern
-          type: string
-        type:
-          const: regex
-          default: regex
-          title: Type
-          type: string
-      required:
-      - pattern
-      title: RegexScannerConfig
-      type: object
-    ZipScannerSource:
-      properties:
-        type:
-          const: zip
-          default: zip
-          title: Type
-          type: string
-      title: ZipScannerSource
-      type: object
-    SuccessMessage:
-      description: Confirms a successful operation.
-      properties:
-        message:
-          title: Message
-          type: string
-      required:
-      - message
-      title: SuccessMessage
-      type: object
-    OrgExport:
-      properties:
-        settings:
-          $ref: '#/components/schemas/ExportSettings'
-        version:
-          exclusiveMinimum: 0.0
           title: Version
-          type: integer
       required:
-      - version
-      - settings
-      title: OrgExport
+      - id
+      title: ProjectConfigScanner
       type: object
-    ProjectConfig:
-      properties:
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Id
-        packages:
-          default: []
-          description: Packages configured for the project
-          items:
-            $ref: '#/components/schemas/ProjectConfigScanner'
-          title: Packages
-          type: array
-        providers:
-          default: []
-          description: Providers available to the project
-          items:
-            $ref: '#/components/schemas/ProjectConfigProvider'
-          title: Providers
-          type: array
-        scanners:
-          default: []
-          description: Guardrails configured for the project
-          items:
-            $ref: '#/components/schemas/ProjectConfigScanner'
-          title: Scanners
-          type: array
-      title: ProjectConfig
-      type: object
-    ProjectConfigProvider:
-      properties:
-        capabilities:
-          anyOf:
-          - items:
-              anyOf:
-              - $ref: '#/components/schemas/ProviderCapability'
-              - type: string
-            type: array
-            uniqueItems: true
-          - type: 'null'
-          title: Capabilities
-        default:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Default
-        enabled:
-          title: Enabled
-          type: boolean
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Id
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-        type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Type
-      required:
-      - enabled
-      title: ProjectConfigProvider
-      type: object
-    RemediationScannerSource:
-      properties:
-        sourceId:
-          format: uuid
-          title: Sourceid
-          type: string
-        type:
-          const: remediation
-          default: remediation
-          title: Type
-          type: string
-      required:
-      - sourceId
-      title: RemediationScannerSource
-      type: object
-    VendorScannerSource:
-      properties:
-        type:
-          const: vendor
-          default: vendor
-          title: Type
-          type: string
-      title: VendorScannerSource
-      type: object
-    ProviderCapability:
+    ScanMode:
       enum:
-      - chat
-      - red_team
-      - siem
-      - openai_chat
-      - openai_responses
-      - anthropic_messages
-      - google_generate_content
-      title: ProviderCapability
+      - block
+      - audit
+      - redact
+      title: ScanMode
       type: string
+    PostAdmingSettingsImportBody:
+      properties:
+        clearExisting:
+          default: false
+          description: If true, all existing data belonging to your organization will be deleted. This is not reversible.
+          title: Clearexisting
+          type: boolean
+        export:
+          $ref: '#/components/schemas/OrgExport'
+          description: Previously exported data to restore to the organization.
+        preserveRoles:
+          default: false
+          description: If true and clearExisting is true, users will preserve the roles they have at time of import.
+          title: Preserveroles
+          type: boolean
+        preserveTokens:
+          default: false
+          description: 'If true and clearExisting is true, personal API tokens will be preserved."
+
+            Machine tokens will not be preserved.'
+          title: Preservetokens
+          type: boolean
+      required:
+      - export
+      title: PostAdmingSettingsImportBody
+      type: object
     Provider:
       properties:
         authTemplate:
@@ -653,6 +272,598 @@ components:
       - capabilities
       title: Provider
       type: object
+    APIWorkflowBlock:
+      properties:
+        outputs:
+          $ref: '#/components/schemas/APIScopeOutputs'
+          default: {}
+        stages:
+          items:
+            discriminator:
+              mapping:
+                request: '#/components/schemas/APIRequestBlock'
+                retry: '#/components/schemas/APIRetryBlock'
+                workflow: '#/components/schemas/APIWorkflowBlock'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/APIRequestBlock'
+            - $ref: '#/components/schemas/APIRetryBlock'
+            - $ref: '#/components/schemas/APIWorkflowBlock'
+          template: true
+          title: Stages
+          type: array
+        type:
+          const: workflow
+          default: workflow
+          title: Type
+          type: string
+      required:
+      - stages
+      title: APIWorkflowBlock
+      type: object
+    ProviderAvailability:
+      properties:
+        global:
+          default: false
+          description: If True provider can be used by all projects
+          title: Global
+          type: boolean
+        projectIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Projectids
+          type: array
+          uniqueItems: true
+      title: ProviderAvailability
+      type: object
+    ProjectConfigProvider:
+      properties:
+        capabilities:
+          anyOf:
+          - items:
+              anyOf:
+              - $ref: '#/components/schemas/ProviderCapability'
+              - type: string
+            type: array
+            uniqueItems: true
+          - type: 'null'
+          title: Capabilities
+        default:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Default
+        enabled:
+          title: Enabled
+          type: boolean
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+      required:
+      - enabled
+      title: ProjectConfigProvider
+      type: object
+    ExportProjectSettings:
+      properties:
+        addedPackagesIds:
+          items:
+            format: uuid
+            type: string
+          title: Addedpackagesids
+          type: array
+        addedProviderIds:
+          items:
+            format: uuid
+            type: string
+          title: Addedproviderids
+          type: array
+        addedScannerIds:
+          items:
+            format: uuid
+            type: string
+          title: Addedscannerids
+          type: array
+        project:
+          $ref: '#/components/schemas/Project'
+        roles:
+          items:
+            $ref: '#/components/schemas/Role'
+          title: Roles
+          type: array
+      required:
+      - project
+      - addedScannerIds
+      - addedPackagesIds
+      - addedProviderIds
+      - roles
+      title: ExportProjectSettings
+      type: object
+    KeywordScannerConfig:
+      properties:
+        type:
+          const: keyword
+          default: keyword
+          title: Type
+          type: string
+        words:
+          description: Words to check for in the prompt or response. Case insensitive. Empty strings will be removed.
+          items:
+            type: string
+          title: Words
+          type: array
+      required:
+      - words
+      title: KeywordScannerConfig
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    ProjectConfig:
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        packages:
+          default: []
+          description: Packages configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Packages
+          type: array
+        providers:
+          default: []
+          description: Providers available to the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigProvider'
+          title: Providers
+          type: array
+        scanners:
+          default: []
+          description: Guardrails configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Scanners
+          type: array
+      title: ProjectConfig
+      type: object
+    ZipScannerSource:
+      properties:
+        type:
+          const: zip
+          default: zip
+          title: Type
+          type: string
+      title: ZipScannerSource
+      type: object
+    InternalScannerSource:
+      properties:
+        type:
+          const: internal
+          default: internal
+          title: Type
+          type: string
+      title: InternalScannerSource
+      type: object
+    HTTPMethod:
+      enum:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - HEAD
+      - OPTIONS
+      title: HTTPMethod
+      type: string
+    ScannerExport:
+      properties:
+        availability:
+          $ref: '#/components/schemas/ScannerAvailability'
+          default:
+            global: false
+            projectIds: []
+        config:
+          anyOf:
+          - discriminator:
+              mapping:
+                custom: '#/components/schemas/GenAIScannerConfig'
+                genai: '#/components/schemas/GenAIScannerConfig'
+                keyword: '#/components/schemas/KeywordScannerConfig'
+                ml_text: '#/components/schemas/MLTextScannerConfig'
+                regex: '#/components/schemas/RegexScannerConfig'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/RegexScannerConfig'
+            - $ref: '#/components/schemas/KeywordScannerConfig'
+            - $ref: '#/components/schemas/GenAIScannerConfig'
+            - $ref: '#/components/schemas/MLTextScannerConfig'
+          - $ref: '#/components/schemas/LegacyScannerConfig'
+          - type: 'null'
+          title: Config
+        direction:
+          $ref: '#/components/schemas/ScannerDirection'
+          default: request
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        packageId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Packageid
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        scannerTemplateId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Scannertemplateid
+        source:
+          default:
+            type: internal
+          discriminator:
+            mapping:
+              internal: '#/components/schemas/InternalScannerSource'
+              remediation: '#/components/schemas/RemediationScannerSource'
+              vendor: '#/components/schemas/VendorScannerSource'
+              zip: '#/components/schemas/ZipScannerSource'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/InternalScannerSource'
+          - $ref: '#/components/schemas/ZipScannerSource'
+          - $ref: '#/components/schemas/VendorScannerSource'
+          - $ref: '#/components/schemas/RemediationScannerSource'
+          title: Source
+        tags:
+          default: []
+          items:
+            maxLength: 50
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          title: Tags
+          type: array
+        vendored:
+          anyOf:
+          - type: boolean
+          - items:
+              type: string
+            type: array
+          default: false
+          title: Vendored
+        versionMeta:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerVersionInputModel'
+          - type: 'null'
+      required:
+      - name
+      - id
+      title: ScannerExport
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    RemediationScannerSource:
+      properties:
+        sourceId:
+          format: uuid
+          title: Sourceid
+          type: string
+        type:
+          const: remediation
+          default: remediation
+          title: Type
+          type: string
+      required:
+      - sourceId
+      title: RemediationScannerSource
+      type: object
+    AWSAuth:
+      properties:
+        accessKey:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Accesskey
+        region:
+          template: true
+          title: Region
+          type: string
+        secretKey:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Secretkey
+        service:
+          template: true
+          title: Service
+          type: string
+        token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Token
+      required:
+      - service
+      - region
+      title: AWSAuth
+      type: object
+    ProjectType:
+      enum:
+      - app
+      - bot
+      - chat
+      - global
+      - agentic
+      - red_team
+      title: ProjectType
+      type: string
+    ScannerVersionMeta:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Createdby
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        direction:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - type: 'null'
+        f1Score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: F1Score
+        id:
+          format: uuid
+          title: Id
+          type: string
+        latestDatasetResult:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDatasetResult'
+          - type: 'null'
+        name:
+          maxLength: 100
+          minLength: 1
+          pattern: ^[a-zA-Z0-9-_]+$
+          title: Name
+          type: string
+        published:
+          title: Published
+          type: boolean
+      required:
+      - id
+      - createdAt
+      - name
+      - published
+      title: ScannerVersionMeta
+      type: object
+    ProviderType:
+      enum:
+      - ibm
+      - openai
+      - azure
+      - cohere
+      - ai21
+      - custom
+      - anthropic
+      - groq
+      - openai-compatible
+      - huggingface
+      - siem
+      - google
+      - bedrock
+      title: ProviderType
+      type: string
+    APIRetryBlock:
+      properties:
+        attempts:
+          title: Attempts
+          type: integer
+        backoff:
+          anyOf:
+          - type: integer
+          - type: string
+          default: 1
+          template: true
+          title: Backoff
+        block:
+          discriminator:
+            mapping:
+              request: '#/components/schemas/APIRequestBlock'
+              retry: '#/components/schemas/APIRetryBlock'
+              workflow: '#/components/schemas/APIWorkflowBlock'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/APIRequestBlock'
+          - $ref: '#/components/schemas/APIWorkflowBlock'
+          - $ref: '#/components/schemas/APIRetryBlock'
+          template: true
+          title: Block
+        type:
+          const: retry
+          default: retry
+          title: Type
+          type: string
+        when:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: When
+      required:
+      - attempts
+      - block
+      title: APIRetryBlock
+      type: object
+    LegacyScannerConfig:
+      additionalProperties: true
+      properties: {}
+      title: LegacyScannerConfig
+      type: object
+    GenAIScannerConfig:
+      properties:
+        input:
+          default: ''
+          title: Input
+          type: string
+        scanContext:
+          default: directional
+          description: 'Describes the context that is provided to the scanner
+
+            individual: Scan only the latest message
+
+            directional: Scan all messages in the conversation in the same direction as the latest message'
+          enum:
+          - individual
+          - directional
+          title: Scancontext
+          type: string
+        type:
+          default: custom
+          enum:
+          - genai
+          - custom
+          title: Type
+          type: string
+      title: GenAIScannerConfig
+      type: object
+    PostAdminSettingsExportBody:
+      properties:
+        export:
+          $ref: '#/components/schemas/OrgExport'
+      required:
+      - export
+      title: PostAdminSettingsExportBody
+      type: object
+    VendorScannerSource:
+      properties:
+        type:
+          const: vendor
+          default: vendor
+          title: Type
+          type: string
+      title: VendorScannerSource
+      type: object
+    ScannerDatasetResult:
+      properties:
+        datasetRunId:
+          format: uuid
+          title: Datasetrunid
+          type: string
+        f1Score:
+          title: F1Score
+          type: number
+      required:
+      - datasetRunId
+      - f1Score
+      title: ScannerDatasetResult
+      type: object
+    ChatbotType:
+      enum:
+      - teams
+      - slack
+      title: ChatbotType
+      type: string
+    RequestConcurrencyLimit:
+      properties:
+        decayPerSecond:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: integer
+          - type: 'null'
+          description: 'Number of request slots that are opened per second.
+
+
+            Set a value to use the concurrency limit as a rate limit.
+
+
+            For example, to set a rate limit of 5 requests per second set requests=5 and decayPerSecond=5'
+          title: Decaypersecond
+        requests:
+          description: Max number of request slots that can be occupied at once.
+          exclusiveMinimum: 0.0
+          title: Requests
+          type: integer
+      required:
+      - requests
+      title: RequestConcurrencyLimit
+      type: object
+    ProjectDeploymentStatus:
+      enum:
+      - live
+      - draft
+      title: ProjectDeploymentStatus
+      type: string
     OCIAuth:
       properties:
         keyId:
@@ -674,13 +885,49 @@ components:
       - privateKeyPem
       title: OCIAuth
       type: object
-    ScanMode:
-      enum:
-      - block
-      - audit
-      - redact
-      title: ScanMode
-      type: string
+    ExportSettings:
+      properties:
+        packages:
+          items:
+            $ref: '#/components/schemas/ScannerPackage'
+          title: Packages
+          type: array
+        projects:
+          items:
+            $ref: '#/components/schemas/ExportProjectSettings'
+          title: Projects
+          type: array
+        providers:
+          items:
+            $ref: '#/components/schemas/Provider'
+          title: Providers
+          type: array
+        roles:
+          items:
+            $ref: '#/components/schemas/Role'
+          title: Roles
+          type: array
+        scanners:
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ScannerExport'
+            - $ref: '#/components/schemas/Scanner'
+          title: Scanners
+          type: array
+        secrets:
+          items:
+            $ref: '#/components/schemas/Secret'
+          title: Secrets
+          type: array
+      required:
+      - projects
+      - scanners
+      - packages
+      - providers
+      - secrets
+      - roles
+      title: ExportSettings
+      type: object
     Project:
       properties:
         adminCount:
@@ -780,31 +1027,36 @@ components:
       - scannerCount
       title: Project
       type: object
-    Secret:
+    ScannerVersionInputModel:
       properties:
-        deletedAt:
+        description:
           anyOf:
-          - format: date-time
+          - type: string
+          - type: 'null'
+          description: Description of the changes in the new version.
+          title: Description
+        name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
             type: string
           - type: 'null'
-          title: Deletedat
-        id:
-          format: uuid
-          title: Id
-          type: string
-        name:
+          description: Name for the new version.
           title: Name
-          type: string
-        value:
-          format: password
-          title: Value
-          type: string
-          writeOnly: true
-      required:
-      - id
-      - name
-      - value
-      title: Secret
+        published:
+          default: true
+          description: If the version should be published.
+          title: Published
+          type: boolean
+        push:
+          default: false
+          description: 'If the version should be pushed to all projects using the guardrail.
+
+            Only has an effect if the version is published.'
+          title: Push
+          type: boolean
+      title: ScannerVersionInputModel
       type: object
     Scanner:
       properties:
@@ -900,285 +1152,17 @@ components:
       - versionMeta
       title: Scanner
       type: object
-    PostAdmingSettingsImportBody:
-      properties:
-        clearExisting:
-          default: false
-          description: If true, all existing data belonging to your organization will be deleted. This is not reversible.
-          title: Clearexisting
-          type: boolean
-        export:
-          $ref: '#/components/schemas/OrgExport'
-          description: Previously exported data to restore to the organization.
-        preserveRoles:
-          default: false
-          description: If true and clearExisting is true, users will preserve the roles they have at time of import.
-          title: Preserveroles
-          type: boolean
-        preserveTokens:
-          default: false
-          description: 'If true and clearExisting is true, personal API tokens will be preserved."
-
-            Machine tokens will not be preserved.'
-          title: Preservetokens
-          type: boolean
-      required:
-      - export
-      title: PostAdmingSettingsImportBody
-      type: object
-    RequestConcurrencyLimit:
-      properties:
-        decayPerSecond:
-          anyOf:
-          - exclusiveMinimum: 0.0
-            type: integer
-          - type: 'null'
-          description: 'Number of request slots that are opened per second.
-
-
-            Set a value to use the concurrency limit as a rate limit.
-
-
-            For example, to set a rate limit of 5 requests per second set requests=5 and decayPerSecond=5'
-          title: Decaypersecond
-        requests:
-          description: Max number of request slots that can be occupied at once.
-          exclusiveMinimum: 0.0
-          title: Requests
-          type: integer
-      required:
-      - requests
-      title: RequestConcurrencyLimit
-      type: object
-    LegacyScannerConfig:
-      additionalProperties: true
-      properties: {}
-      title: LegacyScannerConfig
-      type: object
-    InternalScannerSource:
-      properties:
-        type:
-          const: internal
-          default: internal
-          title: Type
-          type: string
-      title: InternalScannerSource
-      type: object
-    KeywordScannerConfig:
-      properties:
-        type:
-          const: keyword
-          default: keyword
-          title: Type
-          type: string
-        words:
-          description: Words to check for in the prompt or response. Case insensitive. Empty strings will be removed.
-          items:
-            type: string
-          title: Words
-          type: array
-      required:
-      - words
-      title: KeywordScannerConfig
-      type: object
-    ScannerDatasetResult:
-      properties:
-        datasetRunId:
-          format: uuid
-          title: Datasetrunid
-          type: string
-        f1Score:
-          title: F1Score
-          type: number
-      required:
-      - datasetRunId
-      - f1Score
-      title: ScannerDatasetResult
-      type: object
-    AWSAuth:
-      properties:
-        accessKey:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Accesskey
-        region:
-          template: true
-          title: Region
-          type: string
-        secretKey:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Secretkey
-        service:
-          template: true
-          title: Service
-          type: string
-        token:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Token
-      required:
-      - service
-      - region
-      title: AWSAuth
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    ChatbotType:
+    ProviderCapability:
       enum:
-      - teams
-      - slack
-      title: ChatbotType
+      - chat
+      - red_team
+      - siem
+      - openai_chat
+      - openai_responses
+      - anthropic_messages
+      - google_generate_content
+      title: ProviderCapability
       type: string
-    APIRetryBlock:
-      properties:
-        attempts:
-          title: Attempts
-          type: integer
-        backoff:
-          anyOf:
-          - type: integer
-          - type: string
-          default: 1
-          template: true
-          title: Backoff
-        block:
-          discriminator:
-            mapping:
-              request: '#/components/schemas/APIRequestBlock'
-              retry: '#/components/schemas/APIRetryBlock'
-              workflow: '#/components/schemas/APIWorkflowBlock'
-            propertyName: type
-          oneOf:
-          - $ref: '#/components/schemas/APIRequestBlock'
-          - $ref: '#/components/schemas/APIWorkflowBlock'
-          - $ref: '#/components/schemas/APIRetryBlock'
-          template: true
-          title: Block
-        type:
-          const: retry
-          default: retry
-          title: Type
-          type: string
-        when:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: When
-      required:
-      - attempts
-      - block
-      title: APIRetryBlock
-      type: object
-    ScannerExport:
-      properties:
-        availability:
-          $ref: '#/components/schemas/ScannerAvailability'
-          default:
-            global: false
-            projectIds: []
-        config:
-          anyOf:
-          - discriminator:
-              mapping:
-                custom: '#/components/schemas/GenAIScannerConfig'
-                genai: '#/components/schemas/GenAIScannerConfig'
-                keyword: '#/components/schemas/KeywordScannerConfig'
-                ml_text: '#/components/schemas/MLTextScannerConfig'
-                regex: '#/components/schemas/RegexScannerConfig'
-              propertyName: type
-            oneOf:
-            - $ref: '#/components/schemas/RegexScannerConfig'
-            - $ref: '#/components/schemas/KeywordScannerConfig'
-            - $ref: '#/components/schemas/GenAIScannerConfig'
-            - $ref: '#/components/schemas/MLTextScannerConfig'
-          - $ref: '#/components/schemas/LegacyScannerConfig'
-          - type: 'null'
-          title: Config
-        direction:
-          $ref: '#/components/schemas/ScannerDirection'
-          default: request
-        id:
-          format: uuid
-          title: Id
-          type: string
-        name:
-          title: Name
-          type: string
-        packageId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Packageid
-        projectId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Projectid
-        scannerTemplateId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Scannertemplateid
-        source:
-          default:
-            type: internal
-          discriminator:
-            mapping:
-              internal: '#/components/schemas/InternalScannerSource'
-              remediation: '#/components/schemas/RemediationScannerSource'
-              vendor: '#/components/schemas/VendorScannerSource'
-              zip: '#/components/schemas/ZipScannerSource'
-            propertyName: type
-          oneOf:
-          - $ref: '#/components/schemas/InternalScannerSource'
-          - $ref: '#/components/schemas/ZipScannerSource'
-          - $ref: '#/components/schemas/VendorScannerSource'
-          - $ref: '#/components/schemas/RemediationScannerSource'
-          title: Source
-        tags:
-          default: []
-          items:
-            maxLength: 50
-            minLength: 1
-            pattern: ^[a-zA-Z0-9-_]+$
-            type: string
-          title: Tags
-          type: array
-        vendored:
-          anyOf:
-          - type: boolean
-          - items:
-              type: string
-            type: array
-          default: false
-          title: Vendored
-        versionMeta:
-          anyOf:
-          - $ref: '#/components/schemas/ScannerVersionInputModel'
-          - type: 'null'
-      required:
-      - name
-      - id
-      title: ScannerExport
-      type: object
     ScannerDirection:
       enum:
       - both
@@ -1186,24 +1170,31 @@ components:
       - response
       title: ScannerDirection
       type: string
-    HTTPMethod:
-      enum:
-      - GET
-      - POST
-      - PUT
-      - DELETE
-      - PATCH
-      - HEAD
-      - OPTIONS
-      title: HTTPMethod
-      type: string
-    PostAdminSettingsExportBody:
+    Secret:
       properties:
-        export:
-          $ref: '#/components/schemas/OrgExport'
+        deletedAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Deletedat
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        value:
+          format: password
+          title: Value
+          type: string
+          writeOnly: true
       required:
-      - export
-      title: PostAdminSettingsExportBody
+      - id
+      - name
+      - value
+      title: Secret
       type: object
     APIRequestBlock:
       properties:
@@ -1265,163 +1256,172 @@ components:
       - url
       title: APIRequestBlock
       type: object
-    ExportSettings:
+    SuccessMessage:
+      description: Confirms a successful operation.
       properties:
-        packages:
-          items:
-            $ref: '#/components/schemas/ScannerPackage'
-          title: Packages
-          type: array
-        projects:
-          items:
-            $ref: '#/components/schemas/ExportProjectSettings'
-          title: Projects
-          type: array
-        providers:
-          items:
-            $ref: '#/components/schemas/Provider'
-          title: Providers
-          type: array
-        roles:
-          items:
-            $ref: '#/components/schemas/Role'
-          title: Roles
-          type: array
-        scanners:
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/ScannerExport'
-            - $ref: '#/components/schemas/Scanner'
-          title: Scanners
-          type: array
-        secrets:
-          items:
-            $ref: '#/components/schemas/Secret'
-          title: Secrets
-          type: array
+        message:
+          title: Message
+          type: string
       required:
-      - projects
-      - scanners
-      - packages
-      - providers
-      - secrets
-      - roles
-      title: ExportSettings
+      - message
+      title: SuccessMessage
       type: object
-    ProjectConfigScanner:
+    APIScopeOutputs:
+      patternProperties:
+        ^[a-zA-Z_][a-zA-Z0-9_]*$:
+          type: string
+      template: true
+      title: APIScopeOutputs
+      type: object
+    MLTextScannerConfig:
       properties:
-        blocking:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Blocking
+        type:
+          const: ml_text
+          default: ml_text
+          title: Type
+          type: string
+      required: []
+      title: MLTextScannerConfig
+      type: object
+    RegexScannerConfig:
+      properties:
+        pattern:
+          description: Python Flavored Regular Expression (RegEx) to check for in the prompt or response. Case insensitive.
+          title: Pattern
+          type: string
+        type:
+          const: regex
+          default: regex
+          title: Type
+          type: string
+      required:
+      - pattern
+      title: RegexScannerConfig
+      type: object
+    ScannerPackage:
+      properties:
+        availability:
+          $ref: '#/components/schemas/ScannerAvailability'
+          default:
+            global: false
+            projectIds: []
         direction:
-          anyOf:
-          - $ref: '#/components/schemas/ScannerDirection'
-          - const: ''
-            type: string
-          - type: 'null'
-          title: Direction
-        enabled:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Enabled
-        flagMessage:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Flagmessage
-        force:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Force
+          $ref: '#/components/schemas/ScannerDirection'
         id:
           format: uuid
           title: Id
           type: string
-        mode:
+        name:
+          title: Name
+          type: string
+        performanceScannerIds:
           anyOf:
-          - $ref: '#/components/schemas/ScanMode'
+          - items:
+              format: uuid
+              type: string
+            type: array
           - type: 'null'
-        version:
+          title: Performancescannerids
+        projectId:
           anyOf:
           - format: uuid
             type: string
-          - format: date-time
-            type: string
-          - maxLength: 100
-            minLength: 1
-            pattern: ^[a-zA-Z0-9-_]+$
-            type: string
           - type: 'null'
-          title: Version
+          title: Projectid
+        scannerCounts:
+          additionalProperties:
+            type: integer
+          default: {}
+          title: Scannercounts
+          type: object
+        scannerIds:
+          items:
+            format: uuid
+            type: string
+          title: Scannerids
+          type: array
+        source:
+          discriminator:
+            mapping:
+              internal: '#/components/schemas/InternalScannerSource'
+              remediation: '#/components/schemas/RemediationScannerSource'
+              vendor: '#/components/schemas/VendorScannerSource'
+              zip: '#/components/schemas/ZipScannerSource'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/InternalScannerSource'
+          - $ref: '#/components/schemas/ZipScannerSource'
+          - $ref: '#/components/schemas/VendorScannerSource'
+          - $ref: '#/components/schemas/RemediationScannerSource'
+          title: Source
+        vendored:
+          anyOf:
+          - type: boolean
+          - items:
+              type: string
+            type: array
+          default: false
+          title: Vendored
       required:
       - id
-      title: ProjectConfigScanner
+      - name
+      - source
+      - direction
+      - scannerIds
+      title: ScannerPackage
       type: object
-    GenAIScannerConfig:
+    Role:
       properties:
-        input:
-          default: ''
-          title: Input
+        id:
+          format: uuid
+          title: Id
           type: string
-        scanContext:
-          default: directional
-          description: 'Describes the context that is provided to the scanner
-
-            individual: Scan only the latest message
-
-            directional: Scan all messages in the conversation in the same direction as the latest message'
-          enum:
-          - individual
-          - directional
-          title: Scancontext
+        isDefault:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          default: false
+          title: Isdefault
+        memberCount:
+          title: Membercount
+          type: integer
+        name:
+          title: Name
           type: string
-        type:
-          default: custom
-          enum:
-          - genai
-          - custom
-          title: Type
-          type: string
-      title: GenAIScannerConfig
-      type: object
-    ExportProjectSettings:
-      properties:
-        addedPackagesIds:
+        permissions:
+          default: []
           items:
-            format: uuid
             type: string
-          title: Addedpackagesids
+          title: Permissions
           type: array
-        addedProviderIds:
-          items:
-            format: uuid
+        projectId:
+          anyOf:
+          - format: uuid
             type: string
-          title: Addedproviderids
-          type: array
-        addedScannerIds:
-          items:
-            format: uuid
-            type: string
-          title: Addedscannerids
-          type: array
-        project:
-          $ref: '#/components/schemas/Project'
-        roles:
-          items:
-            $ref: '#/components/schemas/Role'
-          title: Roles
-          type: array
+          - type: 'null'
+          title: Projectid
+        system:
+          title: System
+          type: boolean
       required:
-      - project
-      - addedScannerIds
-      - addedPackagesIds
-      - addedProviderIds
-      - roles
-      title: ExportProjectSettings
+      - id
+      - name
+      - system
+      - memberCount
+      title: Role
+      type: object
+    OrgExport:
+      properties:
+        settings:
+          $ref: '#/components/schemas/ExportSettings'
+        version:
+          exclusiveMinimum: 0.0
+          title: Version
+          type: integer
+      required:
+      - version
+      - settings
+      title: OrgExport
       type: object
   securitySchemes:
     HTTPBearer:

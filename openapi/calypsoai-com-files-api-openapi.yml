@@ -70,6 +70,112 @@ paths:
       - Files
 components:
   schemas:
+    FileMetadata:
+      properties:
+        purposes:
+          items:
+            $ref: '#/components/schemas/FilePurpose'
+          title: Purposes
+          type: array
+          uniqueItems: true
+        rowCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rowcount
+        size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size
+      required:
+      - purposes
+      title: FileMetadata
+      type: object
+    Body_post_files:
+      properties:
+        file:
+          format: binary
+          title: File
+          type: string
+        purposes:
+          items:
+            enum:
+            - custom_attacks
+            - datasets
+            type: string
+          title: Purposes
+          type: array
+      required:
+      - file
+      - purposes
+      title: Body_post_files
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    FilePurpose:
+      enum:
+      - custom_attacks
+      - datasets
+      - dataset_runs
+      - remediation_result
+      title: FilePurpose
+      type: string
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    GetFileResponse:
+      properties:
+        file:
+          $ref: '#/components/schemas/File'
+          description: The requested file metadata.
+      required:
+      - file
+      title: GetFileResponse
+      type: object
     File:
       properties:
         content:
@@ -113,112 +219,6 @@ components:
       - name
       - contentType
       title: File
-      type: object
-    PostSuccessMessage:
-      description: Contains the ID of an object after a successful POST operation.
-      properties:
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: string
-          title: Id
-      required:
-      - id
-      title: PostSuccessMessage
-      type: object
-    Body_post_files:
-      properties:
-        file:
-          format: binary
-          title: File
-          type: string
-        purposes:
-          items:
-            enum:
-            - custom_attacks
-            - datasets
-            type: string
-          title: Purposes
-          type: array
-      required:
-      - file
-      - purposes
-      title: Body_post_files
-      type: object
-    FilePurpose:
-      enum:
-      - custom_attacks
-      - datasets
-      - dataset_runs
-      - remediation_result
-      title: FilePurpose
-      type: string
-    GetFileResponse:
-      properties:
-        file:
-          $ref: '#/components/schemas/File'
-          description: The requested file metadata.
-      required:
-      - file
-      title: GetFileResponse
-      type: object
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    FileMetadata:
-      properties:
-        purposes:
-          items:
-            $ref: '#/components/schemas/FilePurpose'
-          title: Purposes
-          type: array
-          uniqueItems: true
-        rowCount:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Rowcount
-        size:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Size
-      required:
-      - purposes
-      title: FileMetadata
       type: object
   securitySchemes:
     HTTPBearer:

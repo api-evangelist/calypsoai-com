@@ -389,84 +389,38 @@ paths:
       - Providers
 components:
   schemas:
-    APIScopeOutputs:
-      patternProperties:
-        ^[a-zA-Z_][a-zA-Z0-9_]*$:
+    ProviderRunRequestData:
+      properties:
+        body:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Body of the request if one was sent, encoded in base64
+          title: Body
+        headers:
+          additionalProperties: true
+          description: Headers sent as part of the request
+          title: Headers
+          type: object
+        method:
+          description: HTTP method of the request
+          title: Method
           type: string
-      template: true
-      title: APIScopeOutputs
-      type: object
-    ProviderAvailability:
-      properties:
-        global:
-          default: false
-          description: If True provider can be used by all projects
-          title: Global
-          type: boolean
-        projectIds:
-          default: []
-          items:
-            format: uuid
-            type: string
-          title: Projectids
-          type: array
-          uniqueItems: true
-      title: ProviderAvailability
-      type: object
-    PostProviderTestTemplateBody:
-      properties:
-        authTemplate:
-          anyOf:
-          - discriminator:
-              mapping:
-                request: '#/components/schemas/APIRequestBlock'
-                retry: '#/components/schemas/APIRetryBlock'
-                workflow: '#/components/schemas/APIWorkflowBlock'
-              propertyName: type
-            oneOf:
-            - $ref: '#/components/schemas/APIRequestBlock'
-            - $ref: '#/components/schemas/APIRetryBlock'
-            - $ref: '#/components/schemas/APIWorkflowBlock'
-          - type: 'null'
-          description: Optional template to use to fetch authentication credentials.
-          title: Authtemplate
-        capability:
-          anyOf:
-          - $ref: '#/components/schemas/ProviderCapability'
-          - type: 'null'
-          description: Provider capability to test for
-        inputs:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          description: Input values that can be accessed in the template.
-          title: Inputs
-        secrets:
-          anyOf:
-          - additionalProperties:
-              format: uuid
-              type: string
-            type: object
-          - type: 'null'
-          description: Secrets that can be accessed in the template.
-          title: Secrets
-        template:
-          description: Provider template to use when sending the test.
-          discriminator:
-            mapping:
-              request: '#/components/schemas/APIRequestBlock'
-              retry: '#/components/schemas/APIRetryBlock'
-              workflow: '#/components/schemas/APIWorkflowBlock'
-            propertyName: type
-          oneOf:
-          - $ref: '#/components/schemas/APIRequestBlock'
-          - $ref: '#/components/schemas/APIRetryBlock'
-          - $ref: '#/components/schemas/APIWorkflowBlock'
-          title: Template
+        queryParams:
+          additionalProperties: true
+          description: Query parameters appended to the URL for this request
+          title: Queryparams
+          type: object
+        url:
+          description: URL that the request was sent
+          title: Url
+          type: string
       required:
-      - template
-      title: PostProviderTestTemplateBody
+      - method
+      - url
+      - headers
+      - queryParams
+      title: ProviderRunRequestData
       type: object
     APIWorkflowBlock:
       properties:
@@ -497,283 +451,6 @@ components:
       - stages
       title: APIWorkflowBlock
       type: object
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-      type: object
-    PostProvidersWithTemplateBody:
-      properties:
-        authTemplate:
-          anyOf:
-          - discriminator:
-              mapping:
-                request: '#/components/schemas/APIRequestBlock'
-                retry: '#/components/schemas/APIRetryBlock'
-                workflow: '#/components/schemas/APIWorkflowBlock'
-              propertyName: type
-            oneOf:
-            - $ref: '#/components/schemas/APIRequestBlock'
-            - $ref: '#/components/schemas/APIRetryBlock'
-            - $ref: '#/components/schemas/APIWorkflowBlock'
-          - type: 'null'
-          description: Optional template to use to fetch authentication credentials.
-          title: Authtemplate
-        capabilities:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/ProviderCapability'
-            type: array
-            uniqueItems: true
-          - type: 'null'
-          description: Set of capabilities that the provider will have. Cannot be changed after creation.
-          title: Capabilities
-        default:
-          default: false
-          description: Whether the new provider should the default provider. Has no effect if enable is false.
-          title: Default
-          type: boolean
-        enable:
-          default: false
-          description: Enable the new provider for the default project for the group/global settings.
-          title: Enable
-          type: boolean
-        inputs:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          description: Input values that can be accessed in the template.
-          title: Inputs
-        maxRequestsPerSecond:
-          anyOf:
-          - exclusiveMinimum: 0.0
-            type: integer
-          - type: 'null'
-          description: Deprecated, use requestConcurrencyLimit instead.
-          title: Maxrequestspersecond
-        name:
-          description: The name can be used to identify the provider instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
-          pattern: ^[a-zA-Z0-9-_]+$
-          title: Name
-          type: string
-        projectId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          description: Limit access to the provider to a given project.
-          title: Projectid
-        redTeam:
-          default: false
-          description: Mark provider for use in attack campaigns.
-          title: Redteam
-          type: boolean
-        requestConcurrencyLimit:
-          anyOf:
-          - $ref: '#/components/schemas/RequestConcurrencyLimit'
-          - type: 'null'
-          description: Specifies concurrency limits for requests from campaign run attacks.
-        secrets:
-          anyOf:
-          - additionalProperties:
-              anyOf:
-              - format: uuid
-                type: string
-              - $ref: '#/components/schemas/NewSecret'
-            type: object
-          - type: 'null'
-          description: Secrets that can be accessed in the template.
-          title: Secrets
-        tag:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Optional tag to attach to the provider.
-          title: Tag
-        template:
-          description: Provider template to use when sending prompts.
-          discriminator:
-            mapping:
-              request: '#/components/schemas/APIRequestBlock'
-              retry: '#/components/schemas/APIRetryBlock'
-              workflow: '#/components/schemas/APIWorkflowBlock'
-            propertyName: type
-          oneOf:
-          - $ref: '#/components/schemas/APIRequestBlock'
-          - $ref: '#/components/schemas/APIRetryBlock'
-          - $ref: '#/components/schemas/APIWorkflowBlock'
-          title: Template
-        test:
-          default: false
-          description: Whether to test the provider connection before creation.
-          title: Test
-          type: boolean
-      required:
-      - name
-      - template
-      title: PostProvidersWithTemplateBody
-      type: object
-    ProviderType:
-      enum:
-      - ibm
-      - openai
-      - azure
-      - cohere
-      - ai21
-      - custom
-      - anthropic
-      - groq
-      - openai-compatible
-      - huggingface
-      - siem
-      - google
-      - bedrock
-      title: ProviderType
-      type: string
-    GetSystemProvidersResponse:
-      properties:
-        providers:
-          description: Available system providers.
-          items:
-            $ref: '#/components/schemas/Provider'
-          title: Providers
-          type: array
-      required:
-      - providers
-      title: GetSystemProvidersResponse
-      type: object
-    PostProviderTestResponse:
-      properties:
-        content:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Content of the provider template response.
-          title: Content
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-        files:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/ProviderOutputFile'
-            type: array
-          - type: 'null'
-          description: Files returned by the provider response.
-          title: Files
-        requests:
-          additionalProperties:
-            $ref: '#/components/schemas/ProviderRunBlockData'
-          description: '"All request/response data collected during the test
-
-
-            Keys are JSON path strings to each request block within the template.'
-          title: Requests
-          type: object
-        statusCode:
-          description: Status code returned by the provider template.
-          title: Statuscode
-          type: integer
-      required:
-      - statusCode
-      - requests
-      title: PostProviderTestResponse
-      type: object
-    SuccessMessage:
-      description: Confirms a successful operation.
-      properties:
-        message:
-          title: Message
-          type: string
-      required:
-      - message
-      title: SuccessMessage
-      type: object
-    ProvideRunResponseData:
-      properties:
-        body:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Body of the response if one was received, encoded in base64
-          title: Body
-        headers:
-          additionalProperties: true
-          description: Headers of the response
-          title: Headers
-          type: object
-        statusCode:
-          description: HTTP status code of the response
-          title: Statuscode
-          type: integer
-      required:
-      - statusCode
-      - headers
-      title: ProvideRunResponseData
-      type: object
-    GetSystemProviderResponse:
-      properties:
-        provider:
-          $ref: '#/components/schemas/Provider'
-          description: Requested system provider object.
-      required:
-      - provider
-      title: GetSystemProviderResponse
-      type: object
-    PatchProviderAccessBody:
-      properties:
-        global:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          description: If provider should be available to all projects, set to True
-          title: Global
-        projectIds:
-          anyOf:
-          - items:
-              format: uuid
-              type: string
-            type: array
-          - type: 'null'
-          description: projects IDs of projects that should be available to use the provider
-          title: Projectids
-      title: PatchProviderAccessBody
-      type: object
-    ProviderCapability:
-      enum:
-      - chat
-      - red_team
-      - siem
-      - openai_chat
-      - openai_responses
-      - anthropic_messages
-      - google_generate_content
-      title: ProviderCapability
-      type: string
     Provider:
       properties:
         authTemplate:
@@ -887,6 +564,667 @@ components:
       - capabilities
       title: Provider
       type: object
+    ProviderAvailability:
+      properties:
+        global:
+          default: false
+          description: If True provider can be used by all projects
+          title: Global
+          type: boolean
+        projectIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Projectids
+          type: array
+          uniqueItems: true
+      title: ProviderAvailability
+      type: object
+    ProvideRunResponseData:
+      properties:
+        body:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Body of the response if one was received, encoded in base64
+          title: Body
+        headers:
+          additionalProperties: true
+          description: Headers of the response
+          title: Headers
+          type: object
+        statusCode:
+          description: HTTP status code of the response
+          title: Statuscode
+          type: integer
+      required:
+      - statusCode
+      - headers
+      title: ProvideRunResponseData
+      type: object
+    PatchProviderBody:
+      properties:
+        authTemplate:
+          anyOf:
+          - discriminator:
+              mapping:
+                request: '#/components/schemas/APIRequestBlock'
+                retry: '#/components/schemas/APIRetryBlock'
+                workflow: '#/components/schemas/APIWorkflowBlock'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/APIRequestBlock'
+            - $ref: '#/components/schemas/APIRetryBlock'
+            - $ref: '#/components/schemas/APIWorkflowBlock'
+          - type: 'null'
+          description: New provider auth template to use when sending prompts.
+          title: Authtemplate
+        inputs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          description: New input values that can be accessed in the template.
+          title: Inputs
+        maxRequestsPerSecond:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: integer
+          - type: 'null'
+          description: Deprecated, use requestConcurrencyLimit instead.
+          title: Maxrequestspersecond
+        name:
+          anyOf:
+          - pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          description: The name can be used to identify the provider instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
+          title: Name
+        requestConcurrencyLimit:
+          anyOf:
+          - $ref: '#/components/schemas/RequestConcurrencyLimit'
+          - const: false
+            type: boolean
+          - type: 'null'
+          description: Specifies concurrency limits for requests from campaign run attacks. Set to false to remove existing limit.
+          title: Requestconcurrencylimit
+        secrets:
+          anyOf:
+          - additionalProperties:
+              anyOf:
+              - format: uuid
+                type: string
+              - $ref: '#/components/schemas/NewSecret'
+            type: object
+          - type: 'null'
+          description: New secrets that can be accessed in the template.
+          title: Secrets
+        template:
+          anyOf:
+          - discriminator:
+              mapping:
+                request: '#/components/schemas/APIRequestBlock'
+                retry: '#/components/schemas/APIRetryBlock'
+                workflow: '#/components/schemas/APIWorkflowBlock'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/APIRequestBlock'
+            - $ref: '#/components/schemas/APIRetryBlock'
+            - $ref: '#/components/schemas/APIWorkflowBlock'
+          - type: 'null'
+          description: New provider template to use when sending prompts.
+          title: Template
+        test:
+          default: false
+          description: Whether to test the provider connection before updating.
+          title: Test
+          type: boolean
+      title: PatchProviderBody
+      type: object
+    ProviderOutputFile:
+      properties:
+        contentType:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Contenttype
+        data:
+          title: Data
+        isBase64:
+          default: false
+          title: Isbase64
+          type: boolean
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+      required:
+      - data
+      title: ProviderOutputFile
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    PatchProviderAccessBody:
+      properties:
+        global:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: If provider should be available to all projects, set to True
+          title: Global
+        projectIds:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          description: projects IDs of projects that should be available to use the provider
+          title: Projectids
+      title: PatchProviderAccessBody
+      type: object
+    GetSystemProviderResponse:
+      properties:
+        provider:
+          $ref: '#/components/schemas/Provider'
+          description: Requested system provider object.
+      required:
+      - provider
+      title: GetSystemProviderResponse
+      type: object
+    HTTPMethod:
+      enum:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - HEAD
+      - OPTIONS
+      title: HTTPMethod
+      type: string
+    PostProvidersWithTemplateBody:
+      properties:
+        authTemplate:
+          anyOf:
+          - discriminator:
+              mapping:
+                request: '#/components/schemas/APIRequestBlock'
+                retry: '#/components/schemas/APIRetryBlock'
+                workflow: '#/components/schemas/APIWorkflowBlock'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/APIRequestBlock'
+            - $ref: '#/components/schemas/APIRetryBlock'
+            - $ref: '#/components/schemas/APIWorkflowBlock'
+          - type: 'null'
+          description: Optional template to use to fetch authentication credentials.
+          title: Authtemplate
+        capabilities:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ProviderCapability'
+            type: array
+            uniqueItems: true
+          - type: 'null'
+          description: Set of capabilities that the provider will have. Cannot be changed after creation.
+          title: Capabilities
+        default:
+          default: false
+          description: Whether the new provider should the default provider. Has no effect if enable is false.
+          title: Default
+          type: boolean
+        enable:
+          default: false
+          description: Enable the new provider for the default project for the group/global settings.
+          title: Enable
+          type: boolean
+        inputs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          description: Input values that can be accessed in the template.
+          title: Inputs
+        maxRequestsPerSecond:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: integer
+          - type: 'null'
+          description: Deprecated, use requestConcurrencyLimit instead.
+          title: Maxrequestspersecond
+        name:
+          description: The name can be used to identify the provider instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
+          pattern: ^[a-zA-Z0-9-_]+$
+          title: Name
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Limit access to the provider to a given project.
+          title: Projectid
+        redTeam:
+          default: false
+          description: Mark provider for use in attack campaigns.
+          title: Redteam
+          type: boolean
+        requestConcurrencyLimit:
+          anyOf:
+          - $ref: '#/components/schemas/RequestConcurrencyLimit'
+          - type: 'null'
+          description: Specifies concurrency limits for requests from campaign run attacks.
+        secrets:
+          anyOf:
+          - additionalProperties:
+              anyOf:
+              - format: uuid
+                type: string
+              - $ref: '#/components/schemas/NewSecret'
+            type: object
+          - type: 'null'
+          description: Secrets that can be accessed in the template.
+          title: Secrets
+        tag:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Optional tag to attach to the provider.
+          title: Tag
+        template:
+          description: Provider template to use when sending prompts.
+          discriminator:
+            mapping:
+              request: '#/components/schemas/APIRequestBlock'
+              retry: '#/components/schemas/APIRetryBlock'
+              workflow: '#/components/schemas/APIWorkflowBlock'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/APIRequestBlock'
+          - $ref: '#/components/schemas/APIRetryBlock'
+          - $ref: '#/components/schemas/APIWorkflowBlock'
+          title: Template
+        test:
+          default: false
+          description: Whether to test the provider connection before creation.
+          title: Test
+          type: boolean
+      required:
+      - name
+      - template
+      title: PostProvidersWithTemplateBody
+      type: object
+    AWSAuth:
+      properties:
+        accessKey:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Accesskey
+        region:
+          template: true
+          title: Region
+          type: string
+        secretKey:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Secretkey
+        service:
+          template: true
+          title: Service
+          type: string
+        token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Token
+      required:
+      - service
+      - region
+      title: AWSAuth
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    APIRetryBlock:
+      properties:
+        attempts:
+          title: Attempts
+          type: integer
+        backoff:
+          anyOf:
+          - type: integer
+          - type: string
+          default: 1
+          template: true
+          title: Backoff
+        block:
+          discriminator:
+            mapping:
+              request: '#/components/schemas/APIRequestBlock'
+              retry: '#/components/schemas/APIRetryBlock'
+              workflow: '#/components/schemas/APIWorkflowBlock'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/APIRequestBlock'
+          - $ref: '#/components/schemas/APIWorkflowBlock'
+          - $ref: '#/components/schemas/APIRetryBlock'
+          template: true
+          title: Block
+        type:
+          const: retry
+          default: retry
+          title: Type
+          type: string
+        when:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: When
+      required:
+      - attempts
+      - block
+      title: APIRetryBlock
+      type: object
+    ProviderType:
+      enum:
+      - ibm
+      - openai
+      - azure
+      - cohere
+      - ai21
+      - custom
+      - anthropic
+      - groq
+      - openai-compatible
+      - huggingface
+      - siem
+      - google
+      - bedrock
+      title: ProviderType
+      type: string
+    GetProvidersResponse:
+      properties:
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+        providers:
+          description: Providers matching the given filter criteria.
+          items:
+            $ref: '#/components/schemas/Provider'
+          title: Providers
+          type: array
+      required:
+      - providers
+      title: GetProvidersResponse
+      type: object
+    PostProviderTestTemplateBody:
+      properties:
+        authTemplate:
+          anyOf:
+          - discriminator:
+              mapping:
+                request: '#/components/schemas/APIRequestBlock'
+                retry: '#/components/schemas/APIRetryBlock'
+                workflow: '#/components/schemas/APIWorkflowBlock'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/APIRequestBlock'
+            - $ref: '#/components/schemas/APIRetryBlock'
+            - $ref: '#/components/schemas/APIWorkflowBlock'
+          - type: 'null'
+          description: Optional template to use to fetch authentication credentials.
+          title: Authtemplate
+        capability:
+          anyOf:
+          - $ref: '#/components/schemas/ProviderCapability'
+          - type: 'null'
+          description: Provider capability to test for
+        inputs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          description: Input values that can be accessed in the template.
+          title: Inputs
+        secrets:
+          anyOf:
+          - additionalProperties:
+              format: uuid
+              type: string
+            type: object
+          - type: 'null'
+          description: Secrets that can be accessed in the template.
+          title: Secrets
+        template:
+          description: Provider template to use when sending the test.
+          discriminator:
+            mapping:
+              request: '#/components/schemas/APIRequestBlock'
+              retry: '#/components/schemas/APIRetryBlock'
+              workflow: '#/components/schemas/APIWorkflowBlock'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/APIRequestBlock'
+          - $ref: '#/components/schemas/APIRetryBlock'
+          - $ref: '#/components/schemas/APIWorkflowBlock'
+          title: Template
+      required:
+      - template
+      title: PostProviderTestTemplateBody
+      type: object
+    PostProviderTestSystemBody:
+      properties:
+        capability:
+          anyOf:
+          - $ref: '#/components/schemas/ProviderCapability'
+          - type: 'null'
+          description: Provider capability to test for
+        inputs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          description: Input values that can be accessed in the template.
+          title: Inputs
+        secrets:
+          anyOf:
+          - additionalProperties:
+              format: uuid
+              type: string
+            type: object
+          - type: 'null'
+          description: Secrets that can be accessed in the template.
+          title: Secrets
+        systemProvider:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          description: ID or name of system provider to test.
+          title: Systemprovider
+      required:
+      - systemProvider
+      title: PostProviderTestSystemBody
+      type: object
+    RequestConcurrencyLimit:
+      properties:
+        decayPerSecond:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: integer
+          - type: 'null'
+          description: 'Number of request slots that are opened per second.
+
+
+            Set a value to use the concurrency limit as a rate limit.
+
+
+            For example, to set a rate limit of 5 requests per second set requests=5 and decayPerSecond=5'
+          title: Decaypersecond
+        requests:
+          description: Max number of request slots that can be occupied at once.
+          exclusiveMinimum: 0.0
+          title: Requests
+          type: integer
+      required:
+      - requests
+      title: RequestConcurrencyLimit
+      type: object
+    ProviderRunBlockData:
+      properties:
+        request:
+          $ref: '#/components/schemas/ProviderRunRequestData'
+          description: Data of the request sent
+        response:
+          anyOf:
+          - $ref: '#/components/schemas/ProvideRunResponseData'
+          - type: 'null'
+          description: Data of the response received for the request, if one was received
+      required:
+      - request
+      title: ProviderRunBlockData
+      type: object
+    PostProviderTestResponse:
+      properties:
+        content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Content of the provider template response.
+          title: Content
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        files:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ProviderOutputFile'
+            type: array
+          - type: 'null'
+          description: Files returned by the provider response.
+          title: Files
+        requests:
+          additionalProperties:
+            $ref: '#/components/schemas/ProviderRunBlockData'
+          description: '"All request/response data collected during the test
+
+
+            Keys are JSON path strings to each request block within the template.'
+          title: Requests
+          type: object
+        statusCode:
+          description: Status code returned by the provider template.
+          title: Statuscode
+          type: integer
+      required:
+      - statusCode
+      - requests
+      title: PostProviderTestResponse
+      type: object
+    OCIAuth:
+      properties:
+        keyId:
+          template: true
+          title: Keyid
+          type: string
+        passphrase:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Passphrase
+        privateKeyPem:
+          template: true
+          title: Privatekeypem
+          type: string
+      required:
+      - keyId
+      - privateKeyPem
+      title: OCIAuth
+      type: object
+    ProviderCapability:
+      enum:
+      - chat
+      - red_team
+      - siem
+      - openai_chat
+      - openai_responses
+      - anthropic_messages
+      - google_generate_content
+      title: ProviderCapability
+      type: string
+    GetProviderResponse:
+      properties:
+        provider:
+          $ref: '#/components/schemas/Provider'
+          description: Requested provider object.
+      required:
+      - provider
+      title: GetProviderResponse
+      type: object
     PostProvidersFromSystemBody:
       properties:
         capabilities:
@@ -978,340 +1316,6 @@ components:
       - systemProvider
       title: PostProvidersFromSystemBody
       type: object
-    OCIAuth:
-      properties:
-        keyId:
-          template: true
-          title: Keyid
-          type: string
-        passphrase:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Passphrase
-        privateKeyPem:
-          template: true
-          title: Privatekeypem
-          type: string
-      required:
-      - keyId
-      - privateKeyPem
-      title: OCIAuth
-      type: object
-    GetProvidersResponse:
-      properties:
-        next:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the next page, if any.
-          title: Next
-        prev:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the previous page, if any.
-          title: Prev
-        providers:
-          description: Providers matching the given filter criteria.
-          items:
-            $ref: '#/components/schemas/Provider'
-          title: Providers
-          type: array
-      required:
-      - providers
-      title: GetProvidersResponse
-      type: object
-    RequestConcurrencyLimit:
-      properties:
-        decayPerSecond:
-          anyOf:
-          - exclusiveMinimum: 0.0
-            type: integer
-          - type: 'null'
-          description: 'Number of request slots that are opened per second.
-
-
-            Set a value to use the concurrency limit as a rate limit.
-
-
-            For example, to set a rate limit of 5 requests per second set requests=5 and decayPerSecond=5'
-          title: Decaypersecond
-        requests:
-          description: Max number of request slots that can be occupied at once.
-          exclusiveMinimum: 0.0
-          title: Requests
-          type: integer
-      required:
-      - requests
-      title: RequestConcurrencyLimit
-      type: object
-    GetProviderResponse:
-      properties:
-        provider:
-          $ref: '#/components/schemas/Provider'
-          description: Requested provider object.
-      required:
-      - provider
-      title: GetProviderResponse
-      type: object
-    AWSAuth:
-      properties:
-        accessKey:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Accesskey
-        region:
-          template: true
-          title: Region
-          type: string
-        secretKey:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Secretkey
-        service:
-          template: true
-          title: Service
-          type: string
-        token:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Token
-      required:
-      - service
-      - region
-      title: AWSAuth
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    APIRetryBlock:
-      properties:
-        attempts:
-          title: Attempts
-          type: integer
-        backoff:
-          anyOf:
-          - type: integer
-          - type: string
-          default: 1
-          template: true
-          title: Backoff
-        block:
-          discriminator:
-            mapping:
-              request: '#/components/schemas/APIRequestBlock'
-              retry: '#/components/schemas/APIRetryBlock'
-              workflow: '#/components/schemas/APIWorkflowBlock'
-            propertyName: type
-          oneOf:
-          - $ref: '#/components/schemas/APIRequestBlock'
-          - $ref: '#/components/schemas/APIWorkflowBlock'
-          - $ref: '#/components/schemas/APIRetryBlock'
-          template: true
-          title: Block
-        type:
-          const: retry
-          default: retry
-          title: Type
-          type: string
-        when:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: When
-      required:
-      - attempts
-      - block
-      title: APIRetryBlock
-      type: object
-    ProviderRunBlockData:
-      properties:
-        request:
-          $ref: '#/components/schemas/ProviderRunRequestData'
-          description: Data of the request sent
-        response:
-          anyOf:
-          - $ref: '#/components/schemas/ProvideRunResponseData'
-          - type: 'null'
-          description: Data of the response received for the request, if one was received
-      required:
-      - request
-      title: ProviderRunBlockData
-      type: object
-    ProviderOutputFile:
-      properties:
-        contentType:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Contenttype
-        data:
-          title: Data
-        isBase64:
-          default: false
-          title: Isbase64
-          type: boolean
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-      required:
-      - data
-      title: ProviderOutputFile
-      type: object
-    PatchProviderBody:
-      properties:
-        authTemplate:
-          anyOf:
-          - discriminator:
-              mapping:
-                request: '#/components/schemas/APIRequestBlock'
-                retry: '#/components/schemas/APIRetryBlock'
-                workflow: '#/components/schemas/APIWorkflowBlock'
-              propertyName: type
-            oneOf:
-            - $ref: '#/components/schemas/APIRequestBlock'
-            - $ref: '#/components/schemas/APIRetryBlock'
-            - $ref: '#/components/schemas/APIWorkflowBlock'
-          - type: 'null'
-          description: New provider auth template to use when sending prompts.
-          title: Authtemplate
-        inputs:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          description: New input values that can be accessed in the template.
-          title: Inputs
-        maxRequestsPerSecond:
-          anyOf:
-          - exclusiveMinimum: 0.0
-            type: integer
-          - type: 'null'
-          description: Deprecated, use requestConcurrencyLimit instead.
-          title: Maxrequestspersecond
-        name:
-          anyOf:
-          - pattern: ^[a-zA-Z0-9-_]+$
-            type: string
-          - type: 'null'
-          description: The name can be used to identify the provider instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
-          title: Name
-        requestConcurrencyLimit:
-          anyOf:
-          - $ref: '#/components/schemas/RequestConcurrencyLimit'
-          - const: false
-            type: boolean
-          - type: 'null'
-          description: Specifies concurrency limits for requests from campaign run attacks. Set to false to remove existing limit.
-          title: Requestconcurrencylimit
-        secrets:
-          anyOf:
-          - additionalProperties:
-              anyOf:
-              - format: uuid
-                type: string
-              - $ref: '#/components/schemas/NewSecret'
-            type: object
-          - type: 'null'
-          description: New secrets that can be accessed in the template.
-          title: Secrets
-        template:
-          anyOf:
-          - discriminator:
-              mapping:
-                request: '#/components/schemas/APIRequestBlock'
-                retry: '#/components/schemas/APIRetryBlock'
-                workflow: '#/components/schemas/APIWorkflowBlock'
-              propertyName: type
-            oneOf:
-            - $ref: '#/components/schemas/APIRequestBlock'
-            - $ref: '#/components/schemas/APIRetryBlock'
-            - $ref: '#/components/schemas/APIWorkflowBlock'
-          - type: 'null'
-          description: New provider template to use when sending prompts.
-          title: Template
-        test:
-          default: false
-          description: Whether to test the provider connection before updating.
-          title: Test
-          type: boolean
-      title: PatchProviderBody
-      type: object
-    HTTPMethod:
-      enum:
-      - GET
-      - POST
-      - PUT
-      - DELETE
-      - PATCH
-      - HEAD
-      - OPTIONS
-      title: HTTPMethod
-      type: string
-    PostSuccessMessage:
-      description: Contains the ID of an object after a successful POST operation.
-      properties:
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: string
-          title: Id
-      required:
-      - id
-      title: PostSuccessMessage
-      type: object
-    PostProviderTestSystemBody:
-      properties:
-        capability:
-          anyOf:
-          - $ref: '#/components/schemas/ProviderCapability'
-          - type: 'null'
-          description: Provider capability to test for
-        inputs:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          description: Input values that can be accessed in the template.
-          title: Inputs
-        secrets:
-          anyOf:
-          - additionalProperties:
-              format: uuid
-              type: string
-            type: object
-          - type: 'null'
-          description: Secrets that can be accessed in the template.
-          title: Secrets
-        systemProvider:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: string
-          description: ID or name of system provider to test.
-          title: Systemprovider
-      required:
-      - systemProvider
-      title: PostProviderTestSystemBody
-      type: object
     APIRequestBlock:
       properties:
         awsAuth:
@@ -1372,38 +1376,34 @@ components:
       - url
       title: APIRequestBlock
       type: object
-    ProviderRunRequestData:
+    SuccessMessage:
+      description: Confirms a successful operation.
       properties:
-        body:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Body of the request if one was sent, encoded in base64
-          title: Body
-        headers:
-          additionalProperties: true
-          description: Headers sent as part of the request
-          title: Headers
-          type: object
-        method:
-          description: HTTP method of the request
-          title: Method
-          type: string
-        queryParams:
-          additionalProperties: true
-          description: Query parameters appended to the URL for this request
-          title: Queryparams
-          type: object
-        url:
-          description: URL that the request was sent
-          title: Url
+        message:
+          title: Message
           type: string
       required:
-      - method
-      - url
-      - headers
-      - queryParams
-      title: ProviderRunRequestData
+      - message
+      title: SuccessMessage
+      type: object
+    APIScopeOutputs:
+      patternProperties:
+        ^[a-zA-Z_][a-zA-Z0-9_]*$:
+          type: string
+      template: true
+      title: APIScopeOutputs
+      type: object
+    GetSystemProvidersResponse:
+      properties:
+        providers:
+          description: Available system providers.
+          items:
+            $ref: '#/components/schemas/Provider'
+          title: Providers
+          type: array
+      required:
+      - providers
+      title: GetSystemProvidersResponse
       type: object
     NewSecret:
       properties:

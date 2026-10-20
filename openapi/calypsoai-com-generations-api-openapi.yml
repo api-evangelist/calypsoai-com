@@ -39,14 +39,17 @@ paths:
       - Generations
 components:
   schemas:
-    CustomIntentGenerationOutput:
+    PostGenerationResponse:
       properties:
-        intent:
-          title: Intent
-          type: string
+        output:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDescriptionGenerationOutput'
+          - $ref: '#/components/schemas/CustomIntentGenerationOutput'
+          - $ref: '#/components/schemas/SystemIntentsGenerationOutput'
+          title: Output
       required:
-      - intent
-      title: CustomIntentGenerationOutput
+      - output
+      title: PostGenerationResponse
       type: object
     SystemIntentsGenerationOutput:
       properties:
@@ -58,15 +61,6 @@ components:
       required:
       - intents
       title: SystemIntentsGenerationOutput
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
       type: object
     SystemIntentsGenerationInput:
       properties:
@@ -83,23 +77,14 @@ components:
       - systemPrompt
       title: SystemIntentsGenerationInput
       type: object
-    PostGenerationsBody:
+    CustomIntentGenerationOutput:
       properties:
-        input:
-          discriminator:
-            mapping:
-              custom_intent: '#/components/schemas/CustomIntentGenerationInput'
-              scanner_description: '#/components/schemas/ScannerDescriptionGenerationInput'
-              system_intents: '#/components/schemas/SystemIntentsGenerationInput'
-            propertyName: type
-          oneOf:
-          - $ref: '#/components/schemas/ScannerDescriptionGenerationInput'
-          - $ref: '#/components/schemas/CustomIntentGenerationInput'
-          - $ref: '#/components/schemas/SystemIntentsGenerationInput'
-          title: Input
+        intent:
+          title: Intent
+          type: string
       required:
-      - input
-      title: PostGenerationsBody
+      - intent
+      title: CustomIntentGenerationOutput
       type: object
     CustomIntentGenerationInput:
       properties:
@@ -115,17 +100,37 @@ components:
       - intent
       title: CustomIntentGenerationInput
       type: object
-    PostGenerationResponse:
+    HTTPValidationError:
       properties:
-        output:
-          anyOf:
-          - $ref: '#/components/schemas/ScannerDescriptionGenerationOutput'
-          - $ref: '#/components/schemas/CustomIntentGenerationOutput'
-          - $ref: '#/components/schemas/SystemIntentsGenerationOutput'
-          title: Output
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ScannerDescriptionGenerationOutput:
+      properties:
+        description:
+          title: Description
+          type: string
       required:
-      - output
-      title: PostGenerationResponse
+      - description
+      title: ScannerDescriptionGenerationOutput
+      type: object
+    ScannerDescriptionGenerationInput:
+      properties:
+        description:
+          title: Description
+          type: string
+        type:
+          const: scanner_description
+          default: scanner_description
+          title: Type
+          type: string
+      required:
+      - description
+      title: ScannerDescriptionGenerationInput
       type: object
     ValidationError:
       properties:
@@ -153,28 +158,23 @@ components:
       - type
       title: ValidationError
       type: object
-    ScannerDescriptionGenerationOutput:
+    PostGenerationsBody:
       properties:
-        description:
-          title: Description
-          type: string
+        input:
+          discriminator:
+            mapping:
+              custom_intent: '#/components/schemas/CustomIntentGenerationInput'
+              scanner_description: '#/components/schemas/ScannerDescriptionGenerationInput'
+              system_intents: '#/components/schemas/SystemIntentsGenerationInput'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/ScannerDescriptionGenerationInput'
+          - $ref: '#/components/schemas/CustomIntentGenerationInput'
+          - $ref: '#/components/schemas/SystemIntentsGenerationInput'
+          title: Input
       required:
-      - description
-      title: ScannerDescriptionGenerationOutput
-      type: object
-    ScannerDescriptionGenerationInput:
-      properties:
-        description:
-          title: Description
-          type: string
-        type:
-          const: scanner_description
-          default: scanner_description
-          title: Type
-          type: string
-      required:
-      - description
-      title: ScannerDescriptionGenerationInput
+      - input
+      title: PostGenerationsBody
       type: object
   securitySchemes:
     HTTPBearer:

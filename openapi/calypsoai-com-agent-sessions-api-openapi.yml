@@ -113,13 +113,87 @@ paths:
       - Agent-Sessions
 components:
   schemas:
-    AgentFingerprintStatus:
+    GetAgentSessionsResponse:
+      properties:
+        agentSessions:
+          items:
+            $ref: '#/components/schemas/AgentSession'
+          title: Agentsessions
+          type: array
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+      required:
+      - agentSessions
+      title: GetAgentSessionsResponse
+      type: object
+    GetAgentSessionResponse:
+      properties:
+        agentSession:
+          $ref: '#/components/schemas/AgentSession'
+      required:
+      - agentSession
+      title: GetAgentSessionResponse
+      type: object
+    PromptOutcome:
+      description: 'Outcome of a prompt after it has been processed by all guardrails and providers.
+
+
+        Cleared: All guardrails passed, and the prompt was sent to providers
+
+        Flagged: At least one guardrail failed, and the prompt was sent to providers
+
+        Blocked: At least one guardrail failed, and the prompt was not sent to providers.'
       enum:
-      - in_progress
-      - failed
-      - completed
-      title: AgentFingerprintStatus
+      - cleared
+      - flagged
+      - redacted
+      - blocked
+      title: PromptOutcome
       type: string
+    FingerprintInternalError:
+      properties:
+        message:
+          title: Message
+          type: string
+        type:
+          const: internal
+          default: internal
+          title: Type
+          type: string
+      required:
+      - message
+      title: FingerprintInternalError
+      type: object
+    FingerprintUnsupportedError:
+      properties:
+        message:
+          title: Message
+          type: string
+        providerId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Providerid
+        type:
+          const: incompatible_format
+          default: incompatible_format
+          title: Type
+          type: string
+      required:
+      - message
+      title: FingerprintUnsupportedError
+      type: object
     AgentFingerprintSummary:
       properties:
         agentCount:
@@ -159,30 +233,38 @@ components:
       - status
       title: AgentFingerprintSummary
       type: object
-    GetAgentSessionResponse:
+    HTTPValidationError:
       properties:
-        agentSession:
-          $ref: '#/components/schemas/AgentSession'
-      required:
-      - agentSession
-      title: GetAgentSessionResponse
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
       type: object
-    PromptOutcome:
-      description: 'Outcome of a prompt after it has been processed by all guardrails and providers.
-
-
-        Cleared: All guardrails passed, and the prompt was sent to providers
-
-        Flagged: At least one guardrail failed, and the prompt was sent to providers
-
-        Blocked: At least one guardrail failed, and the prompt was not sent to providers.'
-      enum:
-      - cleared
-      - flagged
-      - redacted
-      - blocked
-      title: PromptOutcome
-      type: string
+    FingerprintProviderError:
+      properties:
+        message:
+          title: Message
+          type: string
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        statusCode:
+          title: Statuscode
+          type: integer
+        type:
+          const: provider
+          default: provider
+          title: Type
+          type: string
+      required:
+      - message
+      - providerId
+      - statusCode
+      title: FingerprintProviderError
+      type: object
     AgentSession:
       properties:
         fingerprints:
@@ -221,78 +303,13 @@ components:
       - projectId
       title: AgentSession
       type: object
-    AgentSessionSortBy:
+    AgentFingerprintStatus:
       enum:
-      - updated_at
-      - created_at
-      title: AgentSessionSortBy
+      - in_progress
+      - failed
+      - completed
+      title: AgentFingerprintStatus
       type: string
-    FingerprintUnsupportedError:
-      properties:
-        message:
-          title: Message
-          type: string
-        providerId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Providerid
-        type:
-          const: incompatible_format
-          default: incompatible_format
-          title: Type
-          type: string
-      required:
-      - message
-      title: FingerprintUnsupportedError
-      type: object
-    FingerprintProviderError:
-      properties:
-        message:
-          title: Message
-          type: string
-        providerId:
-          format: uuid
-          title: Providerid
-          type: string
-        statusCode:
-          title: Statuscode
-          type: integer
-        type:
-          const: provider
-          default: provider
-          title: Type
-          type: string
-      required:
-      - message
-      - providerId
-      - statusCode
-      title: FingerprintProviderError
-      type: object
-    GetAgentSessionsResponse:
-      properties:
-        agentSessions:
-          items:
-            $ref: '#/components/schemas/AgentSession'
-          title: Agentsessions
-          type: array
-        next:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the next page, if any.
-          title: Next
-        prev:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the previous page, if any.
-          title: Prev
-      required:
-      - agentSessions
-      title: GetAgentSessionsResponse
-      type: object
     ValidationError:
       properties:
         ctx:
@@ -319,29 +336,12 @@ components:
       - type
       title: ValidationError
       type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    FingerprintInternalError:
-      properties:
-        message:
-          title: Message
-          type: string
-        type:
-          const: internal
-          default: internal
-          title: Type
-          type: string
-      required:
-      - message
-      title: FingerprintInternalError
-      type: object
+    AgentSessionSortBy:
+      enum:
+      - updated_at
+      - created_at
+      title: AgentSessionSortBy
+      type: string
   securitySchemes:
     HTTPBearer:
       scheme: bearer

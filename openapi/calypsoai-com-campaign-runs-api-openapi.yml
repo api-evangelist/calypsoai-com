@@ -711,609 +711,15 @@ paths:
       - Campaign-Runs
 components:
   schemas:
-    CampaignRunSearchSortBy:
+    PromptConverter:
       enum:
-      - name
-      - created_at
-      - start_at
-      - score
-      - average_performance
-      - status
-      - model
-      title: CampaignRunSearchSortBy
-      type: string
-    APIScopeOutputs:
-      patternProperties:
-        ^[a-zA-Z_][a-zA-Z0-9_]*$:
-          type: string
-      template: true
-      title: APIScopeOutputs
-      type: object
-    User:
-      properties:
-        admin:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Admin
-        blocked:
-          default: false
-          title: Blocked
-          type: boolean
-        createdAt:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Createdat
-        email:
-          format: password
-          title: Email
-          type: string
-          writeOnly: true
-        id:
-          title: Id
-          type: string
-        lastInvitationSentAt:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Lastinvitationsentat
-        machine:
-          default: false
-          title: Machine
-          type: boolean
-        name:
-          format: password
-          title: Name
-          type: string
-          writeOnly: true
-        org:
-          title: Org
-          type: string
-        permissions:
-          default: []
-          items:
-            type: string
-          title: Permissions
-          type: array
-          uniqueItems: true
-        roleIds:
-          default: []
-          items:
-            format: uuid
-            type: string
-          title: Roleids
-          type: array
-        roles:
-          default: []
-          items:
-            type: string
-          title: Roles
-          type: array
-        social:
-          default: false
-          title: Social
-          type: boolean
-        teams:
-          default: []
-          items:
-            type: string
-          title: Teams
-          type: array
-        verified:
-          default: true
-          title: Verified
-          type: boolean
-      required:
-      - id
-      - name
-      - email
-      - org
-      title: User
-      type: object
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-      type: object
-    AttackRunScheduleErrorEvent:
-      properties:
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        event:
-          const: schedule_error
-          default: schedule_error
-          title: Event
-          type: string
-      required:
-      - createdAt
-      title: AttackRunScheduleErrorEvent
-      type: object
-    SuccessMessage:
-      description: Confirms a successful operation.
-      properties:
-        message:
-          title: Message
-          type: string
-      required:
-      - message
-      title: SuccessMessage
-      type: object
-    AttackRunScheduledEvent:
-      properties:
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        event:
-          const: scheduled
-          default: scheduled
-          title: Event
-          type: string
-        scheduledStartTime:
-          format: date-time
-          title: Scheduledstarttime
-          type: string
-      required:
-      - createdAt
-      - scheduledStartTime
-      title: AttackRunScheduledEvent
-      type: object
-    RemediationCancellingEvent:
-      properties:
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        event:
-          const: cancelling
-          default: cancelling
-          title: Event
-          type: string
-      required:
-      - createdAt
-      title: RemediationCancellingEvent
-      type: object
-    IntentType:
-      enum:
-      - custom
-      - system
-      title: IntentType
-      type: string
-    ScanMode:
-      enum:
-      - block
-      - audit
-      - redact
-      title: ScanMode
-      type: string
-    CampaignRunRemediationSettings:
-      properties:
-        autorun:
-          default: false
-          description: Run remediation once available.
-          title: Autorun
-          type: boolean
-      title: CampaignRunRemediationSettings
-      type: object
-    RemediationStatus:
-      enum:
-      - requested
-      - in_progress
-      - complete
-      - error
-      - implemented
-      - deployed
-      - cancelling
-      - cancelled
-      - rejected
-      title: RemediationStatus
-      type: string
-    AttackErrorSummary:
-      properties:
-        message:
-          title: Message
-          type: string
-        type:
-          $ref: '#/components/schemas/CampaignRunErrorType'
-      required:
-      - type
-      - message
-      title: AttackErrorSummary
-      type: object
-    RemediationScannerConfig:
-      properties:
-        blocking:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Blocking
-        enabled:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Enabled
-        flagMessage:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Flagmessage
-        force:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Force
-        mode:
-          anyOf:
-          - $ref: '#/components/schemas/ScanMode'
-          - type: 'null'
-      title: RemediationScannerConfig
-      type: object
-    AWSAuth:
-      properties:
-        accessKey:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Accesskey
-        region:
-          template: true
-          title: Region
-          type: string
-        secretKey:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Secretkey
-        service:
-          template: true
-          title: Service
-          type: string
-        token:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Token
-      required:
-      - service
-      - region
-      title: AWSAuth
-      type: object
-    CampaignRunRemediation:
-      properties:
-        available:
-          default: false
-          title: Available
-          type: boolean
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Id
-      title: CampaignRunRemediation
-      type: object
-    CampaignScheduleFrequency:
-      enum:
-      - weeks
-      - days
-      title: CampaignScheduleFrequency
-      type: string
-    AttackRun:
-      properties:
-        attack:
-          oneOf:
-          - $ref: '#/components/schemas/StaticContentAttack'
-          - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
-          - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
-          - $ref: '#/components/schemas/OperationalAttack'
-          - $ref: '#/components/schemas/CustomAttack'
-          title: Attack
-        errorCount:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          default: 0
-          title: Errorcount
-        events:
-          items:
-            discriminator:
-              mapping:
-                cancelled: '#/components/schemas/AttackRunCancelledEvent'
-                cancelling: '#/components/schemas/AttackRunCancellingEvent'
-                completed: '#/components/schemas/AttackRunCompletedEvent'
-                failed: '#/components/schemas/AttackRunFailedEvent'
-                queued: '#/components/schemas/AttackRunQueuedEvent'
-                schedule_error: '#/components/schemas/AttackRunScheduleErrorEvent'
-                scheduled: '#/components/schemas/AttackRunScheduledEvent'
-                started: '#/components/schemas/AttackRunStartedEvent'
-              propertyName: event
-            oneOf:
-            - $ref: '#/components/schemas/AttackRunQueuedEvent'
-            - $ref: '#/components/schemas/AttackRunStartedEvent'
-            - $ref: '#/components/schemas/AttackRunScheduledEvent'
-            - $ref: '#/components/schemas/AttackRunCompletedEvent'
-            - $ref: '#/components/schemas/AttackRunFailedEvent'
-            - $ref: '#/components/schemas/AttackRunCancellingEvent'
-            - $ref: '#/components/schemas/AttackRunCancelledEvent'
-            - $ref: '#/components/schemas/AttackRunScheduleErrorEvent'
-          title: Events
-          type: array
-        id:
-          format: uuid
-          title: Id
-          type: string
-        progress:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          default: 0
-          title: Progress
-        providerId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Providerid
-        providerName:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Providername
-        results:
-          default: []
-          items:
-            $ref: '#/components/schemas/DSAttackResult'
-          title: Results
-          type: array
-        total:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Total
-      required:
-      - id
-      - providerId
-      - attack
-      - events
-      title: AttackRun
-      type: object
-    PatchCampaignRunBody:
-      properties:
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-        preserve:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          description: If true, the campaign run and its associated data will be preserved from deletion.
-          title: Preserve
-        remediationSettings:
-          anyOf:
-          - $ref: '#/components/schemas/CampaignRunRemediationSettings'
-          - type: 'null'
-          description: Determines if the campaign run will automatically create a remediation for vulnerabilities found
-        startAt:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          description: New time to start the campaign run
-          title: Startat
-        status:
-          anyOf:
-          - const: cancelled
-            type: string
-          - type: 'null'
-          description: If received, the campaign run will be prevented from running in the future.
-          title: Status
-      title: PatchCampaignRunBody
-      type: object
-    ProviderAvailability:
-      properties:
-        global:
-          default: false
-          description: If True provider can be used by all projects
-          title: Global
-          type: boolean
-        projectIds:
-          default: []
-          items:
-            format: uuid
-            type: string
-          title: Projectids
-          type: array
-          uniqueItems: true
-      title: ProviderAvailability
-      type: object
-    RemediationEvaluationMetrics:
-      properties:
-        accuracy:
-          title: Accuracy
-          type: number
-        confusionMatrix:
-          $ref: '#/components/schemas/RemediationConfusionMatrix'
-        f1Score:
-          title: F1Score
-          type: number
-      required:
-      - f1Score
-      - accuracy
-      - confusionMatrix
-      title: RemediationEvaluationMetrics
-      type: object
-    PatchCampaignRunProjectAccessBody:
-      properties:
-        global:
-          description: If true, the campaign run is available to all projects in the organization
-          title: Global
-          type: boolean
-        projectIds:
-          default: []
-          description: List of project IDs that have access to the campaign run (must be empty if available_globally is true)
-          items:
-            format: uuid
-            type: string
-          title: Projectids
-          type: array
-      required:
-      - global
-      title: PatchCampaignRunProjectAccessBody
-      type: object
-    RemediationIntentScores:
-      properties:
-        after:
-          title: After
-          type: number
-        before:
-          title: Before
-          type: number
-        intent:
-          title: Intent
-          type: string
-      required:
-      - before
-      - after
-      - intent
-      title: RemediationIntentScores
-      type: object
-    InvalidAttack:
-      additionalProperties: true
-      properties:
-        technique:
-          title: Technique
-          type: string
-      required:
-      - technique
-      title: InvalidAttack
-      type: object
-    AttackRunResult:
-      properties:
-        attackRunId:
-          format: uuid
-          title: Attackrunid
-          type: string
-        campaignRunId:
-          format: uuid
-          title: Campaignrunid
-          type: string
-        conversation:
-          default: []
-          items:
-            additionalProperties: true
-            type: object
-          title: Conversation
-          type: array
-        conversationSteps:
-          default: 0
-          title: Conversationsteps
-          type: integer
-        converter:
-          anyOf:
-          - $ref: '#/components/schemas/PromptConverter'
-          - type: 'null'
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-        errorSummary:
-          anyOf:
-          - $ref: '#/components/schemas/AttackErrorSummary'
-          - type: 'null'
-        id:
-          format: uuid
-          title: Id
-          type: string
-        intent:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Intent
-        intentCategory:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Intentcategory
-        intentType:
-          anyOf:
-          - $ref: '#/components/schemas/IntentType'
-          - type: 'null'
-        providerId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Providerid
-        refusalCheck:
-          anyOf:
-          - $ref: '#/components/schemas/RefusalCheck'
-          - type: 'null'
-        severity:
-          anyOf:
-          - maximum: 4.0
-            minimum: 1.0
-            type: integer
-          - type: 'null'
-          title: Severity
-        technique:
-          $ref: '#/components/schemas/AttackTechnique'
-        vector:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Vector
-        vulnerable:
-          title: Vulnerable
-          type: boolean
-      required:
-      - vulnerable
-      - id
-      - campaignRunId
-      - attackRunId
-      - providerId
-      - technique
-      - vector
-      title: AttackRunResult
-      type: object
-    AttackTechnique:
-      enum:
-      - static_content
-      - dynamic_content
-      - operational
-      - custom
-      title: AttackTechnique
+      - base64
+      - leetspeak
+      - unicode_confusable
+      - caesar
+      - repeat_token
+      - single_character
+      title: PromptConverter
       type: string
     RemediationResult:
       properties:
@@ -1344,6 +750,100 @@ components:
       - scores
       - intentScores
       title: RemediationResult
+      type: object
+    HTTPMethod:
+      enum:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - HEAD
+      - OPTIONS
+      title: HTTPMethod
+      type: string
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    APIRetryBlock:
+      properties:
+        attempts:
+          title: Attempts
+          type: integer
+        backoff:
+          anyOf:
+          - type: integer
+          - type: string
+          default: 1
+          template: true
+          title: Backoff
+        block:
+          discriminator:
+            mapping:
+              request: '#/components/schemas/APIRequestBlock'
+              retry: '#/components/schemas/APIRetryBlock'
+              workflow: '#/components/schemas/APIWorkflowBlock'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/APIRequestBlock'
+          - $ref: '#/components/schemas/APIWorkflowBlock'
+          - $ref: '#/components/schemas/APIRetryBlock'
+          template: true
+          title: Block
+        type:
+          const: retry
+          default: retry
+          title: Type
+          type: string
+        when:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: When
+      required:
+      - attempts
+      - block
+      title: APIRetryBlock
+      type: object
+    AttackRunScheduledEvent:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        event:
+          const: scheduled
+          default: scheduled
+          title: Event
+          type: string
+        scheduledStartTime:
+          format: date-time
+          title: Scheduledstarttime
+          type: string
+      required:
+      - createdAt
+      - scheduledStartTime
+      title: AttackRunScheduledEvent
       type: object
     RemediationDeployment:
       properties:
@@ -1390,6 +890,189 @@ components:
       - scannerConfigs
       title: RemediationDeployment
       type: object
+    RequestConcurrencyLimit:
+      properties:
+        decayPerSecond:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: integer
+          - type: 'null'
+          description: 'Number of request slots that are opened per second.
+
+
+            Set a value to use the concurrency limit as a rate limit.
+
+
+            For example, to set a rate limit of 5 requests per second set requests=5 and decayPerSecond=5'
+          title: Decaypersecond
+        requests:
+          description: Max number of request slots that can be occupied at once.
+          exclusiveMinimum: 0.0
+          title: Requests
+          type: integer
+      required:
+      - requests
+      title: RequestConcurrencyLimit
+      type: object
+    RemediationStatus:
+      enum:
+      - requested
+      - in_progress
+      - complete
+      - error
+      - implemented
+      - deployed
+      - cancelling
+      - cancelled
+      - rejected
+      title: RemediationStatus
+      type: string
+    OperationalAttack:
+      properties:
+        severity:
+          const: 1
+          default: 1
+          title: Severity
+          type: integer
+        technique:
+          const: operational
+          default: operational
+          title: Technique
+          type: string
+        vector:
+          $ref: '#/components/schemas/OperationalAttackVector'
+      required:
+      - vector
+      title: OperationalAttack
+      type: object
+    CampaignRunStatus:
+      enum:
+      - scheduled
+      - in_progress
+      - complete
+      - error
+      - cancelling
+      - cancelled
+      - schedule_error
+      title: CampaignRunStatus
+      type: string
+    PostRunCampaignBody:
+      properties:
+        campaignId:
+          description: ID of the campaign to run. If empty, run all attacks.
+          format: uuid
+          title: Campaignid
+          type: string
+        name:
+          description: Name to give the campaign run
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        providerIds:
+          description: IDs of the providers to target for the campaign
+          items:
+            format: uuid
+            type: string
+          maxItems: 5
+          minItems: 1
+          title: Providerids
+          type: array
+        remediationSettings:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignRunRemediationSettings'
+          - type: 'null'
+          description: Remediation settings.
+      required:
+      - campaignId
+      - providerIds
+      - name
+      title: PostRunCampaignBody
+      type: object
+    CampaignRunProviderErrors:
+      properties:
+        errorCount:
+          title: Errorcount
+          type: integer
+        providerFailed:
+          title: Providerfailed
+          type: boolean
+        providerName:
+          title: Providername
+          type: string
+        totalPrompts:
+          title: Totalprompts
+          type: integer
+      required:
+      - providerName
+      - errorCount
+      - totalPrompts
+      - providerFailed
+      title: CampaignRunProviderErrors
+      type: object
+    CustomAttack:
+      properties:
+        fileId:
+          format: uuid
+          title: Fileid
+          type: string
+        name:
+          title: Name
+          type: string
+        severity:
+          anyOf:
+          - maximum: 4.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          default: 1
+          title: Severity
+        technique:
+          const: custom
+          default: custom
+          title: Technique
+          type: string
+      required:
+      - name
+      - fileId
+      title: CustomAttack
+      type: object
+    AttackRunCompletedEvent:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        event:
+          const: completed
+          default: completed
+          title: Event
+          type: string
+      required:
+      - createdAt
+      title: AttackRunCompletedEvent
+      type: object
+    AttackRunQueuedEvent:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        event:
+          const: queued
+          default: queued
+          title: Event
+          type: string
+      required:
+      - createdAt
+      title: AttackRunQueuedEvent
+      type: object
+    IntentType:
+      enum:
+      - custom
+      - system
+      title: IntentType
+      type: string
     Provider:
       properties:
         authTemplate:
@@ -1503,104 +1186,149 @@ components:
       - capabilities
       title: Provider
       type: object
-    OCIAuth:
+    AttackTechnique:
+      enum:
+      - static_content
+      - dynamic_content
+      - operational
+      - custom
+      title: AttackTechnique
+      type: string
+    ValidationError:
       properties:
-        keyId:
-          template: true
-          title: Keyid
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
           type: string
-        passphrase:
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    AWSAuth:
+      properties:
+        accessKey:
           anyOf:
           - type: string
           - type: 'null'
           template: true
-          title: Passphrase
-        privateKeyPem:
+          title: Accesskey
+        region:
           template: true
-          title: Privatekeypem
+          title: Region
           type: string
-      required:
-      - keyId
-      - privateKeyPem
-      title: OCIAuth
-      type: object
-    CampaignRunStatus:
-      enum:
-      - scheduled
-      - in_progress
-      - complete
-      - error
-      - cancelling
-      - cancelled
-      - schedule_error
-      title: CampaignRunStatus
-      type: string
-    CampaignSchedule:
-      properties:
-        campaignId:
-          format: uuid
-          title: Campaignid
-          type: string
-        count:
+        secretKey:
           anyOf:
-          - type: integer
+          - type: string
           - type: 'null'
-          title: Count
+          template: true
+          title: Secretkey
+        service:
+          template: true
+          title: Service
+          type: string
+        token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Token
+      required:
+      - service
+      - region
+      title: AWSAuth
+      type: object
+    RemediationCancellingEvent:
+      properties:
         createdAt:
           format: date-time
           title: Createdat
           type: string
-        endAt:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Endat
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-        frequency:
-          anyOf:
-          - $ref: '#/components/schemas/CampaignScheduleFrequency'
-          - type: 'null'
-        id:
-          format: uuid
-          title: Id
+        event:
+          const: cancelling
+          default: cancelling
+          title: Event
           type: string
-        interval:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Interval
+      required:
+      - createdAt
+      title: RemediationCancellingEvent
+      type: object
+    GenAIScannerConfig:
+      properties:
+        input:
+          default: ''
+          title: Input
+          type: string
+        scanContext:
+          default: directional
+          description: 'Describes the context that is provided to the scanner
+
+            individual: Scan only the latest message
+
+            directional: Scan all messages in the conversation in the same direction as the latest message'
+          enum:
+          - individual
+          - directional
+          title: Scancontext
+          type: string
+        type:
+          default: custom
+          enum:
+          - genai
+          - custom
+          title: Type
+          type: string
+      title: GenAIScannerConfig
+      type: object
+    RemediationResultScanner:
+      properties:
+        config:
+          $ref: '#/components/schemas/GenAIScannerConfig'
         name:
           title: Name
           type: string
-        providerIds:
-          items:
-            format: uuid
-            type: string
-          title: Providerids
-          type: array
-        remediationSettings:
-          anyOf:
-          - $ref: '#/components/schemas/CampaignRunRemediationSettings'
-          - type: 'null'
-        startAt:
+      required:
+      - name
+      - config
+      title: RemediationResultScanner
+      type: object
+    AttackRunStartedEvent:
+      properties:
+        createdAt:
           format: date-time
-          title: Startat
+          title: Createdat
+          type: string
+        event:
+          const: started
+          default: started
+          title: Event
           type: string
       required:
-      - id
-      - name
-      - campaignId
-      - providerIds
-      - startAt
       - createdAt
-      title: CampaignSchedule
+      title: AttackRunStartedEvent
       type: object
-    DynamicSingleTurnContentAttack:
+    CampaignScheduleFrequency:
+      enum:
+      - weeks
+      - days
+      title: CampaignScheduleFrequency
+      type: string
+    StaticContentAttack:
       properties:
         converters:
           default:
@@ -1614,22 +1342,18 @@ components:
             $ref: '#/components/schemas/PromptConverter'
           title: Converters
           type: array
-        intents:
-          items:
-            anyOf:
-            - type: string
-            - $ref: '#/components/schemas/Intent'
-          title: Intents
-          type: array
+        pack:
+          default: 2026-11
+          title: Pack
+          type: string
         severity:
+          const: 1
           default: 1
-          maximum: 4.0
-          minimum: 1.0
           title: Severity
           type: integer
         technique:
-          const: dynamic_content
-          default: dynamic_content
+          const: static_content
+          default: static_content
           title: Technique
           type: string
         vector:
@@ -1663,7 +1387,214 @@ components:
           type: string
       required:
       - vector
-      title: DynamicSingleTurnContentAttack
+      title: StaticContentAttack
+      type: object
+    RefusalCheck:
+      properties:
+        isDeterministic:
+          default: false
+          title: Isdeterministic
+          type: boolean
+        isRefusal:
+          default: false
+          title: Isrefusal
+          type: boolean
+        matchedPhrases:
+          default: []
+          items:
+            type: string
+          title: Matchedphrases
+          type: array
+        score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Score
+        sources:
+          default: []
+          items:
+            $ref: '#/components/schemas/RefusalSources'
+          title: Sources
+          type: array
+      title: RefusalCheck
+      type: object
+    RemediationIntentScores:
+      properties:
+        after:
+          title: After
+          type: number
+        before:
+          title: Before
+          type: number
+        intent:
+          title: Intent
+          type: string
+      required:
+      - before
+      - after
+      - intent
+      title: RemediationIntentScores
+      type: object
+    OCIAuth:
+      properties:
+        keyId:
+          template: true
+          title: Keyid
+          type: string
+        passphrase:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Passphrase
+        privateKeyPem:
+          template: true
+          title: Privatekeypem
+          type: string
+      required:
+      - keyId
+      - privateKeyPem
+      title: OCIAuth
+      type: object
+    InvalidAttack:
+      additionalProperties: true
+      properties:
+        technique:
+          title: Technique
+          type: string
+      required:
+      - technique
+      title: InvalidAttack
+      type: object
+    Campaign:
+      properties:
+        attacks:
+          items:
+            anyOf:
+            - oneOf:
+              - $ref: '#/components/schemas/StaticContentAttack'
+              - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
+              - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
+              - $ref: '#/components/schemas/OperationalAttack'
+              - $ref: '#/components/schemas/CustomAttack'
+            - $ref: '#/components/schemas/InvalidAttack'
+          title: Attacks
+          type: array
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          title: Createdby
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          format: uuid
+          title: Id
+          type: string
+        lastRun:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Lastrun
+        lastRunAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Lastrunat
+        name:
+          title: Name
+          type: string
+        runCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: 0
+          title: Runcount
+        vendored:
+          default: false
+          title: Vendored
+          type: boolean
+      required:
+      - id
+      - name
+      - attacks
+      - createdBy
+      - createdAt
+      title: Campaign
+      type: object
+    APIRequestBlock:
+      properties:
+        awsAuth:
+          anyOf:
+          - $ref: '#/components/schemas/AWSAuth'
+          - type: 'null'
+          template: true
+        body:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Body
+        headers:
+          additionalProperties: true
+          default: {}
+          template: true
+          title: Headers
+          type: object
+        json:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Json
+        method:
+          $ref: '#/components/schemas/HTTPMethod'
+        ociAuth:
+          anyOf:
+          - $ref: '#/components/schemas/OCIAuth'
+          - type: 'null'
+          template: true
+        outputs:
+          $ref: '#/components/schemas/APIScopeOutputs'
+          default: {}
+        queryParams:
+          additionalProperties:
+            type: string
+          default: {}
+          template: true
+          title: Queryparams
+          type: object
+        timeout:
+          default: 20
+          title: Timeout
+          type: integer
+        type:
+          const: request
+          default: request
+          title: Type
+          type: string
+        url:
+          template: true
+          title: Url
+          type: string
+      required:
+      - method
+      - url
+      title: APIRequestBlock
+      type: object
+    APIScopeOutputs:
+      patternProperties:
+        ^[a-zA-Z_][a-zA-Z0-9_]*$:
+          type: string
+      template: true
+      title: APIScopeOutputs
       type: object
     GetCampaignRunsResponse:
       properties:
@@ -1748,157 +1679,140 @@ components:
       - falseNegatives
       title: RemediationConfusionMatrix
       type: object
-    RemediationCompletedEvent:
+    RemediationCancelledEvent:
       properties:
         createdAt:
           format: date-time
           title: Createdat
           type: string
         event:
-          const: completed
-          default: completed
+          const: cancelled
+          default: cancelled
           title: Event
           type: string
       required:
       - createdAt
-      title: RemediationCompletedEvent
+      title: RemediationCancelledEvent
       type: object
-    OperationalAttackVector:
-      enum:
-      - tls
-      - fuzzing
-      title: OperationalAttackVector
-      type: string
-    CustomAttack:
+    RemediationEvaluationMetrics:
       properties:
-        fileId:
-          format: uuid
-          title: Fileid
-          type: string
-        name:
-          title: Name
-          type: string
-        severity:
-          anyOf:
-          - maximum: 4.0
-            minimum: 1.0
-            type: integer
-          - type: 'null'
-          default: 1
-          title: Severity
-        technique:
-          const: custom
-          default: custom
-          title: Technique
-          type: string
+        accuracy:
+          title: Accuracy
+          type: number
+        confusionMatrix:
+          $ref: '#/components/schemas/RemediationConfusionMatrix'
+        f1Score:
+          title: F1Score
+          type: number
       required:
-      - name
-      - fileId
-      title: CustomAttack
+      - f1Score
+      - accuracy
+      - confusionMatrix
+      title: RemediationEvaluationMetrics
       type: object
-    Remediation:
+    ScanMode:
+      enum:
+      - block
+      - audit
+      - redact
+      title: ScanMode
+      type: string
+    AttackRun:
       properties:
-        campaignRunId:
-          format: uuid
-          title: Campaignrunid
-          type: string
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        createdBy:
+        attack:
+          oneOf:
+          - $ref: '#/components/schemas/StaticContentAttack'
+          - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
+          - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
+          - $ref: '#/components/schemas/OperationalAttack'
+          - $ref: '#/components/schemas/CustomAttack'
+          title: Attack
+        errorCount:
           anyOf:
-          - type: string
+          - type: integer
           - type: 'null'
-          title: Createdby
-        deployment:
-          anyOf:
-          - $ref: '#/components/schemas/RemediationDeployment'
-          - type: 'null'
-        error:
-          anyOf:
-          - $ref: '#/components/schemas/RemediationError'
-          - type: 'null'
+          default: 0
+          title: Errorcount
         events:
           items:
             discriminator:
               mapping:
-                cancelled: '#/components/schemas/RemediationCancelledEvent'
-                cancelling: '#/components/schemas/RemediationCancellingEvent'
-                completed: '#/components/schemas/RemediationCompletedEvent'
-                failed: '#/components/schemas/RemediationFailedEvent'
-                queued: '#/components/schemas/RemediationQueuedEvent'
-                started: '#/components/schemas/RemediationStartedEvent'
+                cancelled: '#/components/schemas/AttackRunCancelledEvent'
+                cancelling: '#/components/schemas/AttackRunCancellingEvent'
+                completed: '#/components/schemas/AttackRunCompletedEvent'
+                failed: '#/components/schemas/AttackRunFailedEvent'
+                queued: '#/components/schemas/AttackRunQueuedEvent'
+                schedule_error: '#/components/schemas/AttackRunScheduleErrorEvent'
+                scheduled: '#/components/schemas/AttackRunScheduledEvent'
+                started: '#/components/schemas/AttackRunStartedEvent'
               propertyName: event
             oneOf:
-            - $ref: '#/components/schemas/RemediationQueuedEvent'
-            - $ref: '#/components/schemas/RemediationStartedEvent'
-            - $ref: '#/components/schemas/RemediationCompletedEvent'
-            - $ref: '#/components/schemas/RemediationFailedEvent'
-            - $ref: '#/components/schemas/RemediationCancellingEvent'
-            - $ref: '#/components/schemas/RemediationCancelledEvent'
+            - $ref: '#/components/schemas/AttackRunQueuedEvent'
+            - $ref: '#/components/schemas/AttackRunStartedEvent'
+            - $ref: '#/components/schemas/AttackRunScheduledEvent'
+            - $ref: '#/components/schemas/AttackRunCompletedEvent'
+            - $ref: '#/components/schemas/AttackRunFailedEvent'
+            - $ref: '#/components/schemas/AttackRunCancellingEvent'
+            - $ref: '#/components/schemas/AttackRunCancelledEvent'
+            - $ref: '#/components/schemas/AttackRunScheduleErrorEvent'
           title: Events
           type: array
         id:
           format: uuid
           title: Id
           type: string
-        result:
+        progress:
           anyOf:
-          - $ref: '#/components/schemas/RemediationResult'
+          - type: integer
           - type: 'null'
-        status:
-          $ref: '#/components/schemas/RemediationStatus'
-        updatedAt:
-          format: date-time
-          title: Updatedat
-          type: string
+          default: 0
+          title: Progress
+        providerId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Providerid
+        providerName:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Providername
+        results:
+          default: []
+          items:
+            $ref: '#/components/schemas/DSAttackResult'
+          title: Results
+          type: array
+        total:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total
       required:
       - id
-      - createdAt
-      - updatedAt
-      - status
-      - campaignRunId
+      - providerId
+      - attack
       - events
-      title: Remediation
+      title: AttackRun
       type: object
-    RemediationStartedEvent:
+    ProviderAvailability:
       properties:
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        event:
-          const: started
-          default: started
-          title: Event
-          type: string
-      required:
-      - createdAt
-      title: RemediationStartedEvent
+        global:
+          default: false
+          description: If True provider can be used by all projects
+          title: Global
+          type: boolean
+        projectIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Projectids
+          type: array
+          uniqueItems: true
+      title: ProviderAvailability
       type: object
-    CampaignRunErrorType:
-      enum:
-      - api_token
-      - permission
-      - not_found
-      - validation
-      - rate_limit
-      - client_error
-      - server_error
-      - timeout
-      - service_unavailable
-      - unknown
-      - failure_limit_reached
-      - bad_provider_configuration
-      title: CampaignRunErrorType
-      type: string
-    RefusalSources:
-      enum:
-      - builtin
-      - custom
-      title: RefusalSources
-      type: string
     DSAttackResult:
       properties:
         conversation:
@@ -1957,7 +1871,7 @@ components:
       - vulnerable
       title: DSAttackResult
       type: object
-    AttackRunFailedEvent:
+    RemediationFailedEvent:
       properties:
         createdAt:
           format: date-time
@@ -1975,7 +1889,44 @@ components:
           title: Message
       required:
       - createdAt
-      title: AttackRunFailedEvent
+      title: RemediationFailedEvent
+      type: object
+    CampaignRunProjectAccess:
+      properties:
+        global:
+          default: false
+          description: If True campaign run is available to all projects
+          title: Global
+          type: boolean
+        projectIds:
+          items:
+            format: uuid
+            type: string
+          title: Projectids
+          type: array
+      title: CampaignRunProjectAccess
+      type: object
+    CampaignRunScoreRating:
+      enum:
+      - critical
+      - warning
+      - good
+      - ideal
+      - none
+      title: CampaignRunScoreRating
+      type: string
+    RemediationError:
+      properties:
+        message:
+          title: Message
+          type: string
+        type:
+          title: Type
+          type: string
+      required:
+      - type
+      - message
+      title: RemediationError
       type: object
     ProviderType:
       enum:
@@ -1994,113 +1945,34 @@ components:
       - bedrock
       title: ProviderType
       type: string
-    AttackRunStartedEvent:
+    GetCampaignRunResultsResponse:
       properties:
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        event:
-          const: started
-          default: started
-          title: Event
-          type: string
-      required:
-      - createdAt
-      title: AttackRunStartedEvent
-      type: object
-    Campaign:
-      properties:
-        attacks:
-          items:
-            anyOf:
-            - oneOf:
-              - $ref: '#/components/schemas/StaticContentAttack'
-              - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
-              - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
-              - $ref: '#/components/schemas/OperationalAttack'
-              - $ref: '#/components/schemas/CustomAttack'
-            - $ref: '#/components/schemas/InvalidAttack'
-          title: Attacks
-          type: array
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        createdBy:
-          title: Createdby
-          type: string
-        description:
+        count:
+          description: Total number of results matching the given filters, across all pages
+          title: Count
+          type: integer
+        next:
           anyOf:
           - type: string
           - type: 'null'
-          title: Description
-        id:
-          format: uuid
-          title: Id
-          type: string
-        lastRun:
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
           anyOf:
-          - format: uuid
-            type: string
+          - type: string
           - type: 'null'
-          title: Lastrun
-        lastRunAt:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Lastrunat
-        name:
-          title: Name
-          type: string
-        runCount:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          default: 0
-          title: Runcount
-        vendored:
-          default: false
-          title: Vendored
-          type: boolean
-      required:
-      - id
-      - name
-      - attacks
-      - createdBy
-      - createdAt
-      title: Campaign
-      type: object
-    CampaignRunProjectAccess:
-      properties:
-        global:
-          default: false
-          description: If True campaign run is available to all projects
-          title: Global
-          type: boolean
-        projectIds:
+          description: Cursor to the previous page, if any.
+          title: Prev
+        results:
+          description: Campaign run results matching the given filters
           items:
-            format: uuid
-            type: string
-          title: Projectids
+            $ref: '#/components/schemas/AttackRunResult'
+          title: Results
           type: array
-      title: CampaignRunProjectAccess
-      type: object
-    RemediationQueuedEvent:
-      properties:
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        event:
-          const: queued
-          default: queued
-          title: Event
-          type: string
       required:
-      - createdAt
-      title: RemediationQueuedEvent
+      - results
+      - count
+      title: GetCampaignRunResultsResponse
       type: object
     CampaignRun:
       properties:
@@ -2240,22 +2112,7 @@ components:
       - remediation
       title: CampaignRun
       type: object
-    AttackRunCompletedEvent:
-      properties:
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        event:
-          const: completed
-          default: completed
-          title: Event
-          type: string
-      required:
-      - createdAt
-      title: AttackRunCompletedEvent
-      type: object
-    RemediationFailedEvent:
+    AttackRunFailedEvent:
       properties:
         createdAt:
           format: date-time
@@ -2273,25 +2130,7 @@ components:
           title: Message
       required:
       - createdAt
-      title: RemediationFailedEvent
-      type: object
-    Intent:
-      properties:
-        severity:
-          default: 2
-          maximum: 4.0
-          minimum: 1.0
-          title: Severity
-          type: integer
-        text:
-          title: Text
-          type: string
-        type:
-          $ref: '#/components/schemas/IntentType'
-          default: custom
-      required:
-      - text
-      title: Intent
+      title: AttackRunFailedEvent
       type: object
     AttackRunCancellingEvent:
       properties:
@@ -2308,255 +2147,258 @@ components:
       - createdAt
       title: AttackRunCancellingEvent
       type: object
-    AttackRunCancelledEvent:
+    CampaignSchedule:
       properties:
+        campaignId:
+          format: uuid
+          title: Campaignid
+          type: string
+        count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Count
         createdAt:
           format: date-time
           title: Createdat
           type: string
-        event:
-          const: cancelled
-          default: cancelled
-          title: Event
-          type: string
-      required:
-      - createdAt
-      title: AttackRunCancelledEvent
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    StaticContentAttack:
-      properties:
-        converters:
-          default:
-          - base64
-          - leetspeak
-          - unicode_confusable
-          - caesar
-          - repeat_token
-          - single_character
-          items:
-            $ref: '#/components/schemas/PromptConverter'
-          title: Converters
-          type: array
-        pack:
-          default: 2026-11
-          title: Pack
-          type: string
-        severity:
-          const: 1
-          default: 1
-          title: Severity
-          type: integer
-        technique:
-          const: static_content
-          default: static_content
-          title: Technique
-          type: string
-        vector:
-          enum:
-          - dan
-          - fictional_context_change
-          - conditional_context_change
-          - math_prompt
-          - flip
-          - persuasive_adversarial
-          - payload_splitting
-          - refusal_suppression
-          - scenario_nesting
-          - style_injection
-          - word_game
-          - fallacy_failure
-          - adversarial_metaphor
-          - persona_bullying
-          - invasive_context_engineering
-          - sugar_coated_poison
-          - developer_role_attack
-          - topic_steering
-          - bias_framing
-          - cyberpunk_stories
-          - crescendo
-          - morality_dilemma
-          - stylistic_reformulation
-          - involuntary_in_context_learning
-          - safety_paradox
-          title: Vector
-          type: string
-      required:
-      - vector
-      title: StaticContentAttack
-      type: object
-    CampaignRunScoreRating:
-      enum:
-      - critical
-      - warning
-      - good
-      - ideal
-      - none
-      title: CampaignRunScoreRating
-      type: string
-    PostSuccessMessage:
-      description: Contains the ID of an object after a successful POST operation.
-      properties:
-        id:
+        endAt:
           anyOf:
-          - format: uuid
+          - format: date-time
             type: string
+          - type: 'null'
+          title: Endat
+        error:
+          anyOf:
           - type: string
+          - type: 'null'
+          title: Error
+        frequency:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignScheduleFrequency'
+          - type: 'null'
+        id:
+          format: uuid
           title: Id
+          type: string
+        interval:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Interval
+        name:
+          title: Name
+          type: string
+        providerIds:
+          items:
+            format: uuid
+            type: string
+          title: Providerids
+          type: array
+        remediationSettings:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignRunRemediationSettings'
+          - type: 'null'
+        startAt:
+          format: date-time
+          title: Startat
+          type: string
       required:
       - id
-      title: PostSuccessMessage
+      - name
+      - campaignId
+      - providerIds
+      - startAt
+      - createdAt
+      title: CampaignSchedule
       type: object
-    RemediationError:
+    PatchCampaignRunBody:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        preserve:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: If true, the campaign run and its associated data will be preserved from deletion.
+          title: Preserve
+        remediationSettings:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignRunRemediationSettings'
+          - type: 'null'
+          description: Determines if the campaign run will automatically create a remediation for vulnerabilities found
+        startAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          description: New time to start the campaign run
+          title: Startat
+        status:
+          anyOf:
+          - const: cancelled
+            type: string
+          - type: 'null'
+          description: If received, the campaign run will be prevented from running in the future.
+          title: Status
+      title: PatchCampaignRunBody
+      type: object
+    RemediationScannerConfig:
+      properties:
+        blocking:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Blocking
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+        flagMessage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Flagmessage
+        force:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Force
+        mode:
+          anyOf:
+          - $ref: '#/components/schemas/ScanMode'
+          - type: 'null'
+      title: RemediationScannerConfig
+      type: object
+    ProviderCapability:
+      enum:
+      - chat
+      - red_team
+      - siem
+      - openai_chat
+      - openai_responses
+      - anthropic_messages
+      - google_generate_content
+      title: ProviderCapability
+      type: string
+    SuccessMessage:
+      description: Confirms a successful operation.
       properties:
         message:
           title: Message
           type: string
-        type:
-          title: Type
-          type: string
       required:
-      - type
       - message
-      title: RemediationError
+      title: SuccessMessage
       type: object
-    CampaignRunProviderErrors:
+    User:
       properties:
-        errorCount:
-          title: Errorcount
-          type: integer
-        providerFailed:
-          title: Providerfailed
+        admin:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Admin
+        blocked:
+          default: false
+          title: Blocked
           type: boolean
-        providerName:
-          title: Providername
-          type: string
-        totalPrompts:
-          title: Totalprompts
-          type: integer
-      required:
-      - providerName
-      - errorCount
-      - totalPrompts
-      - providerFailed
-      title: CampaignRunProviderErrors
-      type: object
-    PromptConverter:
-      enum:
-      - base64
-      - leetspeak
-      - unicode_confusable
-      - caesar
-      - repeat_token
-      - single_character
-      title: PromptConverter
-      type: string
-    APIRequestBlock:
-      properties:
-        awsAuth:
+        createdAt:
           anyOf:
-          - $ref: '#/components/schemas/AWSAuth'
-          - type: 'null'
-          template: true
-        body:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Body
-        headers:
-          additionalProperties: true
-          default: {}
-          template: true
-          title: Headers
-          type: object
-        json:
-          anyOf:
-          - type: string
-          - type: 'null'
-          template: true
-          title: Json
-        method:
-          $ref: '#/components/schemas/HTTPMethod'
-        ociAuth:
-          anyOf:
-          - $ref: '#/components/schemas/OCIAuth'
-          - type: 'null'
-          template: true
-        outputs:
-          $ref: '#/components/schemas/APIScopeOutputs'
-          default: {}
-        queryParams:
-          additionalProperties:
+          - format: date-time
             type: string
-          default: {}
-          template: true
-          title: Queryparams
-          type: object
-        timeout:
-          default: 20
-          title: Timeout
-          type: integer
-        type:
-          const: request
-          default: request
-          title: Type
+          - type: 'null'
+          title: Createdat
+        email:
+          format: password
+          title: Email
           type: string
-        url:
-          template: true
-          title: Url
+          writeOnly: true
+        id:
+          title: Id
           type: string
+        lastInvitationSentAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Lastinvitationsentat
+        machine:
+          default: false
+          title: Machine
+          type: boolean
+        name:
+          format: password
+          title: Name
+          type: string
+          writeOnly: true
+        org:
+          title: Org
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+          uniqueItems: true
+        roleIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Roleids
+          type: array
+        roles:
+          default: []
+          items:
+            type: string
+          title: Roles
+          type: array
+        social:
+          default: false
+          title: Social
+          type: boolean
+        teams:
+          default: []
+          items:
+            type: string
+          title: Teams
+          type: array
+        verified:
+          default: true
+          title: Verified
+          type: boolean
       required:
-      - method
-      - url
-      title: APIRequestBlock
+      - id
+      - name
+      - email
+      - org
+      title: User
       type: object
-    RemediationCancelledEvent:
+    RefusalSources:
+      enum:
+      - builtin
+      - custom
+      title: RefusalSources
+      type: string
+    RemediationStartedEvent:
       properties:
         createdAt:
           format: date-time
           title: Createdat
           type: string
         event:
-          const: cancelled
-          default: cancelled
+          const: started
+          default: started
           title: Event
           type: string
       required:
       - createdAt
-      title: RemediationCancelledEvent
-      type: object
-    GetCampaignRunResponse:
-      properties:
-        campaign:
-          anyOf:
-          - $ref: '#/components/schemas/Campaign'
-          - type: 'null'
-        campaignRun:
-          $ref: '#/components/schemas/CampaignRun'
-        providers:
-          additionalProperties:
-            $ref: '#/components/schemas/Provider'
-          propertyNames:
-            format: uuid
-          title: Providers
-          type: object
-        schedule:
-          anyOf:
-          - $ref: '#/components/schemas/CampaignSchedule'
-          - type: 'null'
-      required:
-      - campaignRun
-      - providers
-      title: GetCampaignRunResponse
+      title: RemediationStartedEvent
       type: object
     APIWorkflowBlock:
       properties:
@@ -2587,168 +2429,72 @@ components:
       - stages
       title: APIWorkflowBlock
       type: object
-    RefusalCheck:
+    Remediation:
       properties:
-        isDeterministic:
-          default: false
-          title: Isdeterministic
-          type: boolean
-        isRefusal:
-          default: false
-          title: Isrefusal
-          type: boolean
-        matchedPhrases:
-          default: []
-          items:
-            type: string
-          title: Matchedphrases
-          type: array
-        score:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Score
-        sources:
-          default: []
-          items:
-            $ref: '#/components/schemas/RefusalSources'
-          title: Sources
-          type: array
-      title: RefusalCheck
-      type: object
-    ProviderCapability:
-      enum:
-      - chat
-      - red_team
-      - siem
-      - openai_chat
-      - openai_responses
-      - anthropic_messages
-      - google_generate_content
-      title: ProviderCapability
-      type: string
-    OperationalAttack:
-      properties:
-        severity:
-          const: 1
-          default: 1
-          title: Severity
-          type: integer
-        technique:
-          const: operational
-          default: operational
-          title: Technique
+        campaignRunId:
+          format: uuid
+          title: Campaignrunid
           type: string
-        vector:
-          $ref: '#/components/schemas/OperationalAttackVector'
-      required:
-      - vector
-      title: OperationalAttack
-      type: object
-    RequestConcurrencyLimit:
-      properties:
-        decayPerSecond:
-          anyOf:
-          - exclusiveMinimum: 0.0
-            type: integer
-          - type: 'null'
-          description: 'Number of request slots that are opened per second.
-
-
-            Set a value to use the concurrency limit as a rate limit.
-
-
-            For example, to set a rate limit of 5 requests per second set requests=5 and decayPerSecond=5'
-          title: Decaypersecond
-        requests:
-          description: Max number of request slots that can be occupied at once.
-          exclusiveMinimum: 0.0
-          title: Requests
-          type: integer
-      required:
-      - requests
-      title: RequestConcurrencyLimit
-      type: object
-    AttackRunQueuedEvent:
-      properties:
         createdAt:
           format: date-time
           title: Createdat
           type: string
-        event:
-          const: queued
-          default: queued
-          title: Event
-          type: string
-      required:
-      - createdAt
-      title: AttackRunQueuedEvent
-      type: object
-    RemediationScores:
-      properties:
-        after:
-          title: After
-          type: number
-        before:
-          title: Before
-          type: number
-      required:
-      - before
-      - after
-      title: RemediationScores
-      type: object
-    APIRetryBlock:
-      properties:
-        attempts:
-          title: Attempts
-          type: integer
-        backoff:
-          anyOf:
-          - type: integer
-          - type: string
-          default: 1
-          template: true
-          title: Backoff
-        block:
-          discriminator:
-            mapping:
-              request: '#/components/schemas/APIRequestBlock'
-              retry: '#/components/schemas/APIRetryBlock'
-              workflow: '#/components/schemas/APIWorkflowBlock'
-            propertyName: type
-          oneOf:
-          - $ref: '#/components/schemas/APIRequestBlock'
-          - $ref: '#/components/schemas/APIWorkflowBlock'
-          - $ref: '#/components/schemas/APIRetryBlock'
-          template: true
-          title: Block
-        type:
-          const: retry
-          default: retry
-          title: Type
-          type: string
-        when:
+        createdBy:
           anyOf:
           - type: string
           - type: 'null'
-          template: true
-          title: When
+          title: Createdby
+        deployment:
+          anyOf:
+          - $ref: '#/components/schemas/RemediationDeployment'
+          - type: 'null'
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/RemediationError'
+          - type: 'null'
+        events:
+          items:
+            discriminator:
+              mapping:
+                cancelled: '#/components/schemas/RemediationCancelledEvent'
+                cancelling: '#/components/schemas/RemediationCancellingEvent'
+                completed: '#/components/schemas/RemediationCompletedEvent'
+                failed: '#/components/schemas/RemediationFailedEvent'
+                queued: '#/components/schemas/RemediationQueuedEvent'
+                started: '#/components/schemas/RemediationStartedEvent'
+              propertyName: event
+            oneOf:
+            - $ref: '#/components/schemas/RemediationQueuedEvent'
+            - $ref: '#/components/schemas/RemediationStartedEvent'
+            - $ref: '#/components/schemas/RemediationCompletedEvent'
+            - $ref: '#/components/schemas/RemediationFailedEvent'
+            - $ref: '#/components/schemas/RemediationCancellingEvent'
+            - $ref: '#/components/schemas/RemediationCancelledEvent'
+          title: Events
+          type: array
+        id:
+          format: uuid
+          title: Id
+          type: string
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/RemediationResult'
+          - type: 'null'
+        status:
+          $ref: '#/components/schemas/RemediationStatus'
+        updatedAt:
+          format: date-time
+          title: Updatedat
+          type: string
       required:
-      - attempts
-      - block
-      title: APIRetryBlock
+      - id
+      - createdAt
+      - updatedAt
+      - status
+      - campaignRunId
+      - events
+      title: Remediation
       type: object
-    HTTPMethod:
-      enum:
-      - GET
-      - POST
-      - PUT
-      - DELETE
-      - PATCH
-      - HEAD
-      - OPTIONS
-      title: HTTPMethod
-      type: string
     DynamicMultiTurnContentAttack:
       properties:
         converters:
@@ -2798,106 +2544,360 @@ components:
       - vector
       title: DynamicMultiTurnContentAttack
       type: object
-    PostRunCampaignBody:
+    CampaignRunSearchSortBy:
+      enum:
+      - name
+      - created_at
+      - start_at
+      - score
+      - average_performance
+      - status
+      - model
+      title: CampaignRunSearchSortBy
+      type: string
+    OperationalAttackVector:
+      enum:
+      - tls
+      - fuzzing
+      title: OperationalAttackVector
+      type: string
+    CampaignRunRemediationSettings:
       properties:
-        campaignId:
-          description: ID of the campaign to run. If empty, run all attacks.
+        autorun:
+          default: false
+          description: Run remediation once available.
+          title: Autorun
+          type: boolean
+      title: CampaignRunRemediationSettings
+      type: object
+    RemediationCompletedEvent:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        event:
+          const: completed
+          default: completed
+          title: Event
+          type: string
+      required:
+      - createdAt
+      title: RemediationCompletedEvent
+      type: object
+    AttackErrorSummary:
+      properties:
+        message:
+          title: Message
+          type: string
+        type:
+          $ref: '#/components/schemas/CampaignRunErrorType'
+      required:
+      - type
+      - message
+      title: AttackErrorSummary
+      type: object
+    Intent:
+      properties:
+        severity:
+          default: 2
+          maximum: 4.0
+          minimum: 1.0
+          title: Severity
+          type: integer
+        text:
+          title: Text
+          type: string
+        type:
+          $ref: '#/components/schemas/IntentType'
+          default: custom
+      required:
+      - text
+      title: Intent
+      type: object
+    AttackRunScheduleErrorEvent:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        event:
+          const: schedule_error
+          default: schedule_error
+          title: Event
+          type: string
+      required:
+      - createdAt
+      title: AttackRunScheduleErrorEvent
+      type: object
+    AttackRunResult:
+      properties:
+        attackRunId:
           format: uuid
-          title: Campaignid
+          title: Attackrunid
           type: string
-        name:
-          description: Name to give the campaign run
-          maxLength: 100
-          minLength: 1
-          title: Name
+        campaignRunId:
+          format: uuid
+          title: Campaignrunid
           type: string
-        providerIds:
-          description: IDs of the providers to target for the campaign
+        conversation:
+          default: []
+          items:
+            additionalProperties: true
+            type: object
+          title: Conversation
+          type: array
+        conversationSteps:
+          default: 0
+          title: Conversationsteps
+          type: integer
+        converter:
+          anyOf:
+          - $ref: '#/components/schemas/PromptConverter'
+          - type: 'null'
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        errorSummary:
+          anyOf:
+          - $ref: '#/components/schemas/AttackErrorSummary'
+          - type: 'null'
+        id:
+          format: uuid
+          title: Id
+          type: string
+        intent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Intent
+        intentCategory:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Intentcategory
+        intentType:
+          anyOf:
+          - $ref: '#/components/schemas/IntentType'
+          - type: 'null'
+        providerId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Providerid
+        refusalCheck:
+          anyOf:
+          - $ref: '#/components/schemas/RefusalCheck'
+          - type: 'null'
+        severity:
+          anyOf:
+          - maximum: 4.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Severity
+        technique:
+          $ref: '#/components/schemas/AttackTechnique'
+        vector:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vector
+        vulnerable:
+          title: Vulnerable
+          type: boolean
+      required:
+      - vulnerable
+      - id
+      - campaignRunId
+      - attackRunId
+      - providerId
+      - technique
+      - vector
+      title: AttackRunResult
+      type: object
+    RemediationQueuedEvent:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        event:
+          const: queued
+          default: queued
+          title: Event
+          type: string
+      required:
+      - createdAt
+      title: RemediationQueuedEvent
+      type: object
+    CampaignRunErrorType:
+      enum:
+      - api_token
+      - permission
+      - not_found
+      - validation
+      - rate_limit
+      - client_error
+      - server_error
+      - timeout
+      - service_unavailable
+      - unknown
+      - failure_limit_reached
+      - bad_provider_configuration
+      title: CampaignRunErrorType
+      type: string
+    RemediationScores:
+      properties:
+        after:
+          title: After
+          type: number
+        before:
+          title: Before
+          type: number
+      required:
+      - before
+      - after
+      title: RemediationScores
+      type: object
+    DynamicSingleTurnContentAttack:
+      properties:
+        converters:
+          default:
+          - base64
+          - leetspeak
+          - unicode_confusable
+          - caesar
+          - repeat_token
+          - single_character
+          items:
+            $ref: '#/components/schemas/PromptConverter'
+          title: Converters
+          type: array
+        intents:
+          items:
+            anyOf:
+            - type: string
+            - $ref: '#/components/schemas/Intent'
+          title: Intents
+          type: array
+        severity:
+          default: 1
+          maximum: 4.0
+          minimum: 1.0
+          title: Severity
+          type: integer
+        technique:
+          const: dynamic_content
+          default: dynamic_content
+          title: Technique
+          type: string
+        vector:
+          enum:
+          - dan
+          - fictional_context_change
+          - conditional_context_change
+          - math_prompt
+          - flip
+          - persuasive_adversarial
+          - payload_splitting
+          - refusal_suppression
+          - scenario_nesting
+          - style_injection
+          - word_game
+          - fallacy_failure
+          - adversarial_metaphor
+          - persona_bullying
+          - invasive_context_engineering
+          - sugar_coated_poison
+          - developer_role_attack
+          - topic_steering
+          - bias_framing
+          - cyberpunk_stories
+          - crescendo
+          - morality_dilemma
+          - stylistic_reformulation
+          - involuntary_in_context_learning
+          - safety_paradox
+          title: Vector
+          type: string
+      required:
+      - vector
+      title: DynamicSingleTurnContentAttack
+      type: object
+    PatchCampaignRunProjectAccessBody:
+      properties:
+        global:
+          description: If true, the campaign run is available to all projects in the organization
+          title: Global
+          type: boolean
+        projectIds:
+          default: []
+          description: List of project IDs that have access to the campaign run (must be empty if available_globally is true)
           items:
             format: uuid
             type: string
-          maxItems: 5
-          minItems: 1
-          title: Providerids
-          type: array
-        remediationSettings:
-          anyOf:
-          - $ref: '#/components/schemas/CampaignRunRemediationSettings'
-          - type: 'null'
-          description: Remediation settings.
-      required:
-      - campaignId
-      - providerIds
-      - name
-      title: PostRunCampaignBody
-      type: object
-    RemediationResultScanner:
-      properties:
-        config:
-          $ref: '#/components/schemas/GenAIScannerConfig'
-        name:
-          title: Name
-          type: string
-      required:
-      - name
-      - config
-      title: RemediationResultScanner
-      type: object
-    GetCampaignRunResultsResponse:
-      properties:
-        count:
-          description: Total number of results matching the given filters, across all pages
-          title: Count
-          type: integer
-        next:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the next page, if any.
-          title: Next
-        prev:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the previous page, if any.
-          title: Prev
-        results:
-          description: Campaign run results matching the given filters
-          items:
-            $ref: '#/components/schemas/AttackRunResult'
-          title: Results
+          title: Projectids
           type: array
       required:
-      - results
-      - count
-      title: GetCampaignRunResultsResponse
+      - global
+      title: PatchCampaignRunProjectAccessBody
       type: object
-    GenAIScannerConfig:
+    GetCampaignRunResponse:
       properties:
-        input:
-          default: ''
-          title: Input
+        campaign:
+          anyOf:
+          - $ref: '#/components/schemas/Campaign'
+          - type: 'null'
+        campaignRun:
+          $ref: '#/components/schemas/CampaignRun'
+        providers:
+          additionalProperties:
+            $ref: '#/components/schemas/Provider'
+          propertyNames:
+            format: uuid
+          title: Providers
+          type: object
+        schedule:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignSchedule'
+          - type: 'null'
+      required:
+      - campaignRun
+      - providers
+      title: GetCampaignRunResponse
+      type: object
+    AttackRunCancelledEvent:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
           type: string
-        scanContext:
-          default: directional
-          description: 'Describes the context that is provided to the scanner
-
-            individual: Scan only the latest message
-
-            directional: Scan all messages in the conversation in the same direction as the latest message'
-          enum:
-          - individual
-          - directional
-          title: Scancontext
+        event:
+          const: cancelled
+          default: cancelled
+          title: Event
           type: string
-        type:
-          default: custom
-          enum:
-          - genai
-          - custom
-          title: Type
-          type: string
-      title: GenAIScannerConfig
+      required:
+      - createdAt
+      title: AttackRunCancelledEvent
+      type: object
+    CampaignRunRemediation:
+      properties:
+        available:
+          default: false
+          title: Available
+          type: boolean
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+      title: CampaignRunRemediation
       type: object
   securitySchemes:
     HTTPBearer:

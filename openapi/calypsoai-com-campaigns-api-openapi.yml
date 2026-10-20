@@ -297,6 +297,466 @@ paths:
       - Campaigns
 components:
   schemas:
+    PromptConverter:
+      enum:
+      - base64
+      - leetspeak
+      - unicode_confusable
+      - caesar
+      - repeat_token
+      - single_character
+      title: PromptConverter
+      type: string
+    IntentType:
+      enum:
+      - custom
+      - system
+      title: IntentType
+      type: string
+    DynamicMultiTurnContentAttack:
+      properties:
+        converters:
+          default:
+          - base64
+          - leetspeak
+          - unicode_confusable
+          - caesar
+          - repeat_token
+          - single_character
+          items:
+            $ref: '#/components/schemas/PromptConverter'
+          title: Converters
+          type: array
+        intents:
+          items:
+            anyOf:
+            - type: string
+            - $ref: '#/components/schemas/Intent'
+          title: Intents
+          type: array
+        multiTurn:
+          const: true
+          default: true
+          title: Multiturn
+          type: boolean
+        severity:
+          default: 1
+          maximum: 4.0
+          minimum: 1.0
+          title: Severity
+          type: integer
+        technique:
+          const: dynamic_content
+          default: dynamic_content
+          title: Technique
+          type: string
+        vector:
+          enum:
+          - crescendo
+          - frame
+          - trolley
+          - echo_chamber
+          title: Vector
+          type: string
+      required:
+      - vector
+      title: DynamicMultiTurnContentAttack
+      type: object
+    AttackTechnique:
+      enum:
+      - static_content
+      - dynamic_content
+      - operational
+      - custom
+      title: AttackTechnique
+      type: string
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    OperationalAttackVector:
+      enum:
+      - tls
+      - fuzzing
+      title: OperationalAttackVector
+      type: string
+    GetCampaignResponse:
+      properties:
+        campaign:
+          $ref: '#/components/schemas/Campaign'
+          description: Requested campaign object
+      required:
+      - campaign
+      title: GetCampaignResponse
+      type: object
+    Intent:
+      properties:
+        severity:
+          default: 2
+          maximum: 4.0
+          minimum: 1.0
+          title: Severity
+          type: integer
+        text:
+          title: Text
+          type: string
+        type:
+          $ref: '#/components/schemas/IntentType'
+          default: custom
+      required:
+      - text
+      title: Intent
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    PostCampaignsBody:
+      properties:
+        attacks:
+          description: List of attacks to run as part of this campaign
+          items:
+            anyOf:
+            - oneOf:
+              - $ref: '#/components/schemas/StaticContentAttack'
+              - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
+              - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
+              - $ref: '#/components/schemas/OperationalAttack'
+              - $ref: '#/components/schemas/CustomAttack'
+            - enum:
+              - static_content
+              - operational
+              type: string
+          title: Attacks
+          type: array
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Description for the campaign
+          title: Description
+        name:
+          description: Name for the new campaign
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+      required:
+      - name
+      - attacks
+      title: PostCampaignsBody
+      type: object
+    CampaignSortBy:
+      enum:
+      - name
+      - created_at
+      - last_run
+      - num_of_runs
+      title: CampaignSortBy
+      type: string
+    StaticContentAttack:
+      properties:
+        converters:
+          default:
+          - base64
+          - leetspeak
+          - unicode_confusable
+          - caesar
+          - repeat_token
+          - single_character
+          items:
+            $ref: '#/components/schemas/PromptConverter'
+          title: Converters
+          type: array
+        pack:
+          default: 2026-11
+          title: Pack
+          type: string
+        severity:
+          const: 1
+          default: 1
+          title: Severity
+          type: integer
+        technique:
+          const: static_content
+          default: static_content
+          title: Technique
+          type: string
+        vector:
+          enum:
+          - dan
+          - fictional_context_change
+          - conditional_context_change
+          - math_prompt
+          - flip
+          - persuasive_adversarial
+          - payload_splitting
+          - refusal_suppression
+          - scenario_nesting
+          - style_injection
+          - word_game
+          - fallacy_failure
+          - adversarial_metaphor
+          - persona_bullying
+          - invasive_context_engineering
+          - sugar_coated_poison
+          - developer_role_attack
+          - topic_steering
+          - bias_framing
+          - cyberpunk_stories
+          - crescendo
+          - morality_dilemma
+          - stylistic_reformulation
+          - involuntary_in_context_learning
+          - safety_paradox
+          title: Vector
+          type: string
+      required:
+      - vector
+      title: StaticContentAttack
+      type: object
+    InvalidAttack:
+      additionalProperties: true
+      properties:
+        technique:
+          title: Technique
+          type: string
+      required:
+      - technique
+      title: InvalidAttack
+      type: object
+    OperationalAttack:
+      properties:
+        severity:
+          const: 1
+          default: 1
+          title: Severity
+          type: integer
+        technique:
+          const: operational
+          default: operational
+          title: Technique
+          type: string
+        vector:
+          $ref: '#/components/schemas/OperationalAttackVector'
+      required:
+      - vector
+      title: OperationalAttack
+      type: object
+    PatchCampaignBody:
+      properties:
+        attacks:
+          anyOf:
+          - items:
+              anyOf:
+              - oneOf:
+                - $ref: '#/components/schemas/StaticContentAttack'
+                - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
+                - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
+                - $ref: '#/components/schemas/OperationalAttack'
+                - $ref: '#/components/schemas/CustomAttack'
+              - enum:
+                - static_content
+                - operational
+                type: string
+            type: array
+          - type: 'null'
+          description: New list of attacks to run as part of this campaign
+          title: Attacks
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: New description for the campaign
+          title: Description
+        name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          description: New name for the campaign.
+          title: Name
+      title: PatchCampaignBody
+      type: object
+    Campaign:
+      properties:
+        attacks:
+          items:
+            anyOf:
+            - oneOf:
+              - $ref: '#/components/schemas/StaticContentAttack'
+              - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
+              - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
+              - $ref: '#/components/schemas/OperationalAttack'
+              - $ref: '#/components/schemas/CustomAttack'
+            - $ref: '#/components/schemas/InvalidAttack'
+          title: Attacks
+          type: array
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          title: Createdby
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          format: uuid
+          title: Id
+          type: string
+        lastRun:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Lastrun
+        lastRunAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Lastrunat
+        name:
+          title: Name
+          type: string
+        runCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: 0
+          title: Runcount
+        vendored:
+          default: false
+          title: Vendored
+          type: boolean
+      required:
+      - id
+      - name
+      - attacks
+      - createdBy
+      - createdAt
+      title: Campaign
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    DynamicSingleTurnContentAttack:
+      properties:
+        converters:
+          default:
+          - base64
+          - leetspeak
+          - unicode_confusable
+          - caesar
+          - repeat_token
+          - single_character
+          items:
+            $ref: '#/components/schemas/PromptConverter'
+          title: Converters
+          type: array
+        intents:
+          items:
+            anyOf:
+            - type: string
+            - $ref: '#/components/schemas/Intent'
+          title: Intents
+          type: array
+        severity:
+          default: 1
+          maximum: 4.0
+          minimum: 1.0
+          title: Severity
+          type: integer
+        technique:
+          const: dynamic_content
+          default: dynamic_content
+          title: Technique
+          type: string
+        vector:
+          enum:
+          - dan
+          - fictional_context_change
+          - conditional_context_change
+          - math_prompt
+          - flip
+          - persuasive_adversarial
+          - payload_splitting
+          - refusal_suppression
+          - scenario_nesting
+          - style_injection
+          - word_game
+          - fallacy_failure
+          - adversarial_metaphor
+          - persona_bullying
+          - invasive_context_engineering
+          - sugar_coated_poison
+          - developer_role_attack
+          - topic_steering
+          - bias_framing
+          - cyberpunk_stories
+          - crescendo
+          - morality_dilemma
+          - stylistic_reformulation
+          - involuntary_in_context_learning
+          - safety_paradox
+          title: Vector
+          type: string
+      required:
+      - vector
+      title: DynamicSingleTurnContentAttack
+      type: object
     User:
       properties:
         admin:
@@ -381,360 +841,6 @@ components:
       - org
       title: User
       type: object
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-      type: object
-    CampaignSortBy:
-      enum:
-      - name
-      - created_at
-      - last_run
-      - num_of_runs
-      title: CampaignSortBy
-      type: string
-    SuccessMessage:
-      description: Confirms a successful operation.
-      properties:
-        message:
-          title: Message
-          type: string
-      required:
-      - message
-      title: SuccessMessage
-      type: object
-    InvalidAttack:
-      additionalProperties: true
-      properties:
-        technique:
-          title: Technique
-          type: string
-      required:
-      - technique
-      title: InvalidAttack
-      type: object
-    PostCampaignsBody:
-      properties:
-        attacks:
-          description: List of attacks to run as part of this campaign
-          items:
-            anyOf:
-            - oneOf:
-              - $ref: '#/components/schemas/StaticContentAttack'
-              - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
-              - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
-              - $ref: '#/components/schemas/OperationalAttack'
-              - $ref: '#/components/schemas/CustomAttack'
-            - enum:
-              - static_content
-              - operational
-              type: string
-          title: Attacks
-          type: array
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Description for the campaign
-          title: Description
-        name:
-          description: Name for the new campaign
-          maxLength: 100
-          minLength: 1
-          title: Name
-          type: string
-      required:
-      - name
-      - attacks
-      title: PostCampaignsBody
-      type: object
-    Campaign:
-      properties:
-        attacks:
-          items:
-            anyOf:
-            - oneOf:
-              - $ref: '#/components/schemas/StaticContentAttack'
-              - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
-              - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
-              - $ref: '#/components/schemas/OperationalAttack'
-              - $ref: '#/components/schemas/CustomAttack'
-            - $ref: '#/components/schemas/InvalidAttack'
-          title: Attacks
-          type: array
-        createdAt:
-          format: date-time
-          title: Createdat
-          type: string
-        createdBy:
-          title: Createdby
-          type: string
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        id:
-          format: uuid
-          title: Id
-          type: string
-        lastRun:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Lastrun
-        lastRunAt:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Lastrunat
-        name:
-          title: Name
-          type: string
-        runCount:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          default: 0
-          title: Runcount
-        vendored:
-          default: false
-          title: Vendored
-          type: boolean
-      required:
-      - id
-      - name
-      - attacks
-      - createdBy
-      - createdAt
-      title: Campaign
-      type: object
-    GetCampaignResponse:
-      properties:
-        campaign:
-          $ref: '#/components/schemas/Campaign'
-          description: Requested campaign object
-      required:
-      - campaign
-      title: GetCampaignResponse
-      type: object
-    IntentType:
-      enum:
-      - custom
-      - system
-      title: IntentType
-      type: string
-    AttackTechnique:
-      enum:
-      - static_content
-      - dynamic_content
-      - operational
-      - custom
-      title: AttackTechnique
-      type: string
-    OperationalAttack:
-      properties:
-        severity:
-          const: 1
-          default: 1
-          title: Severity
-          type: integer
-        technique:
-          const: operational
-          default: operational
-          title: Technique
-          type: string
-        vector:
-          $ref: '#/components/schemas/OperationalAttackVector'
-      required:
-      - vector
-      title: OperationalAttack
-      type: object
-    DynamicSingleTurnContentAttack:
-      properties:
-        converters:
-          default:
-          - base64
-          - leetspeak
-          - unicode_confusable
-          - caesar
-          - repeat_token
-          - single_character
-          items:
-            $ref: '#/components/schemas/PromptConverter'
-          title: Converters
-          type: array
-        intents:
-          items:
-            anyOf:
-            - type: string
-            - $ref: '#/components/schemas/Intent'
-          title: Intents
-          type: array
-        severity:
-          default: 1
-          maximum: 4.0
-          minimum: 1.0
-          title: Severity
-          type: integer
-        technique:
-          const: dynamic_content
-          default: dynamic_content
-          title: Technique
-          type: string
-        vector:
-          enum:
-          - dan
-          - fictional_context_change
-          - conditional_context_change
-          - math_prompt
-          - flip
-          - persuasive_adversarial
-          - payload_splitting
-          - refusal_suppression
-          - scenario_nesting
-          - style_injection
-          - word_game
-          - fallacy_failure
-          - adversarial_metaphor
-          - persona_bullying
-          - invasive_context_engineering
-          - sugar_coated_poison
-          - developer_role_attack
-          - topic_steering
-          - bias_framing
-          - cyberpunk_stories
-          - crescendo
-          - morality_dilemma
-          - stylistic_reformulation
-          - involuntary_in_context_learning
-          - safety_paradox
-          title: Vector
-          type: string
-      required:
-      - vector
-      title: DynamicSingleTurnContentAttack
-      type: object
-    OperationalAttackVector:
-      enum:
-      - tls
-      - fuzzing
-      title: OperationalAttackVector
-      type: string
-    Intent:
-      properties:
-        severity:
-          default: 2
-          maximum: 4.0
-          minimum: 1.0
-          title: Severity
-          type: integer
-        text:
-          title: Text
-          type: string
-        type:
-          $ref: '#/components/schemas/IntentType'
-          default: custom
-      required:
-      - text
-      title: Intent
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    PatchCampaignBody:
-      properties:
-        attacks:
-          anyOf:
-          - items:
-              anyOf:
-              - oneOf:
-                - $ref: '#/components/schemas/StaticContentAttack'
-                - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
-                - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
-                - $ref: '#/components/schemas/OperationalAttack'
-                - $ref: '#/components/schemas/CustomAttack'
-              - enum:
-                - static_content
-                - operational
-                type: string
-            type: array
-          - type: 'null'
-          description: New list of attacks to run as part of this campaign
-          title: Attacks
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: New description for the campaign
-          title: Description
-        name:
-          anyOf:
-          - maxLength: 100
-            minLength: 1
-            type: string
-          - type: 'null'
-          description: New name for the campaign.
-          title: Name
-      title: PatchCampaignBody
-      type: object
-    CustomAttack:
-      properties:
-        fileId:
-          format: uuid
-          title: Fileid
-          type: string
-        name:
-          title: Name
-          type: string
-        severity:
-          anyOf:
-          - maximum: 4.0
-            minimum: 1.0
-            type: integer
-          - type: 'null'
-          default: 1
-          title: Severity
-        technique:
-          const: custom
-          default: custom
-          title: Technique
-          type: string
-      required:
-      - name
-      - fileId
-      title: CustomAttack
-      type: object
     GetCampaignsResponse:
       properties:
         campaigns:
@@ -765,139 +871,33 @@ components:
       - campaigns
       title: GetCampaignsResponse
       type: object
-    StaticContentAttack:
+    CustomAttack:
       properties:
-        converters:
-          default:
-          - base64
-          - leetspeak
-          - unicode_confusable
-          - caesar
-          - repeat_token
-          - single_character
-          items:
-            $ref: '#/components/schemas/PromptConverter'
-          title: Converters
-          type: array
-        pack:
-          default: 2026-11
-          title: Pack
+        fileId:
+          format: uuid
+          title: Fileid
+          type: string
+        name:
+          title: Name
           type: string
         severity:
-          const: 1
-          default: 1
-          title: Severity
-          type: integer
-        technique:
-          const: static_content
-          default: static_content
-          title: Technique
-          type: string
-        vector:
-          enum:
-          - dan
-          - fictional_context_change
-          - conditional_context_change
-          - math_prompt
-          - flip
-          - persuasive_adversarial
-          - payload_splitting
-          - refusal_suppression
-          - scenario_nesting
-          - style_injection
-          - word_game
-          - fallacy_failure
-          - adversarial_metaphor
-          - persona_bullying
-          - invasive_context_engineering
-          - sugar_coated_poison
-          - developer_role_attack
-          - topic_steering
-          - bias_framing
-          - cyberpunk_stories
-          - crescendo
-          - morality_dilemma
-          - stylistic_reformulation
-          - involuntary_in_context_learning
-          - safety_paradox
-          title: Vector
-          type: string
-      required:
-      - vector
-      title: StaticContentAttack
-      type: object
-    PostSuccessMessage:
-      description: Contains the ID of an object after a successful POST operation.
-      properties:
-        id:
           anyOf:
-          - format: uuid
-            type: string
-          - type: string
-          title: Id
-      required:
-      - id
-      title: PostSuccessMessage
-      type: object
-    DynamicMultiTurnContentAttack:
-      properties:
-        converters:
-          default:
-          - base64
-          - leetspeak
-          - unicode_confusable
-          - caesar
-          - repeat_token
-          - single_character
-          items:
-            $ref: '#/components/schemas/PromptConverter'
-          title: Converters
-          type: array
-        intents:
-          items:
-            anyOf:
-            - type: string
-            - $ref: '#/components/schemas/Intent'
-          title: Intents
-          type: array
-        multiTurn:
-          const: true
-          default: true
-          title: Multiturn
-          type: boolean
-        severity:
+          - maximum: 4.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
           default: 1
-          maximum: 4.0
-          minimum: 1.0
           title: Severity
-          type: integer
         technique:
-          const: dynamic_content
-          default: dynamic_content
+          const: custom
+          default: custom
           title: Technique
           type: string
-        vector:
-          enum:
-          - crescendo
-          - frame
-          - trolley
-          - echo_chamber
-          title: Vector
-          type: string
       required:
-      - vector
-      title: DynamicMultiTurnContentAttack
+      - name
+      - fileId
+      title: CustomAttack
       type: object
-    PromptConverter:
-      enum:
-      - base64
-      - leetspeak
-      - unicode_confusable
-      - caesar
-      - repeat_token
-      - single_character
-      title: PromptConverter
-      type: string
   securitySchemes:
     HTTPBearer:
       scheme: bearer

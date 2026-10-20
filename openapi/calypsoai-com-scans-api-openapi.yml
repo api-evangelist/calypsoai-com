@@ -339,6 +339,21 @@ paths:
       - Scans
 components:
   schemas:
+    GenAIScannerResult:
+      properties:
+        tokenUsage:
+          default: 0
+          title: Tokenusage
+          type: integer
+        type:
+          default: custom
+          enum:
+          - genai
+          - custom
+          title: Type
+          type: string
+      title: GenAIScannerResult
+      type: object
     ScannerAvailability:
       properties:
         global:
@@ -356,15 +371,274 @@ components:
           uniqueItems: true
       title: ScannerAvailability
       type: object
-    PatchScanBody:
+    ProjectConfigScanner:
       properties:
-        preserve:
-          description: Whether or not to preserve this scan request when deleting scan requests periodically
-          title: Preserve
-          type: boolean
+        blocking:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Blocking
+        direction:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - const: ''
+            type: string
+          - type: 'null'
+          title: Direction
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+        flagMessage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Flagmessage
+        force:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Force
+        id:
+          format: uuid
+          title: Id
+          type: string
+        mode:
+          anyOf:
+          - $ref: '#/components/schemas/ScanMode'
+          - type: 'null'
+        version:
+          anyOf:
+          - format: uuid
+            type: string
+          - format: date-time
+            type: string
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          title: Version
       required:
-      - preserve
-      title: PatchScanBody
+      - id
+      title: ProjectConfigScanner
+      type: object
+    ProjectScanners:
+      properties:
+        configs:
+          additionalProperties:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          default: {}
+          description: Behaviour of each guardrails specific to the project, such as whether to block flagged prompts
+          propertyNames:
+            format: uuid
+          title: Configs
+          type: object
+        forcedScanners:
+          additionalProperties:
+            anyOf:
+            - $ref: '#/components/schemas/Scanner'
+            - items:
+                $ref: '#/components/schemas/Scanner'
+              type: array
+          default: {}
+          description: 'Guardrails enabled for the project which were enabled by the global setting''s admin.
+
+            A list value indicates multiple versions of a guardrail that were enabled (Playground prompts only).'
+          propertyNames:
+            format: uuid
+          title: Forcedscanners
+          type: object
+        scanners:
+          additionalProperties:
+            $ref: '#/components/schemas/Scanner'
+          default: {}
+          description: Guardrails enabled for the project which were enabled by the project's admin.
+          propertyNames:
+            format: uuid
+          title: Scanners
+          type: object
+      title: ProjectScanners
+      type: object
+    MLTextScannerResult:
+      properties:
+        type:
+          const: ml_text
+          default: ml_text
+          title: Type
+          type: string
+      title: MLTextScannerResult
+      type: object
+    ScanMode:
+      enum:
+      - block
+      - audit
+      - redact
+      title: ScanMode
+      type: string
+    LegacyScannerResult:
+      additionalProperties: true
+      properties: {}
+      title: LegacyScannerResult
+      type: object
+    KeywordScannerConfig:
+      properties:
+        type:
+          const: keyword
+          default: keyword
+          title: Type
+          type: string
+        words:
+          description: Words to check for in the prompt or response. Case insensitive. Empty strings will be removed.
+          items:
+            type: string
+          title: Words
+          type: array
+      required:
+      - words
+      title: KeywordScannerConfig
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    RegexScannerResult:
+      properties:
+        matches:
+          items:
+            maxItems: 2
+            minItems: 2
+            prefixItems:
+            - type: integer
+            - type: integer
+            type: array
+          title: Matches
+          type: array
+        type:
+          const: regex
+          default: regex
+          title: Type
+          type: string
+      required:
+      - matches
+      title: RegexScannerResult
+      type: object
+    ScanOutcome:
+      description: The outcome of a single scan on a prompt.
+      enum:
+      - failed
+      - passed
+      title: ScanOutcome
+      type: string
+    ZipScannerSource:
+      properties:
+        type:
+          const: zip
+          default: zip
+          title: Type
+          type: string
+      title: ZipScannerSource
+      type: object
+    InternalScannerSource:
+      properties:
+        type:
+          const: internal
+          default: internal
+          title: Type
+          type: string
+      title: InternalScannerSource
+      type: object
+    ScanRequestResult:
+      properties:
+        outcome:
+          $ref: '#/components/schemas/PromptOutcome'
+          description: One of 'cleared' or 'flagged'
+        response:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: The response of the prompt from the llm after processing by guardrails, in case it is a response scan
+          title: Response
+        scannerResults:
+          description: Result for each guardrail that ran on the prompt
+          items:
+            $ref: '#/components/schemas/Scan'
+          title: Scannerresults
+          type: array
+      required:
+      - scannerResults
+      - outcome
+      title: ScanRequestResult
+      type: object
+    GetScanResponse:
+      properties:
+        scan:
+          $ref: '#/components/schemas/ScanRequest'
+          description: Requested scan request object.
+      required:
+      - scan
+      title: GetScanResponse
+      type: object
+    ErrorScanResult:
+      properties:
+        msg:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Msg
+        type:
+          const: error
+          default: error
+          title: Type
+          type: string
+      title: ErrorScanResult
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    RemediationScannerSource:
+      properties:
+        sourceId:
+          format: uuid
+          title: Sourceid
+          type: string
+        type:
+          const: remediation
+          default: remediation
+          title: Type
+          type: string
+      required:
+      - sourceId
+      title: RemediationScannerSource
       type: object
     ScannerVersionMeta:
       properties:
@@ -415,82 +689,6 @@ components:
       - published
       title: ScannerVersionMeta
       type: object
-    GetScansResponse:
-      properties:
-        next:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the next page, if any.
-          title: Next
-        prev:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Cursor to the previous page, if any.
-          title: Prev
-        scans:
-          description: Scan requests objects matching the given filter criteria.
-          items:
-            $ref: '#/components/schemas/ScanRequest'
-          title: Scans
-          type: array
-      required:
-      - scans
-      title: GetScansResponse
-      type: object
-    PromptOutcome:
-      description: 'Outcome of a prompt after it has been processed by all guardrails and providers.
-
-
-        Cleared: All guardrails passed, and the prompt was sent to providers
-
-        Flagged: At least one guardrail failed, and the prompt was sent to providers
-
-        Blocked: At least one guardrail failed, and the prompt was not sent to providers.'
-      enum:
-      - cleared
-      - flagged
-      - redacted
-      - blocked
-      title: PromptOutcome
-      type: string
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-      type: object
-    MLTextScannerConfig:
-      properties:
-        type:
-          const: ml_text
-          default: ml_text
-          title: Type
-          type: string
-      required: []
-      title: MLTextScannerConfig
-      type: object
     RawScanFormat:
       enum:
       - openai-chat-request
@@ -499,138 +697,38 @@ components:
       - openai-responses-sse
       title: RawScanFormat
       type: string
-    SuccessMessage:
-      description: Confirms a successful operation.
+    GenAIScannerConfig:
       properties:
-        message:
-          title: Message
+        input:
+          default: ''
+          title: Input
           type: string
-      required:
-      - message
-      title: SuccessMessage
-      type: object
-    RegexScannerConfig:
-      properties:
-        pattern:
-          description: Python Flavored Regular Expression (RegEx) to check for in the prompt or response. Case insensitive.
-          title: Pattern
-          type: string
-        type:
-          const: regex
-          default: regex
-          title: Type
-          type: string
-      required:
-      - pattern
-      title: RegexScannerConfig
-      type: object
-    ZipScannerSource:
-      properties:
-        type:
-          const: zip
-          default: zip
-          title: Type
-          type: string
-      title: ZipScannerSource
-      type: object
-    ProjectScanners:
-      properties:
-        configs:
-          additionalProperties:
-            $ref: '#/components/schemas/ProjectConfigScanner'
-          default: {}
-          description: Behaviour of each guardrails specific to the project, such as whether to block flagged prompts
-          propertyNames:
-            format: uuid
-          title: Configs
-          type: object
-        forcedScanners:
-          additionalProperties:
-            anyOf:
-            - $ref: '#/components/schemas/Scanner'
-            - items:
-                $ref: '#/components/schemas/Scanner'
-              type: array
-          default: {}
-          description: 'Guardrails enabled for the project which were enabled by the global setting''s admin.
+        scanContext:
+          default: directional
+          description: 'Describes the context that is provided to the scanner
 
-            A list value indicates multiple versions of a guardrail that were enabled (Playground prompts only).'
-          propertyNames:
-            format: uuid
-          title: Forcedscanners
-          type: object
-        scanners:
-          additionalProperties:
-            $ref: '#/components/schemas/Scanner'
-          default: {}
-          description: Guardrails enabled for the project which were enabled by the project's admin.
-          propertyNames:
-            format: uuid
-          title: Scanners
-          type: object
-      title: ProjectScanners
-      type: object
-    RemediationScannerSource:
-      properties:
-        sourceId:
-          format: uuid
-          title: Sourceid
+            individual: Scan only the latest message
+
+            directional: Scan all messages in the conversation in the same direction as the latest message'
+          enum:
+          - individual
+          - directional
+          title: Scancontext
           type: string
         type:
-          const: remediation
-          default: remediation
+          default: custom
+          enum:
+          - genai
+          - custom
           title: Type
           type: string
-      required:
-      - sourceId
-      title: RemediationScannerSource
+      title: GenAIScannerConfig
       type: object
-    VendorScannerSource:
-      properties:
-        type:
-          const: vendor
-          default: vendor
-          title: Type
-          type: string
-      title: VendorScannerSource
-      type: object
-    LegacyScannerResult:
+    LegacyScannerConfig:
       additionalProperties: true
       properties: {}
-      title: LegacyScannerResult
+      title: LegacyScannerConfig
       type: object
-    PostScansResponse:
-      properties:
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          description: ID of the newly created scan request, if recording is enabled
-          title: Id
-        redactedInput:
-          description: The given input after any redaction
-          title: Redactedinput
-          type: string
-        result:
-          $ref: '#/components/schemas/ScanRequestResult'
-          description: Results for the scan request.
-        scanners:
-          anyOf:
-          - $ref: '#/components/schemas/ProjectScanners'
-          - type: 'null'
-      required:
-      - result
-      - redactedInput
-      title: PostScansResponse
-      type: object
-    ScanMode:
-      enum:
-      - block
-      - audit
-      - redact
-      title: ScanMode
-      type: string
     ScanRequest:
       properties:
         externalMetadata:
@@ -697,143 +795,41 @@ components:
       - userId
       title: ScanRequest
       type: object
-    Scanner:
+    PatchScanBody:
       properties:
-        availability:
-          $ref: '#/components/schemas/ScannerAvailability'
-          default:
-            global: false
-            projectIds: []
-        config:
-          anyOf:
-          - discriminator:
-              mapping:
-                custom: '#/components/schemas/GenAIScannerConfig'
-                genai: '#/components/schemas/GenAIScannerConfig'
-                keyword: '#/components/schemas/KeywordScannerConfig'
-                ml_text: '#/components/schemas/MLTextScannerConfig'
-                regex: '#/components/schemas/RegexScannerConfig'
-              propertyName: type
-            oneOf:
-            - $ref: '#/components/schemas/RegexScannerConfig'
-            - $ref: '#/components/schemas/KeywordScannerConfig'
-            - $ref: '#/components/schemas/GenAIScannerConfig'
-            - $ref: '#/components/schemas/MLTextScannerConfig'
-          - $ref: '#/components/schemas/LegacyScannerConfig'
-          - type: 'null'
-          title: Config
-        direction:
-          $ref: '#/components/schemas/ScannerDirection'
-          default: request
-        id:
-          format: uuid
-          title: Id
-          type: string
-        name:
-          title: Name
-          type: string
-        packageId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Packageid
-        projectId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Projectid
-        scannerTemplateId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Scannertemplateid
-        source:
-          default:
-            type: internal
-          discriminator:
-            mapping:
-              internal: '#/components/schemas/InternalScannerSource'
-              remediation: '#/components/schemas/RemediationScannerSource'
-              vendor: '#/components/schemas/VendorScannerSource'
-              zip: '#/components/schemas/ZipScannerSource'
-            propertyName: type
-          oneOf:
-          - $ref: '#/components/schemas/InternalScannerSource'
-          - $ref: '#/components/schemas/ZipScannerSource'
-          - $ref: '#/components/schemas/VendorScannerSource'
-          - $ref: '#/components/schemas/RemediationScannerSource'
-          title: Source
-        tags:
-          default: []
-          items:
-            maxLength: 50
-            minLength: 1
-            pattern: ^[a-zA-Z0-9-_]+$
-            type: string
-          title: Tags
-          type: array
-        vendored:
-          anyOf:
-          - type: boolean
-          - items:
-              type: string
-            type: array
-          default: false
-          title: Vendored
-        versionMeta:
-          $ref: '#/components/schemas/ScannerVersionMeta'
+        preserve:
+          description: Whether or not to preserve this scan request when deleting scan requests periodically
+          title: Preserve
+          type: boolean
       required:
-      - name
-      - id
-      - versionMeta
-      title: Scanner
+      - preserve
+      title: PatchScanBody
       type: object
-    ScanRequestResult:
+    VendorScannerSource:
       properties:
-        outcome:
-          $ref: '#/components/schemas/PromptOutcome'
-          description: One of 'cleared' or 'flagged'
-        response:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: The response of the prompt from the llm after processing by guardrails, in case it is a response scan
-          title: Response
-        scannerResults:
-          description: Result for each guardrail that ran on the prompt
-          items:
-            $ref: '#/components/schemas/Scan'
-          title: Scannerresults
-          type: array
-      required:
-      - scannerResults
-      - outcome
-      title: ScanRequestResult
-      type: object
-    RegexScannerResult:
-      properties:
-        matches:
-          items:
-            maxItems: 2
-            minItems: 2
-            prefixItems:
-            - type: integer
-            - type: integer
-            type: array
-          title: Matches
-          type: array
         type:
-          const: regex
-          default: regex
+          const: vendor
+          default: vendor
           title: Type
           type: string
-      required:
-      - matches
-      title: RegexScannerResult
+      title: VendorScannerSource
       type: object
+    PromptOutcome:
+      description: 'Outcome of a prompt after it has been processed by all guardrails and providers.
+
+
+        Cleared: All guardrails passed, and the prompt was sent to providers
+
+        Flagged: At least one guardrail failed, and the prompt was sent to providers
+
+        Blocked: At least one guardrail failed, and the prompt was not sent to providers.'
+      enum:
+      - cleared
+      - flagged
+      - redacted
+      - blocked
+      title: PromptOutcome
+      type: string
     KeywordScannerResult:
       properties:
         matches:
@@ -857,127 +853,6 @@ components:
       - matches
       title: KeywordScannerResult
       type: object
-    LegacyScannerConfig:
-      additionalProperties: true
-      properties: {}
-      title: LegacyScannerConfig
-      type: object
-    InternalScannerSource:
-      properties:
-        type:
-          const: internal
-          default: internal
-          title: Type
-          type: string
-      title: InternalScannerSource
-      type: object
-    ScanOutcome:
-      description: The outcome of a single scan on a prompt.
-      enum:
-      - failed
-      - passed
-      title: ScanOutcome
-      type: string
-    KeywordScannerConfig:
-      properties:
-        type:
-          const: keyword
-          default: keyword
-          title: Type
-          type: string
-        words:
-          description: Words to check for in the prompt or response. Case insensitive. Empty strings will be removed.
-          items:
-            type: string
-          title: Words
-          type: array
-      required:
-      - words
-      title: KeywordScannerConfig
-      type: object
-    MLTextScannerResult:
-      properties:
-        type:
-          const: ml_text
-          default: ml_text
-          title: Type
-          type: string
-      title: MLTextScannerResult
-      type: object
-    Scan:
-      properties:
-        completedDate:
-          format: date-time
-          title: Completeddate
-          type: string
-        customConfig:
-          default: false
-          title: Customconfig
-          type: boolean
-        data:
-          anyOf:
-          - discriminator:
-              mapping:
-                custom: '#/components/schemas/GenAIScannerResult'
-                error: '#/components/schemas/ErrorScanResult'
-                genai: '#/components/schemas/GenAIScannerResult'
-                keyword: '#/components/schemas/KeywordScannerResult'
-                ml_text: '#/components/schemas/MLTextScannerResult'
-                regex: '#/components/schemas/RegexScannerResult'
-              propertyName: type
-            oneOf:
-            - $ref: '#/components/schemas/RegexScannerResult'
-            - $ref: '#/components/schemas/KeywordScannerResult'
-            - $ref: '#/components/schemas/GenAIScannerResult'
-            - $ref: '#/components/schemas/MLTextScannerResult'
-            - $ref: '#/components/schemas/ErrorScanResult'
-          - $ref: '#/components/schemas/LegacyScannerResult'
-          title: Data
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-        outcome:
-          $ref: '#/components/schemas/ScanOutcome'
-        scanDirection:
-          $ref: '#/components/schemas/ScanDirection'
-        scannerId:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Scannerid
-        scannerName:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Scannername
-        scannerVersionMeta:
-          anyOf:
-          - $ref: '#/components/schemas/ScannerVersionMeta'
-          - type: 'null'
-        startedDate:
-          format: date-time
-          title: Starteddate
-          type: string
-      required:
-      - outcome
-      - data
-      - startedDate
-      - completedDate
-      - scanDirection
-      title: Scan
-      type: object
-    GetScanResponse:
-      properties:
-        scan:
-          $ref: '#/components/schemas/ScanRequest'
-          description: Requested scan request object.
-      required:
-      - scan
-      title: GetScanResponse
-      type: object
     ScannerDatasetResult:
       properties:
         datasetRunId:
@@ -992,28 +867,30 @@ components:
       - f1Score
       title: ScannerDatasetResult
       type: object
-    ErrorScanResult:
+    PostScansResponse:
       properties:
-        msg:
+        id:
           anyOf:
-          - type: string
+          - format: uuid
+            type: string
           - type: 'null'
-          title: Msg
-        type:
-          const: error
-          default: error
-          title: Type
+          description: ID of the newly created scan request, if recording is enabled
+          title: Id
+        redactedInput:
+          description: The given input after any redaction
+          title: Redactedinput
           type: string
-      title: ErrorScanResult
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
+        result:
+          $ref: '#/components/schemas/ScanRequestResult'
+          description: Results for the scan request.
+        scanners:
+          anyOf:
+          - $ref: '#/components/schemas/ProjectScanners'
+          - type: 'null'
+      required:
+      - result
+      - redactedInput
+      title: PostScansResponse
       type: object
     PostScansBody:
       properties:
@@ -1117,6 +994,100 @@ components:
       - input
       title: PostScansBody
       type: object
+    Scanner:
+      properties:
+        availability:
+          $ref: '#/components/schemas/ScannerAvailability'
+          default:
+            global: false
+            projectIds: []
+        config:
+          anyOf:
+          - discriminator:
+              mapping:
+                custom: '#/components/schemas/GenAIScannerConfig'
+                genai: '#/components/schemas/GenAIScannerConfig'
+                keyword: '#/components/schemas/KeywordScannerConfig'
+                ml_text: '#/components/schemas/MLTextScannerConfig'
+                regex: '#/components/schemas/RegexScannerConfig'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/RegexScannerConfig'
+            - $ref: '#/components/schemas/KeywordScannerConfig'
+            - $ref: '#/components/schemas/GenAIScannerConfig'
+            - $ref: '#/components/schemas/MLTextScannerConfig'
+          - $ref: '#/components/schemas/LegacyScannerConfig'
+          - type: 'null'
+          title: Config
+        direction:
+          $ref: '#/components/schemas/ScannerDirection'
+          default: request
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        packageId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Packageid
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        scannerTemplateId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Scannertemplateid
+        source:
+          default:
+            type: internal
+          discriminator:
+            mapping:
+              internal: '#/components/schemas/InternalScannerSource'
+              remediation: '#/components/schemas/RemediationScannerSource'
+              vendor: '#/components/schemas/VendorScannerSource'
+              zip: '#/components/schemas/ZipScannerSource'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/InternalScannerSource'
+          - $ref: '#/components/schemas/ZipScannerSource'
+          - $ref: '#/components/schemas/VendorScannerSource'
+          - $ref: '#/components/schemas/RemediationScannerSource'
+          title: Source
+        tags:
+          default: []
+          items:
+            maxLength: 50
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          title: Tags
+          type: array
+        vendored:
+          anyOf:
+          - type: boolean
+          - items:
+              type: string
+            type: array
+          default: false
+          title: Vendored
+        versionMeta:
+          $ref: '#/components/schemas/ScannerVersionMeta'
+      required:
+      - name
+      - id
+      - versionMeta
+      title: Scanner
+      type: object
     ScannerDirection:
       enum:
       - both
@@ -1124,106 +1095,135 @@ components:
       - response
       title: ScannerDirection
       type: string
+    Scan:
+      properties:
+        completedDate:
+          format: date-time
+          title: Completeddate
+          type: string
+        customConfig:
+          default: false
+          title: Customconfig
+          type: boolean
+        data:
+          anyOf:
+          - discriminator:
+              mapping:
+                custom: '#/components/schemas/GenAIScannerResult'
+                error: '#/components/schemas/ErrorScanResult'
+                genai: '#/components/schemas/GenAIScannerResult'
+                keyword: '#/components/schemas/KeywordScannerResult'
+                ml_text: '#/components/schemas/MLTextScannerResult'
+                regex: '#/components/schemas/RegexScannerResult'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/RegexScannerResult'
+            - $ref: '#/components/schemas/KeywordScannerResult'
+            - $ref: '#/components/schemas/GenAIScannerResult'
+            - $ref: '#/components/schemas/MLTextScannerResult'
+            - $ref: '#/components/schemas/ErrorScanResult'
+          - $ref: '#/components/schemas/LegacyScannerResult'
+          title: Data
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+        outcome:
+          $ref: '#/components/schemas/ScanOutcome'
+        scanDirection:
+          $ref: '#/components/schemas/ScanDirection'
+        scannerId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Scannerid
+        scannerName:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Scannername
+        scannerVersionMeta:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerVersionMeta'
+          - type: 'null'
+        startedDate:
+          format: date-time
+          title: Starteddate
+          type: string
+      required:
+      - outcome
+      - data
+      - startedDate
+      - completedDate
+      - scanDirection
+      title: Scan
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
     ScanDirection:
       enum:
       - request
       - response
       title: ScanDirection
       type: string
-    GenAIScannerResult:
+    MLTextScannerConfig:
       properties:
-        tokenUsage:
-          default: 0
-          title: Tokenusage
-          type: integer
         type:
-          default: custom
-          enum:
-          - genai
-          - custom
+          const: ml_text
+          default: ml_text
           title: Type
           type: string
-      title: GenAIScannerResult
+      required: []
+      title: MLTextScannerConfig
       type: object
-    ProjectConfigScanner:
+    RegexScannerConfig:
       properties:
-        blocking:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Blocking
-        direction:
-          anyOf:
-          - $ref: '#/components/schemas/ScannerDirection'
-          - const: ''
-            type: string
-          - type: 'null'
-          title: Direction
-        enabled:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Enabled
-        flagMessage:
+        pattern:
+          description: Python Flavored Regular Expression (RegEx) to check for in the prompt or response. Case insensitive.
+          title: Pattern
+          type: string
+        type:
+          const: regex
+          default: regex
+          title: Type
+          type: string
+      required:
+      - pattern
+      title: RegexScannerConfig
+      type: object
+    GetScansResponse:
+      properties:
+        next:
           anyOf:
           - type: string
           - type: 'null'
-          title: Flagmessage
-        force:
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
           anyOf:
-          - type: boolean
+          - type: string
           - type: 'null'
-          title: Force
-        id:
-          format: uuid
-          title: Id
-          type: string
-        mode:
-          anyOf:
-          - $ref: '#/components/schemas/ScanMode'
-          - type: 'null'
-        version:
-          anyOf:
-          - format: uuid
-            type: string
-          - format: date-time
-            type: string
-          - maxLength: 100
-            minLength: 1
-            pattern: ^[a-zA-Z0-9-_]+$
-            type: string
-          - type: 'null'
-          title: Version
+          description: Cursor to the previous page, if any.
+          title: Prev
+        scans:
+          description: Scan requests objects matching the given filter criteria.
+          items:
+            $ref: '#/components/schemas/ScanRequest'
+          title: Scans
+          type: array
       required:
-      - id
-      title: ProjectConfigScanner
-      type: object
-    GenAIScannerConfig:
-      properties:
-        input:
-          default: ''
-          title: Input
-          type: string
-        scanContext:
-          default: directional
-          description: 'Describes the context that is provided to the scanner
-
-            individual: Scan only the latest message
-
-            directional: Scan all messages in the conversation in the same direction as the latest message'
-          enum:
-          - individual
-          - directional
-          title: Scancontext
-          type: string
-        type:
-          default: custom
-          enum:
-          - genai
-          - custom
-          title: Type
-          type: string
-      title: GenAIScannerConfig
+      - scans
+      title: GetScansResponse
       type: object
   securitySchemes:
     HTTPBearer:

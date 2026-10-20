@@ -147,6 +147,14 @@ paths:
       - Branding
 components:
   schemas:
+    GetBrandingResponse:
+      properties:
+        config:
+          $ref: '#/components/schemas/BrandingConfig'
+      required:
+      - config
+      title: GetBrandingResponse
+      type: object
     BrandingConfig:
       properties:
         disablePoweredByCai:
@@ -174,13 +182,24 @@ components:
           title: Supportemail
       title: BrandingConfig
       type: object
-    PatchBrandingBody:
+    SuccessMessage:
+      description: Confirms a successful operation.
       properties:
-        config:
-          $ref: '#/components/schemas/BrandingConfig'
+        message:
+          title: Message
+          type: string
       required:
-      - config
-      title: PatchBrandingBody
+      - message
+      title: SuccessMessage
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
       type: object
     ValidationError:
       properties:
@@ -208,32 +227,13 @@ components:
       - type
       title: ValidationError
       type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    SuccessMessage:
-      description: Confirms a successful operation.
-      properties:
-        message:
-          title: Message
-          type: string
-      required:
-      - message
-      title: SuccessMessage
-      type: object
-    GetBrandingResponse:
+    PatchBrandingBody:
       properties:
         config:
           $ref: '#/components/schemas/BrandingConfig'
       required:
       - config
-      title: GetBrandingResponse
+      title: PatchBrandingBody
       type: object
   securitySchemes:
     HTTPBearer:

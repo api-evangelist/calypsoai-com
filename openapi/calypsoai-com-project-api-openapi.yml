@@ -46,155 +46,6 @@ paths:
       - Project
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
-      type: object
-    GetGlobalProjectResponse:
-      properties:
-        project:
-          $ref: '#/components/schemas/Project'
-          description: The default project for the group/chatbot specified or global settings if neither is given.
-      required:
-      - project
-      title: GetGlobalProjectResponse
-      type: object
-    ScannerDirection:
-      enum:
-      - both
-      - request
-      - response
-      title: ScannerDirection
-      type: string
-    ProjectConfig:
-      properties:
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Id
-        packages:
-          default: []
-          description: Packages configured for the project
-          items:
-            $ref: '#/components/schemas/ProjectConfigScanner'
-          title: Packages
-          type: array
-        providers:
-          default: []
-          description: Providers available to the project
-          items:
-            $ref: '#/components/schemas/ProjectConfigProvider'
-          title: Providers
-          type: array
-        scanners:
-          default: []
-          description: Guardrails configured for the project
-          items:
-            $ref: '#/components/schemas/ProjectConfigScanner'
-          title: Scanners
-          type: array
-      title: ProjectConfig
-      type: object
-    ProjectConfigProvider:
-      properties:
-        capabilities:
-          anyOf:
-          - items:
-              anyOf:
-              - $ref: '#/components/schemas/ProviderCapability'
-              - type: string
-            type: array
-            uniqueItems: true
-          - type: 'null'
-          title: Capabilities
-        default:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Default
-        enabled:
-          title: Enabled
-          type: boolean
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Id
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-        type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Type
-      required:
-      - enabled
-      title: ProjectConfigProvider
-      type: object
-    ProjectType:
-      enum:
-      - app
-      - bot
-      - chat
-      - global
-      - agentic
-      - red_team
-      title: ProjectType
-      type: string
-    ProjectDeploymentStatus:
-      enum:
-      - live
-      - draft
-      title: ProjectDeploymentStatus
-      type: string
-    ProviderCapability:
-      enum:
-      - chat
-      - red_team
-      - siem
-      - openai_chat
-      - openai_responses
-      - anthropic_messages
-      - google_generate_content
-      title: ProviderCapability
-      type: string
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-      type: object
     ProjectConfigScanner:
       properties:
         blocking:
@@ -261,6 +112,80 @@ components:
       - redact
       title: ScanMode
       type: string
+    GetGlobalProjectResponse:
+      properties:
+        project:
+          $ref: '#/components/schemas/Project'
+          description: The default project for the group/chatbot specified or global settings if neither is given.
+      required:
+      - project
+      title: GetGlobalProjectResponse
+      type: object
+    ProjectDeploymentStatus:
+      enum:
+      - live
+      - draft
+      title: ProjectDeploymentStatus
+      type: string
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ProjectType:
+      enum:
+      - app
+      - bot
+      - chat
+      - global
+      - agentic
+      - red_team
+      title: ProjectType
+      type: string
+    ProjectConfigProvider:
+      properties:
+        capabilities:
+          anyOf:
+          - items:
+              anyOf:
+              - $ref: '#/components/schemas/ProviderCapability'
+              - type: string
+            type: array
+            uniqueItems: true
+          - type: 'null'
+          title: Capabilities
+        default:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Default
+        enabled:
+          title: Enabled
+          type: boolean
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+      required:
+      - enabled
+      title: ProjectConfigProvider
+      type: object
     Project:
       properties:
         adminCount:
@@ -359,6 +284,81 @@ components:
       - providerCount
       - scannerCount
       title: Project
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    ProviderCapability:
+      enum:
+      - chat
+      - red_team
+      - siem
+      - openai_chat
+      - openai_responses
+      - anthropic_messages
+      - google_generate_content
+      title: ProviderCapability
+      type: string
+    ScannerDirection:
+      enum:
+      - both
+      - request
+      - response
+      title: ScannerDirection
+      type: string
+    ProjectConfig:
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        packages:
+          default: []
+          description: Packages configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Packages
+          type: array
+        providers:
+          default: []
+          description: Providers available to the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigProvider'
+          title: Providers
+          type: array
+        scanners:
+          default: []
+          description: Guardrails configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Scanners
+          type: array
+      title: ProjectConfig
       type: object
   securitySchemes:
     HTTPBearer:

@@ -86,33 +86,6 @@ paths:
       - Refusal-Catalogs
 components:
   schemas:
-    RefusalCatalog:
-      properties:
-        createdAt:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Createdat
-        createdBy:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Createdby
-        id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Id
-        phrases:
-          default: []
-          items:
-            type: string
-          title: Phrases
-          type: array
-      title: RefusalCatalog
-      type: object
     PostRefusalCatalog:
       properties:
         phrases:
@@ -123,6 +96,15 @@ components:
       required:
       - phrases
       title: PostRefusalCatalog
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
       type: object
     PostRefusalCatalogResponse:
       properties:
@@ -173,14 +155,32 @@ components:
       - type
       title: ValidationError
       type: object
-    HTTPValidationError:
+    RefusalCatalog:
       properties:
-        detail:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        createdBy:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Createdby
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        phrases:
+          default: []
           items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
+            type: string
+          title: Phrases
           type: array
-      title: HTTPValidationError
+      title: RefusalCatalog
       type: object
   securitySchemes:
     HTTPBearer:

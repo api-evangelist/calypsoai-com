@@ -135,6 +135,14 @@ components:
       - id
       title: PostOrgResponse
       type: object
+    GetOrgResponse:
+      properties:
+        org:
+          $ref: '#/components/schemas/Organization'
+      required:
+      - org
+      title: GetOrgResponse
+      type: object
     PatchOrganizationPreferencesBody:
       examples:
       - preferences:
@@ -149,13 +157,6 @@ components:
       - preferences
       title: PatchOrganizationPreferencesBody
       type: object
-    UserRole:
-      enum:
-      - owner
-      - super_admin
-      - basic
-      title: UserRole
-      type: string
     PatchOrgBody:
       properties:
         applicationUrl:
@@ -174,6 +175,16 @@ components:
           - type: 'null'
           title: Requiremfa
       title: PatchOrgBody
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
       type: object
     Setting:
       properties:
@@ -199,14 +210,6 @@ components:
       - setAt
       - level
       title: Setting
-      type: object
-    GetOrgResponse:
-      properties:
-        org:
-          $ref: '#/components/schemas/Organization'
-      required:
-      - org
-      title: GetOrgResponse
       type: object
     PostOrgBody:
       properties:
@@ -254,6 +257,15 @@ components:
       - name
       title: PostOrgBody
       type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
     GetOrganizationPreferencesResponse:
       properties:
         preferences:
@@ -265,41 +277,6 @@ components:
       required:
       - preferences
       title: GetOrganizationPreferencesResponse
-      type: object
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-      type: object
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
       type: object
     Organization:
       properties:
@@ -347,15 +324,38 @@ components:
       - adminRoleId
       title: Organization
       type: object
-    SuccessMessage:
-      description: Confirms a successful operation.
+    UserRole:
+      enum:
+      - owner
+      - super_admin
+      - basic
+      title: UserRole
+      type: string
+    ValidationError:
       properties:
-        message:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
           title: Message
           type: string
+        type:
+          title: Error Type
+          type: string
       required:
-      - message
-      title: SuccessMessage
+      - loc
+      - msg
+      - type
+      title: ValidationError
       type: object
   securitySchemes:
     HTTPBearer:
