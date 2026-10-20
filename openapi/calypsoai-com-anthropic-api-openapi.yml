@@ -1,0 +1,108 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Anthropic API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Anthropic
+paths:
+  /anthropic/{provider}/v1/messages:
+    post:
+      operationId: post_anthropic_provider_v1_messages
+      parameters:
+      - in: path
+        name: provider
+        required: true
+        schema:
+          title: Provider
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAnthropicMessagesBody'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Post
+      tags:
+      - Anthropic
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    PostAnthropicMessagesBody:
+      additionalProperties: true
+      properties:
+        max_tokens:
+          title: Max Tokens
+          type: integer
+        messages:
+          items:
+            additionalProperties: true
+            type: object
+          title: Messages
+          type: array
+        model:
+          title: Model
+          type: string
+        stream:
+          default: false
+          title: Stream
+          type: boolean
+      required:
+      - max_tokens
+      - messages
+      - model
+      title: PostAnthropicMessagesBody
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

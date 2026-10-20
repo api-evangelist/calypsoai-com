@@ -1,0 +1,773 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Users API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Users
+paths:
+  /backend/v1/users:
+    get:
+      description: 'Retrieves a list of users matching the given filter criteria,
+
+        with the option to adjust the limit for more results.'
+      operationId: get_users
+      parameters:
+      - description: User's name or email address for filtering results
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: User's name or email address for filtering results
+          title: Search
+      - description: Selects page for paginated results. Pass in the next or prev attribute in the response
+        in: query
+        name: cursor
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Selects page for paginated results. Pass in the next or prev attribute in the response
+          title: Cursor
+      - description: Number of results to return.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Number of results to return.
+          title: Limit
+          type: integer
+      - description: If provided, returns only users in that project
+        in: query
+        name: project
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          - type: 'null'
+          description: If provided, returns only users in that project
+          title: Project
+      - description: If provided, returns only users assigned to that role
+        in: query
+        name: roleId
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: If provided, returns only users assigned to that role
+          title: Roleid
+      - description: Include all of the roles from the returned users in the response.
+        in: query
+        name: includeRoles
+        required: false
+        schema:
+          default: false
+          description: Include all of the roles from the returned users in the response.
+          title: Includeroles
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUsersResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get users
+      tags:
+      - Users
+    post:
+      description: Creates a new user.
+      operationId: post_users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUserBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Create user
+      tags:
+      - Users
+  /backend/v1/users/me:
+    get:
+      description: Retrieves the currently authenticated user's information.
+      operationId: get_users_me
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUsersMeResponse'
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Get authenticated user
+      tags:
+      - Users
+  /backend/v1/users/token-verification:
+    post:
+      description: Verifies a user with a token and sets the user's password.
+      operationId: post_users_token_verification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUsersVerificationBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Set user's password
+      tags:
+      - Users
+  /backend/v1/users/{userId}:
+    delete:
+      description: Deletes a user by their ID.
+      operationId: delete_users_userId
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          title: Userid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Delete user
+      tags:
+      - Users
+    get:
+      description: Retrieves a user by their ID.
+      operationId: get_users_userId
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          title: Userid
+          type: string
+      - description: Include the user's roles in the response
+        in: query
+        name: includeRoles
+        required: false
+        schema:
+          default: false
+          description: Include the user's roles in the response
+          title: Includeroles
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get user
+      tags:
+      - Users
+    patch:
+      description: 'Updates a user by their ID.
+
+
+        Only users can change their own name.
+
+        Users created through social account connections (Google, Microsoft) cannot change their names.'
+      operationId: patch_users_userId
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          title: Userid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchUserBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update user
+      tags:
+      - Users
+  /backend/v1/users/{userId}/multifactor:
+    delete:
+      description: Resets multi-factor authentication for a user.
+      operationId: delete_users_userId_multifactor
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          title: Userid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Reset multi-factor authentication
+      tags:
+      - Users
+  /backend/v1/users/{userId}/roles/{roleId}:
+    delete:
+      description: Removes a specified role from a user.
+      operationId: delete_users_userId_roles_roleId
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          title: Userid
+          type: string
+      - in: path
+        name: roleId
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Roleid
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Retract role from user
+      tags:
+      - Users
+    post:
+      description: Assigns a specified role to a user.
+      operationId: post_users_userId_roles_roleId
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          title: Userid
+          type: string
+      - in: path
+        name: roleId
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Roleid
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Assign role to user
+      tags:
+      - Users
+  /backend/v1/users/{userId}/verification/resend:
+    post:
+      description: Sends the verification email again to the user.
+      operationId: post_users_userId_verification_resend
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          title: Userid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Re-sends users verification email
+      tags:
+      - Users
+  /backend/v1/users/{userId}/verification/token:
+    post:
+      description: Generates a token for a user to verify their account and set their password.
+      operationId: post_users_userId_verification_token
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          title: Userid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostVerificationTokenResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Generate verification token
+      tags:
+      - Users
+components:
+  schemas:
+    PatchUserBody:
+      properties:
+        blocked:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Whether the user should be blocked.
+          title: Blocked
+        name:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          description: New name for the user.
+          title: Name
+      title: PatchUserBody
+      type: object
+    UserRole:
+      enum:
+      - owner
+      - super_admin
+      - basic
+      title: UserRole
+      type: string
+    PostUserBody:
+      properties:
+        email:
+          description: Email for the new user.
+          format: email
+          maxLength: 255
+          title: Email
+          type: string
+        name:
+          description: Name for the new user.
+          maxLength: 255
+          minLength: 1
+          title: Name
+          type: string
+        roleIds:
+          default: []
+          description: Roles to assign to the user.
+          items:
+            format: uuid
+            type: string
+          title: Roleids
+          type: array
+        roles:
+          default:
+          - basic
+          description: Deprecated
+          items:
+            $ref: '#/components/schemas/UserRole'
+          title: Roles
+          type: array
+        sendInvite:
+          default: true
+          description: Whether or not to send an invite email, if possible.
+          title: Sendinvite
+          type: boolean
+      required:
+      - email
+      - name
+      title: PostUserBody
+      type: object
+    User:
+      properties:
+        admin:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Admin
+        blocked:
+          default: false
+          title: Blocked
+          type: boolean
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        email:
+          format: password
+          title: Email
+          type: string
+          writeOnly: true
+        id:
+          title: Id
+          type: string
+        lastInvitationSentAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Lastinvitationsentat
+        machine:
+          default: false
+          title: Machine
+          type: boolean
+        name:
+          format: password
+          title: Name
+          type: string
+          writeOnly: true
+        org:
+          title: Org
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+          uniqueItems: true
+        roleIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Roleids
+          type: array
+        roles:
+          default: []
+          items:
+            type: string
+          title: Roles
+          type: array
+        social:
+          default: false
+          title: Social
+          type: boolean
+        teams:
+          default: []
+          items:
+            type: string
+          title: Teams
+          type: array
+        verified:
+          default: true
+          title: Verified
+          type: boolean
+      required:
+      - id
+      - name
+      - email
+      - org
+      title: User
+      type: object
+    PostUsersVerificationBody:
+      properties:
+        password:
+          description: New password for user
+          title: Password
+          type: string
+        token:
+          description: Token for verification
+          title: Token
+          type: string
+      required:
+      - token
+      - password
+      title: PostUsersVerificationBody
+      type: object
+    PostVerificationTokenResponse:
+      properties:
+        token:
+          title: Token
+          type: string
+      required:
+      - token
+      title: PostVerificationTokenResponse
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    GetUsersResponse:
+      properties:
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+        roles:
+          additionalProperties:
+            $ref: '#/components/schemas/Role'
+          default: {}
+          description: All roles that are held by user's in the response, if requested.
+          propertyNames:
+            format: uuid
+          title: Roles
+          type: object
+        users:
+          description: Users matching the given filter criteria.
+          items:
+            $ref: '#/components/schemas/User'
+          title: Users
+          type: array
+      required:
+      - users
+      title: GetUsersResponse
+      type: object
+    GetUsersMeResponse:
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+          description: The currently authenticated user.
+      required:
+      - user
+      title: GetUsersMeResponse
+      type: object
+    Role:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        isDefault:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          default: false
+          title: Isdefault
+        memberCount:
+          title: Membercount
+          type: integer
+        name:
+          title: Name
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        system:
+          title: System
+          type: boolean
+      required:
+      - id
+      - name
+      - system
+      - memberCount
+      title: Role
+      type: object
+    PostUserResponse:
+      properties:
+        emailSent:
+          description: If an email was sent to invite the user
+          title: Emailsent
+          type: boolean
+        id:
+          description: ID of the created user
+          title: Id
+          type: string
+      required:
+      - id
+      - emailSent
+      title: PostUserResponse
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    GetUserResponse:
+      properties:
+        roles:
+          additionalProperties:
+            $ref: '#/components/schemas/Role'
+          default: {}
+          description: The user's roles if requested
+          propertyNames:
+            format: uuid
+          title: Roles
+          type: object
+        user:
+          $ref: '#/components/schemas/User'
+          description: Requested user object.
+      required:
+      - user
+      title: GetUserResponse
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

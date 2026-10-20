@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/calypsoai-com/main/json-schema/calypsoai-com-post-scans-body-schema.json",
+  "title": "PostScansBody",
+  "x-generated": "2026-10-20",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/calypsoai-com-openapi.json#/components/schemas/PostScansBody",
+  "properties": {
+    "configOverrides": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/RegexScannerConfig"
+              },
+              {
+                "$ref": "#/$defs/KeywordScannerConfig"
+              },
+              {
+                "$ref": "#/$defs/GenAIScannerConfig"
+              },
+              {
+                "$ref": "#/$defs/MLTextScannerConfig"
+              }
+            ]
+          },
+          {
+            "additionalProperties": true,
+            "type": "object"
+          }
+        ]
+      },
+      "default": {},
+      "description": "Config overrider for guardrails.",
+      "propertyNames": {
+        "format": "uuid"
+      },
+      "title": "Configoverrides",
+      "type": "object"
+    },
+    "disabled": {
+      "default": [],
+      "description": "Disable guardrails.",
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Disabled",
+      "type": "array"
+    },
+    "externalMetadata": {
+      "anyOf": [
+        {
+          "maxProperties": 10,
+          "patternProperties": {
+            "^[a-zA-Z0-9_\\-]*$": {
+              "maxLength": 255,
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 50
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "A json string for users to attach any data to the prompt for their own use,\nFor example to tag certain prompts for tracking\n(Limited to 10 items, keys of up to 50 characters and values of up to 255 characters).",
+      "title": "Externalmetadata"
+    },
+    "flagOnly": {
+      "default": true,
+      "description": "If true, the final outcome is 'flagged' if any scanner is triggered.\nOtherwise, the outcome depends on the scanner's mode.",
+      "title": "Flagonly",
+      "type": "boolean"
+    },
+    "forceEnabled": {
+      "default": [],
+      "description": "Force guardrails to be enabled.",
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Forceenabled",
+      "type": "array"
+    },
+    "input": {
+      "description": "Data to scan.",
+      "title": "Input",
+      "type": "string"
+    },
+    "project": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Project to use configuration for. If not provided, the global default will be used.",
+      "title": "Project"
+    },
+    "requestPromptId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional prompt ID to link this scan request to. If provided and scan_direction is response,\nthe scan request will be linked to the given prompt ID as a response scan.",
+      "title": "Requestpromptid"
+    },
+    "scanDirection": {
+      "$ref": "#/$defs/ScanDirection",
+      "default": "request",
+      "description": "The direction of the scan, either 'request' or 'response'.\nThis is used for determining which guardrails to apply based on project configuration."
+    },
+    "verbose": {
+      "default": false,
+      "description": "If true, return details on each guardrail that ran against the input data",
+      "title": "Verbose",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "input"
+  ],
+  "type": "object",
+  "$defs": {
+    "GenAIScannerConfig": {
+      "properties": {
+        "input": {
+          "default": "",
+          "title": "Input",
+          "type": "string"
+        },
+        "scanContext": {
+          "default": "directional",
+          "description": "Describes the context that is provided to the scanner\nindividual: Scan only the latest message\ndirectional: Scan all messages in the conversation in the same direction as the latest message",
+          "enum": [
+            "individual",
+            "directional"
+          ],
+          "title": "Scancontext",
+          "type": "string"
+        },
+        "type": {
+          "default": "custom",
+          "enum": [
+            "genai",
+            "custom"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "title": "GenAIScannerConfig",
+      "type": "object"
+    },
+    "KeywordScannerConfig": {
+      "properties": {
+        "type": {
+          "const": "keyword",
+          "default": "keyword",
+          "title": "Type",
+          "type": "string"
+        },
+        "words": {
+          "description": "Words to check for in the prompt or response. Case insensitive. Empty strings will be removed.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Words",
+          "type": "array"
+        }
+      },
+      "required": [
+        "words"
+      ],
+      "title": "KeywordScannerConfig",
+      "type": "object"
+    },
+    "MLTextScannerConfig": {
+      "properties": {
+        "type": {
+          "const": "ml_text",
+          "default": "ml_text",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "MLTextScannerConfig",
+      "type": "object"
+    },
+    "RegexScannerConfig": {
+      "properties": {
+        "pattern": {
+          "description": "Python Flavored Regular Expression (RegEx) to check for in the prompt or response. Case insensitive.",
+          "title": "Pattern",
+          "type": "string"
+        },
+        "type": {
+          "const": "regex",
+          "default": "regex",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pattern"
+      ],
+      "title": "RegexScannerConfig",
+      "type": "object"
+    },
+    "ScanDirection": {
+      "enum": [
+        "request",
+        "response"
+      ],
+      "title": "ScanDirection",
+      "type": "string"
+    }
+  }
+}

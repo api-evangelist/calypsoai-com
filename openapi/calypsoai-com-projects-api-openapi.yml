@@ -1,0 +1,1983 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Projects API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Projects
+paths:
+  /backend/v1/projects:
+    get:
+      description: 'Retrieves a list of projects that match the given criteria,
+
+        with the option to adjust the limit for more results.'
+      operationId: get_projects
+      parameters:
+      - description: Selects page for paginated results. Pass in the next or prev attribute in the response
+        in: query
+        name: cursor
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Selects page for paginated results. Pass in the next or prev attribute in the response
+          title: Cursor
+      - description: Only return results that match the given text.
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Only return results that match the given text.
+          title: Search
+      - description: Limits the amount of results.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Limits the amount of results.
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - description: Whether results should be sorted in ascending order.
+        in: query
+        name: ascending
+        required: false
+        schema:
+          default: false
+          description: Whether results should be sorted in ascending order.
+          title: Ascending
+          type: boolean
+      - description: Filter projects by these types.
+        in: query
+        name: type
+        required: false
+        schema:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ProjectType'
+            type: array
+          - type: 'null'
+          description: Filter projects by these types.
+          title: Type
+      - description: Filter by projects that have these providers added.
+        in: query
+        name: providerId
+        required: false
+        schema:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          description: Filter by projects that have these providers added.
+          title: Providerid
+      - description: Sort results by the given parameter.
+        in: query
+        name: sortBy
+        required: false
+        schema:
+          $ref: '#/components/schemas/ProjectSearchSortBy'
+          default: created_at
+          description: Sort results by the given parameter.
+      - description: Get projects that the current user is/isn't admin of.
+        in: query
+        name: admin
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Get projects that the current user is/isn't admin of.
+          title: Admin
+      - description: Filter by projects created by the specified user.
+        in: query
+        name: createdBy
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by projects created by the specified user.
+          title: Createdby
+      - description: Filter projects by their deployment status.
+        in: query
+        name: deploymentStatus
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/ProjectDeploymentStatus'
+          - type: 'null'
+          description: Filter projects by their deployment status.
+          title: Deploymentstatus
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProjectsResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get projects
+      tags:
+      - Projects
+    post:
+      description: Creates a new project
+      operationId: post_projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostProjectsBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostSuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Create project
+      tags:
+      - Projects
+  /backend/v1/projects/{project}:
+    delete:
+      description: 'Deletes a project.
+
+        Only an org admin can delete projects.'
+      operationId: delete_projects_project
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Delete project
+      tags:
+      - Projects
+    get:
+      description: Retrieves a project by its ID or name.
+      operationId: get_projects_project
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      - description: Get the config at a given point in time.
+        in: query
+        name: configAt
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          description: Get the config at a given point in time.
+          title: Configat
+      - description: Include full guardrail, guardrail package, and provider objects added to the project.
+        in: query
+        name: includeAdded
+        required: false
+        schema:
+          default: false
+          description: Include full guardrail, guardrail package, and provider objects added to the project.
+          title: Includeadded
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProjectResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get project by ID or name
+      tags:
+      - Projects
+    patch:
+      description: Modifies a project, including its name, friendly ID and configuration.
+      operationId: patch_projects_project
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchProjectBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update project
+      tags:
+      - Projects
+  /backend/v1/projects/{project}/members:
+    post:
+      description: Only a project admin can add users to a project.
+      operationId: post_projects_project_members
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostProjectMembersBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Add users to project
+      tags:
+      - Projects
+  /backend/v1/projects/{project}/members/{userId}:
+    delete:
+      description: Removes a user from a project. Only a project admin can perform this action.
+      operationId: delete_projects_project_members_userId
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      - in: path
+        name: userId
+        required: true
+        schema:
+          title: Userid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Remove user from project
+      tags:
+      - Projects
+    patch:
+      description: Updates a user's admin status within a project. Only project admins can modify a user's admin status.
+      operationId: patch_projects_project_members_userId
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      - in: path
+        name: userId
+        required: true
+        schema:
+          title: Userid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchProjectMemberBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update project user
+      tags:
+      - Projects
+  /backend/v1/projects/{project}/providers/{providerId}:
+    delete:
+      description: Remove provider from project.
+      operationId: delete_projects_project_providers_providerId
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      - in: path
+        name: providerId
+        required: true
+        schema:
+          format: uuid
+          title: Providerid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Remove provider from project
+      tags:
+      - Projects
+    post:
+      description: Add provider to project.
+      operationId: post_projects_project_providers_providerId
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      - in: path
+        name: providerId
+        required: true
+        schema:
+          format: uuid
+          title: Providerid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Add provider to project
+      tags:
+      - Projects
+  /backend/v1/projects/{project}/scanner-packages/{scannerPackageId}:
+    delete:
+      description: Remove guardrail package from project.
+      operationId: delete_projects_project_scanner_packages_scannerPackageId
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      - in: path
+        name: scannerPackageId
+        required: true
+        schema:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Remove guardrail package from project
+      tags:
+      - Projects
+    post:
+      description: Add scanner_package to project.
+      operationId: post_projects_project_scanner_packages_scannerPackageId
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      - in: path
+        name: scannerPackageId
+        required: true
+        schema:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Add scanner_package to project
+      tags:
+      - Projects
+  /backend/v1/projects/{project}/scanners:
+    get:
+      description: 'Retrieves all guardrails and their configurations
+
+        used when sending prompts or performing scans within the project.'
+      operationId: get_projects_project_scanners
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          format: uuid
+          title: Project
+          type: string
+      - description: Get the config at a given point in time.
+        in: query
+        name: configAt
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          description: Get the config at a given point in time.
+          title: Configat
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProjectScannersResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get project guardrails
+      tags:
+      - Projects
+  /backend/v1/projects/{project}/scanners/{scannerId}:
+    delete:
+      description: Remove guardrail from project.
+      operationId: delete_projects_project_scanners_scannerId
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      - in: path
+        name: scannerId
+        required: true
+        schema:
+          format: uuid
+          title: Scannerid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Remove guardrail from project
+      tags:
+      - Projects
+    post:
+      description: Add guardrail to project.
+      operationId: post_projects_project_scanners_scannerId
+      parameters:
+      - in: path
+        name: project
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Project
+      - in: path
+        name: scannerId
+        required: true
+        schema:
+          format: uuid
+          title: Scannerid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Add guardrail to project
+      tags:
+      - Projects
+components:
+  schemas:
+    ScannerAvailability:
+      properties:
+        global:
+          default: false
+          description: If True guardrail can be used by all projects
+          title: Global
+          type: boolean
+        projectIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Projectids
+          type: array
+          uniqueItems: true
+      title: ScannerAvailability
+      type: object
+    ScannerVersionMeta:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Createdby
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        direction:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - type: 'null'
+        f1Score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: F1Score
+        id:
+          format: uuid
+          title: Id
+          type: string
+        latestDatasetResult:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDatasetResult'
+          - type: 'null'
+        name:
+          maxLength: 100
+          minLength: 1
+          pattern: ^[a-zA-Z0-9-_]+$
+          title: Name
+          type: string
+        published:
+          title: Published
+          type: boolean
+      required:
+      - id
+      - createdAt
+      - name
+      - published
+      title: ScannerVersionMeta
+      type: object
+    ProjectDeploymentStatus:
+      enum:
+      - live
+      - draft
+      title: ProjectDeploymentStatus
+      type: string
+    ProjectType:
+      enum:
+      - app
+      - bot
+      - chat
+      - global
+      - agentic
+      - red_team
+      title: ProjectType
+      type: string
+    APIScopeOutputs:
+      patternProperties:
+        ^[a-zA-Z_][a-zA-Z0-9_]*$:
+          type: string
+      template: true
+      title: APIScopeOutputs
+      type: object
+    ProviderAvailability:
+      properties:
+        global:
+          default: false
+          description: If True provider can be used by all projects
+          title: Global
+          type: boolean
+        projectIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Projectids
+          type: array
+          uniqueItems: true
+      title: ProviderAvailability
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    APIWorkflowBlock:
+      properties:
+        outputs:
+          $ref: '#/components/schemas/APIScopeOutputs'
+          default: {}
+        stages:
+          items:
+            discriminator:
+              mapping:
+                request: '#/components/schemas/APIRequestBlock'
+                retry: '#/components/schemas/APIRetryBlock'
+                workflow: '#/components/schemas/APIWorkflowBlock'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/APIRequestBlock'
+            - $ref: '#/components/schemas/APIRetryBlock'
+            - $ref: '#/components/schemas/APIWorkflowBlock'
+          template: true
+          title: Stages
+          type: array
+        type:
+          const: workflow
+          default: workflow
+          title: Type
+          type: string
+      required:
+      - stages
+      title: APIWorkflowBlock
+      type: object
+    GetProjectsResponse:
+      properties:
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+        projects:
+          description: Projects matching the given filter criteria.
+          items:
+            $ref: '#/components/schemas/Project'
+          title: Projects
+          type: array
+      required:
+      - projects
+      title: GetProjectsResponse
+      type: object
+    MLTextScannerConfig:
+      properties:
+        type:
+          const: ml_text
+          default: ml_text
+          title: Type
+          type: string
+      required: []
+      title: MLTextScannerConfig
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    ScannerPackage:
+      properties:
+        availability:
+          $ref: '#/components/schemas/ScannerAvailability'
+          default:
+            global: false
+            projectIds: []
+        direction:
+          $ref: '#/components/schemas/ScannerDirection'
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        performanceScannerIds:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          title: Performancescannerids
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        scannerCounts:
+          additionalProperties:
+            type: integer
+          default: {}
+          title: Scannercounts
+          type: object
+        scannerIds:
+          items:
+            format: uuid
+            type: string
+          title: Scannerids
+          type: array
+        source:
+          discriminator:
+            mapping:
+              internal: '#/components/schemas/InternalScannerSource'
+              remediation: '#/components/schemas/RemediationScannerSource'
+              vendor: '#/components/schemas/VendorScannerSource'
+              zip: '#/components/schemas/ZipScannerSource'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/InternalScannerSource'
+          - $ref: '#/components/schemas/ZipScannerSource'
+          - $ref: '#/components/schemas/VendorScannerSource'
+          - $ref: '#/components/schemas/RemediationScannerSource'
+          title: Source
+        vendored:
+          anyOf:
+          - type: boolean
+          - items:
+              type: string
+            type: array
+          default: false
+          title: Vendored
+      required:
+      - id
+      - name
+      - source
+      - direction
+      - scannerIds
+      title: ScannerPackage
+      type: object
+    RegexScannerConfig:
+      properties:
+        pattern:
+          description: Python Flavored Regular Expression (RegEx) to check for in the prompt or response. Case insensitive.
+          title: Pattern
+          type: string
+        type:
+          const: regex
+          default: regex
+          title: Type
+          type: string
+      required:
+      - pattern
+      title: RegexScannerConfig
+      type: object
+    ZipScannerSource:
+      properties:
+        type:
+          const: zip
+          default: zip
+          title: Type
+          type: string
+      title: ZipScannerSource
+      type: object
+    ProviderType:
+      enum:
+      - ibm
+      - openai
+      - azure
+      - cohere
+      - ai21
+      - custom
+      - anthropic
+      - groq
+      - openai-compatible
+      - huggingface
+      - siem
+      - google
+      - bedrock
+      title: ProviderType
+      type: string
+    GetProjectResponse:
+      properties:
+        project:
+          $ref: '#/components/schemas/Project'
+          description: Requested project object.
+        providers:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/Provider'
+            type: array
+          - type: 'null'
+          description: Providers added to the project. Only populated when includeAdded is true.
+          title: Providers
+        scannerPackages:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ScannerPackage'
+            type: array
+          - type: 'null'
+          description: Guardrail packages added to the project. Only populated when includeAdded is true.
+          title: Scannerpackages
+        scanners:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/Scanner'
+            type: array
+          - type: 'null'
+          description: Guardrails added to the project. Only populated when includeAdded is true.
+          title: Scanners
+        truncated:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: True if any category exceeded the per-category limit. Only set when includeAdded is true.
+          title: Truncated
+      required:
+      - project
+      title: GetProjectResponse
+      type: object
+    ProjectScanners:
+      properties:
+        configs:
+          additionalProperties:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          default: {}
+          description: Behaviour of each guardrails specific to the project, such as whether to block flagged prompts
+          propertyNames:
+            format: uuid
+          title: Configs
+          type: object
+        forcedScanners:
+          additionalProperties:
+            anyOf:
+            - $ref: '#/components/schemas/Scanner'
+            - items:
+                $ref: '#/components/schemas/Scanner'
+              type: array
+          default: {}
+          description: 'Guardrails enabled for the project which were enabled by the global setting''s admin.
+
+            A list value indicates multiple versions of a guardrail that were enabled (Playground prompts only).'
+          propertyNames:
+            format: uuid
+          title: Forcedscanners
+          type: object
+        scanners:
+          additionalProperties:
+            $ref: '#/components/schemas/Scanner'
+          default: {}
+          description: Guardrails enabled for the project which were enabled by the project's admin.
+          propertyNames:
+            format: uuid
+          title: Scanners
+          type: object
+      title: ProjectScanners
+      type: object
+    ProjectConfig:
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        packages:
+          default: []
+          description: Packages configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Packages
+          type: array
+        providers:
+          default: []
+          description: Providers available to the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigProvider'
+          title: Providers
+          type: array
+        scanners:
+          default: []
+          description: Guardrails configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Scanners
+          type: array
+      title: ProjectConfig
+      type: object
+    ProjectConfigProvider:
+      properties:
+        capabilities:
+          anyOf:
+          - items:
+              anyOf:
+              - $ref: '#/components/schemas/ProviderCapability'
+              - type: string
+            type: array
+            uniqueItems: true
+          - type: 'null'
+          title: Capabilities
+        default:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Default
+        enabled:
+          title: Enabled
+          type: boolean
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+      required:
+      - enabled
+      title: ProjectConfigProvider
+      type: object
+    RemediationScannerSource:
+      properties:
+        sourceId:
+          format: uuid
+          title: Sourceid
+          type: string
+        type:
+          const: remediation
+          default: remediation
+          title: Type
+          type: string
+      required:
+      - sourceId
+      title: RemediationScannerSource
+      type: object
+    PatchProjectBody:
+      properties:
+        config:
+          anyOf:
+          - $ref: '#/components/schemas/ProjectConfig'
+          - type: 'null'
+          description: New config for the project. Partial configurations are accepted.
+        deploymentStatus:
+          anyOf:
+          - $ref: '#/components/schemas/ProjectDeploymentStatus'
+          - type: 'null'
+          description: New deployment status for the project.
+        friendlyId:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          description: The name can be used to identify the project instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
+          title: Friendlyid
+        name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name
+      title: PatchProjectBody
+      type: object
+    VendorScannerSource:
+      properties:
+        type:
+          const: vendor
+          default: vendor
+          title: Type
+          type: string
+      title: VendorScannerSource
+      type: object
+    ProviderCapability:
+      enum:
+      - chat
+      - red_team
+      - siem
+      - openai_chat
+      - openai_responses
+      - anthropic_messages
+      - google_generate_content
+      title: ProviderCapability
+      type: string
+    Provider:
+      properties:
+        authTemplate:
+          anyOf:
+          - discriminator:
+              mapping:
+                request: '#/components/schemas/APIRequestBlock'
+                retry: '#/components/schemas/APIRetryBlock'
+                workflow: '#/components/schemas/APIWorkflowBlock'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/APIRequestBlock'
+            - $ref: '#/components/schemas/APIRetryBlock'
+            - $ref: '#/components/schemas/APIWorkflowBlock'
+          - type: 'null'
+          description: Optional API template to retrieve temporary auth credentials
+          title: Authtemplate
+        availability:
+          $ref: '#/components/schemas/ProviderAvailability'
+          default:
+            global: false
+            projectIds: []
+        capabilities:
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ProviderCapability'
+            - type: string
+          title: Capabilities
+          type: array
+          uniqueItems: true
+        hasLogo:
+          default: false
+          title: Haslogo
+          type: boolean
+        id:
+          format: uuid
+          title: Id
+          type: string
+        inputs:
+          additionalProperties: true
+          title: Inputs
+          type: object
+        maxRequestsPerSecond:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Deprecated, use requestConcurrencyLimit instead
+          title: Maxrequestspersecond
+        name:
+          description: The name can be used to identify the provider instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
+          pattern: ^[a-zA-Z0-9-_]+$
+          title: Name
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        redTeam:
+          default: false
+          title: Redteam
+          type: boolean
+        requestConcurrencyLimit:
+          anyOf:
+          - $ref: '#/components/schemas/RequestConcurrencyLimit'
+          - type: 'null'
+          description: Specifies concurrency limits for requests from campaign run attacks
+        secrets:
+          additionalProperties:
+            format: uuid
+            type: string
+          title: Secrets
+          type: object
+        siem:
+          default: false
+          title: Siem
+          type: boolean
+        systemProviderId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Systemproviderid
+        tag:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tag
+        template:
+          discriminator:
+            mapping:
+              request: '#/components/schemas/APIRequestBlock'
+              retry: '#/components/schemas/APIRetryBlock'
+              workflow: '#/components/schemas/APIWorkflowBlock'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/APIRequestBlock'
+          - $ref: '#/components/schemas/APIRetryBlock'
+          - $ref: '#/components/schemas/APIWorkflowBlock'
+          title: Template
+        type:
+          $ref: '#/components/schemas/ProviderType'
+      required:
+      - id
+      - name
+      - type
+      - template
+      - inputs
+      - secrets
+      - capabilities
+      title: Provider
+      type: object
+    OCIAuth:
+      properties:
+        keyId:
+          template: true
+          title: Keyid
+          type: string
+        passphrase:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Passphrase
+        privateKeyPem:
+          template: true
+          title: Privatekeypem
+          type: string
+      required:
+      - keyId
+      - privateKeyPem
+      title: OCIAuth
+      type: object
+    ScanMode:
+      enum:
+      - block
+      - audit
+      - redact
+      title: ScanMode
+      type: string
+    Project:
+      properties:
+        adminCount:
+          default: 0
+          title: Admincount
+          type: integer
+        adminRoleId:
+          format: uuid
+          title: Adminroleid
+          type: string
+        agentSessionCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Agentsessioncount
+        botType:
+          anyOf:
+          - $ref: '#/components/schemas/ChatbotType'
+          - type: 'null'
+        chatbotId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Chatbotid
+        config:
+          $ref: '#/components/schemas/ProjectConfig'
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          title: Createdby
+          type: string
+        deploymentStatus:
+          $ref: '#/components/schemas/ProjectDeploymentStatus'
+          default: draft
+        friendlyId:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          description: The name can be used to identify the project instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
+          title: Friendlyid
+        id:
+          format: uuid
+          title: Id
+          type: string
+        memberCount:
+          default: 0
+          title: Membercount
+          type: integer
+        memberRoleId:
+          format: uuid
+          title: Memberroleid
+          type: string
+        name:
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        providerCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Providercount
+        scannerCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Scannercount
+        tokenCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Tokencount
+        type:
+          $ref: '#/components/schemas/ProjectType'
+        updatedAt:
+          format: date-time
+          title: Updatedat
+          type: string
+      required:
+      - id
+      - name
+      - type
+      - config
+      - createdAt
+      - createdBy
+      - updatedAt
+      - adminRoleId
+      - memberRoleId
+      - tokenCount
+      - providerCount
+      - scannerCount
+      title: Project
+      type: object
+    Scanner:
+      properties:
+        availability:
+          $ref: '#/components/schemas/ScannerAvailability'
+          default:
+            global: false
+            projectIds: []
+        config:
+          anyOf:
+          - discriminator:
+              mapping:
+                custom: '#/components/schemas/GenAIScannerConfig'
+                genai: '#/components/schemas/GenAIScannerConfig'
+                keyword: '#/components/schemas/KeywordScannerConfig'
+                ml_text: '#/components/schemas/MLTextScannerConfig'
+                regex: '#/components/schemas/RegexScannerConfig'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/RegexScannerConfig'
+            - $ref: '#/components/schemas/KeywordScannerConfig'
+            - $ref: '#/components/schemas/GenAIScannerConfig'
+            - $ref: '#/components/schemas/MLTextScannerConfig'
+          - $ref: '#/components/schemas/LegacyScannerConfig'
+          - type: 'null'
+          title: Config
+        direction:
+          $ref: '#/components/schemas/ScannerDirection'
+          default: request
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        packageId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Packageid
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        scannerTemplateId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Scannertemplateid
+        source:
+          default:
+            type: internal
+          discriminator:
+            mapping:
+              internal: '#/components/schemas/InternalScannerSource'
+              remediation: '#/components/schemas/RemediationScannerSource'
+              vendor: '#/components/schemas/VendorScannerSource'
+              zip: '#/components/schemas/ZipScannerSource'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/InternalScannerSource'
+          - $ref: '#/components/schemas/ZipScannerSource'
+          - $ref: '#/components/schemas/VendorScannerSource'
+          - $ref: '#/components/schemas/RemediationScannerSource'
+          title: Source
+        tags:
+          default: []
+          items:
+            maxLength: 50
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          title: Tags
+          type: array
+        vendored:
+          anyOf:
+          - type: boolean
+          - items:
+              type: string
+            type: array
+          default: false
+          title: Vendored
+        versionMeta:
+          $ref: '#/components/schemas/ScannerVersionMeta'
+      required:
+      - name
+      - id
+      - versionMeta
+      title: Scanner
+      type: object
+    RequestConcurrencyLimit:
+      properties:
+        decayPerSecond:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: integer
+          - type: 'null'
+          description: 'Number of request slots that are opened per second.
+
+
+            Set a value to use the concurrency limit as a rate limit.
+
+
+            For example, to set a rate limit of 5 requests per second set requests=5 and decayPerSecond=5'
+          title: Decaypersecond
+        requests:
+          description: Max number of request slots that can be occupied at once.
+          exclusiveMinimum: 0.0
+          title: Requests
+          type: integer
+      required:
+      - requests
+      title: RequestConcurrencyLimit
+      type: object
+    LegacyScannerConfig:
+      additionalProperties: true
+      properties: {}
+      title: LegacyScannerConfig
+      type: object
+    InternalScannerSource:
+      properties:
+        type:
+          const: internal
+          default: internal
+          title: Type
+          type: string
+      title: InternalScannerSource
+      type: object
+    KeywordScannerConfig:
+      properties:
+        type:
+          const: keyword
+          default: keyword
+          title: Type
+          type: string
+        words:
+          description: Words to check for in the prompt or response. Case insensitive. Empty strings will be removed.
+          items:
+            type: string
+          title: Words
+          type: array
+      required:
+      - words
+      title: KeywordScannerConfig
+      type: object
+    ScannerDatasetResult:
+      properties:
+        datasetRunId:
+          format: uuid
+          title: Datasetrunid
+          type: string
+        f1Score:
+          title: F1Score
+          type: number
+      required:
+      - datasetRunId
+      - f1Score
+      title: ScannerDatasetResult
+      type: object
+    AWSAuth:
+      properties:
+        accessKey:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Accesskey
+        region:
+          template: true
+          title: Region
+          type: string
+        secretKey:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Secretkey
+        service:
+          template: true
+          title: Service
+          type: string
+        token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Token
+      required:
+      - service
+      - region
+      title: AWSAuth
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ChatbotType:
+      enum:
+      - teams
+      - slack
+      title: ChatbotType
+      type: string
+    APIRetryBlock:
+      properties:
+        attempts:
+          title: Attempts
+          type: integer
+        backoff:
+          anyOf:
+          - type: integer
+          - type: string
+          default: 1
+          template: true
+          title: Backoff
+        block:
+          discriminator:
+            mapping:
+              request: '#/components/schemas/APIRequestBlock'
+              retry: '#/components/schemas/APIRetryBlock'
+              workflow: '#/components/schemas/APIWorkflowBlock'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/APIRequestBlock'
+          - $ref: '#/components/schemas/APIWorkflowBlock'
+          - $ref: '#/components/schemas/APIRetryBlock'
+          template: true
+          title: Block
+        type:
+          const: retry
+          default: retry
+          title: Type
+          type: string
+        when:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: When
+      required:
+      - attempts
+      - block
+      title: APIRetryBlock
+      type: object
+    GetProjectScannersResponse:
+      properties:
+        projectScanners:
+          $ref: '#/components/schemas/ProjectScanners'
+      required:
+      - projectScanners
+      title: GetProjectScannersResponse
+      type: object
+    PatchProjectMemberBody:
+      properties:
+        admin:
+          description: Whether the user should be an admin of the given group.
+          title: Admin
+          type: boolean
+      required:
+      - admin
+      title: PatchProjectMemberBody
+      type: object
+    ProjectSearchSortBy:
+      enum:
+      - name
+      - created_at
+      - updated_at
+      title: ProjectSearchSortBy
+      type: string
+    ScannerDirection:
+      enum:
+      - both
+      - request
+      - response
+      title: ScannerDirection
+      type: string
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    HTTPMethod:
+      enum:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - HEAD
+      - OPTIONS
+      title: HTTPMethod
+      type: string
+    PostProjectMembersBody:
+      properties:
+        admin:
+          default: false
+          description: IDs of users to add to the project.
+          title: Admin
+          type: boolean
+        members:
+          items:
+            type: string
+          title: Members
+          type: array
+      required:
+      - members
+      title: PostProjectMembersBody
+      type: object
+    APIRequestBlock:
+      properties:
+        awsAuth:
+          anyOf:
+          - $ref: '#/components/schemas/AWSAuth'
+          - type: 'null'
+          template: true
+        body:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Body
+        headers:
+          additionalProperties: true
+          default: {}
+          template: true
+          title: Headers
+          type: object
+        json:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Json
+        method:
+          $ref: '#/components/schemas/HTTPMethod'
+        ociAuth:
+          anyOf:
+          - $ref: '#/components/schemas/OCIAuth'
+          - type: 'null'
+          template: true
+        outputs:
+          $ref: '#/components/schemas/APIScopeOutputs'
+          default: {}
+        queryParams:
+          additionalProperties:
+            type: string
+          default: {}
+          template: true
+          title: Queryparams
+          type: object
+        timeout:
+          default: 20
+          title: Timeout
+          type: integer
+        type:
+          const: request
+          default: request
+          title: Type
+          type: string
+        url:
+          template: true
+          title: Url
+          type: string
+      required:
+      - method
+      - url
+      title: APIRequestBlock
+      type: object
+    ProjectConfigScanner:
+      properties:
+        blocking:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Blocking
+        direction:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - const: ''
+            type: string
+          - type: 'null'
+          title: Direction
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+        flagMessage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Flagmessage
+        force:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Force
+        id:
+          format: uuid
+          title: Id
+          type: string
+        mode:
+          anyOf:
+          - $ref: '#/components/schemas/ScanMode'
+          - type: 'null'
+        version:
+          anyOf:
+          - format: uuid
+            type: string
+          - format: date-time
+            type: string
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          title: Version
+      required:
+      - id
+      title: ProjectConfigScanner
+      type: object
+    GenAIScannerConfig:
+      properties:
+        input:
+          default: ''
+          title: Input
+          type: string
+        scanContext:
+          default: directional
+          description: 'Describes the context that is provided to the scanner
+
+            individual: Scan only the latest message
+
+            directional: Scan all messages in the conversation in the same direction as the latest message'
+          enum:
+          - individual
+          - directional
+          title: Scancontext
+          type: string
+        type:
+          default: custom
+          enum:
+          - genai
+          - custom
+          title: Type
+          type: string
+      title: GenAIScannerConfig
+      type: object
+    PostProjectsBody:
+      properties:
+        adminIds:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: 'User IDs to be set as project admins, if not specified will be set to current user.
+
+            At least one ID is required for API calls using global or project tokens.'
+          title: Adminids
+        config:
+          anyOf:
+          - $ref: '#/components/schemas/ProjectConfig'
+          - type: 'null'
+          description: 'Config for the project.
+
+            If not provided, the current config for the specified group or global settings will be used.'
+        deploymentStatus:
+          $ref: '#/components/schemas/ProjectDeploymentStatus'
+          default: draft
+          description: Deployment status for the project.
+        friendlyId:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          description: The name can be used to identify the project instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
+          title: Friendlyid
+        memberIds:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: User IDs to be set as project members.
+          title: Memberids
+        name:
+          description: Name for the project.
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        type:
+          description: Type of the project to create.
+          enum:
+          - app
+          - agentic
+          - chat
+          - bot
+          - red_team
+          title: Type
+          type: string
+      required:
+      - name
+      - type
+      title: PostProjectsBody
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

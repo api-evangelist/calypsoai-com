@@ -1,0 +1,363 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Org API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Org
+paths:
+  /backend/v1/org:
+    get:
+      description: Retrieves the organization details.
+      operationId: get_org
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOrgResponse'
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Get organization
+      tags:
+      - Org
+    patch:
+      description: Modifies the organization's name, application URL, and enables multi-factor authentication.
+      operationId: patch_org
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchOrgBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update organization
+      tags:
+      - Org
+    post:
+      description: Creates a new organization with the given name.
+      operationId: post_org
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostOrgBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostOrgResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Create organization
+      tags:
+      - Org
+  /backend/v1/org/preferences:
+    get:
+      description: Retrieves all organization preferences.
+      operationId: get_org_preferences
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOrganizationPreferencesResponse'
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Get org preferences
+      tags:
+      - Org
+    patch:
+      description: Modifies the organization preferences.
+      operationId: patch_org_preferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchOrganizationPreferencesBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update org preferences
+      tags:
+      - Org
+components:
+  schemas:
+    PostOrgResponse:
+      properties:
+        id:
+          description: ID of the created organization
+          title: Id
+          type: string
+      required:
+      - id
+      title: PostOrgResponse
+      type: object
+    PatchOrganizationPreferencesBody:
+      examples:
+      - preferences:
+          org.preferences.record_prompts: false
+      properties:
+        preferences:
+          additionalProperties: true
+          description: Organization preferences to update
+          title: Preferences
+          type: object
+      required:
+      - preferences
+      title: PatchOrganizationPreferencesBody
+      type: object
+    UserRole:
+      enum:
+      - owner
+      - super_admin
+      - basic
+      title: UserRole
+      type: string
+    PatchOrgBody:
+      properties:
+        applicationUrl:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Applicationurl
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        requireMfa:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Requiremfa
+      title: PatchOrgBody
+      type: object
+    Setting:
+      properties:
+        level:
+          title: Level
+          type: integer
+        name:
+          title: Name
+          type: string
+        setAt:
+          format: date-time
+          title: Setat
+          type: string
+        setBy:
+          title: Setby
+          type: string
+        value:
+          title: Value
+      required:
+      - name
+      - value
+      - setBy
+      - setAt
+      - level
+      title: Setting
+      type: object
+    GetOrgResponse:
+      properties:
+        org:
+          $ref: '#/components/schemas/Organization'
+      required:
+      - org
+      title: GetOrgResponse
+      type: object
+    PostOrgBody:
+      properties:
+        email:
+          anyOf:
+          - format: email
+            maxLength: 255
+            type: string
+          - type: 'null'
+          description: Email for the new user.
+          title: Email
+        name:
+          description: Name for the new organization
+          title: Name
+          type: string
+        roleIds:
+          description: Roles to assign to the user.
+          items:
+            anyOf:
+            - format: uuid
+              type: string
+            - type: string
+          title: Roleids
+          type: array
+        roles:
+          description: Deprecated
+          items:
+            $ref: '#/components/schemas/UserRole'
+          title: Roles
+          type: array
+        sendInvite:
+          default: true
+          description: Whether or not to send an invite email, if possible.
+          title: Sendinvite
+          type: boolean
+        userName:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          description: Name for the new user.
+          title: Username
+      required:
+      - name
+      title: PostOrgBody
+      type: object
+    GetOrganizationPreferencesResponse:
+      properties:
+        preferences:
+          description: List of organization preferences.
+          items:
+            $ref: '#/components/schemas/Setting'
+          title: Preferences
+          type: array
+      required:
+      - preferences
+      title: GetOrganizationPreferencesResponse
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    Organization:
+      properties:
+        adminRoleId:
+          format: uuid
+          title: Adminroleid
+          type: string
+        applicationUrl:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Applicationurl
+        disabled:
+          default: false
+          title: Disabled
+          type: boolean
+        entitlements:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Entitlements
+        hasOwner:
+          default: false
+          title: Hasowner
+          type: boolean
+        id:
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        ownerRoleId:
+          format: uuid
+          title: Ownerroleid
+          type: string
+        requireMfa:
+          default: false
+          title: Requiremfa
+          type: boolean
+      required:
+      - id
+      - name
+      - ownerRoleId
+      - adminRoleId
+      title: Organization
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

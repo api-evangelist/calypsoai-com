@@ -1,0 +1,831 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Tokens API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Tokens
+paths:
+  /backend/v1/tokens:
+    get:
+      description: 'Retrieves a list of tokens matching the given filter criteria,
+
+        with the option to adjust the limit for more results.
+
+        The token values are obfuscated.
+
+        By default, the current user''s personal tokens are returned.'
+      operationId: get_tokens
+      parameters:
+      - description: Selects page for paginated results. Pass in the next or prev attribute in the response.
+        in: query
+        name: cursor
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Selects page for paginated results. Pass in the next or prev attribute in the response.
+          title: Cursor
+      - description: Include user details for token owners.
+        in: query
+        name: includeUsers
+        required: false
+        schema:
+          default: false
+          description: Include user details for token owners.
+          title: Includeusers
+          type: boolean
+      - description: Include project details for project-scoped tokens.
+        in: query
+        name: includeProjects
+        required: false
+        schema:
+          default: false
+          description: Include project details for project-scoped tokens.
+          title: Includeprojects
+          type: boolean
+      - description: Filter tokens by their scope (personal, organization, project).
+        in: query
+        name: scope
+        required: false
+        schema:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/TokenScope'
+            type: array
+          - type: 'null'
+          description: Filter tokens by their scope (personal, organization, project).
+          title: Scope
+      - description: Filter tokens by their status (active, expired, revoked).
+        in: query
+        name: status
+        required: false
+        schema:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/TokenStatus'
+            type: array
+          - type: 'null'
+          default:
+          - active
+          description: Filter tokens by their status (active, expired, revoked).
+          title: Status
+      - description: Sort results by the given parameter.
+        in: query
+        name: sortBy
+        required: false
+        schema:
+          $ref: '#/components/schemas/TokenSearchSortBy'
+          default: id
+          description: Sort results by the given parameter.
+      - description: Whether results should be sorted in ascending order.
+        in: query
+        name: ascending
+        required: false
+        schema:
+          default: false
+          description: Whether results should be sorted in ascending order.
+          title: Ascending
+          type: boolean
+      - description: Filter tokens by the users that own them.
+        in: query
+        name: userId
+        required: false
+        schema:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: Filter tokens by the users that own them.
+          title: Userid
+      - description: Deprecated. If true returns only machine tokens, if false doesn't return machine tokens.
+        in: query
+        name: machine
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Deprecated. If true returns only machine tokens, if false doesn't return machine tokens.
+          title: Machine
+      - description: Filter tokens by the projects they belong to. Accepts one or more project IDs.
+        in: query
+        name: projectId
+        required: false
+        schema:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          description: Filter tokens by the projects they belong to. Accepts one or more project IDs.
+          title: Projectid
+      - description: Limits the amount of returned objects. Max 100, min 1.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Limits the amount of returned objects. Max 100, min 1.
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTokensResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get API tokens
+      tags:
+      - Tokens
+    post:
+      description: 'Creates an API token.
+
+        Based on the provided body,
+
+        it will either create a machine token for the org or user group, or a personal API token.'
+      operationId: post_tokens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/PostTokensMachineBody'
+              - $ref: '#/components/schemas/PostTokensBody'
+              title: Body
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostTokensResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Create API token
+      tags:
+      - Tokens
+  /backend/v1/tokens/bulk-delete:
+    post:
+      description: Deletes multiple API tokens at once by their IDs.
+      operationId: post_tokens_bulk_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBulkDeleteBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Bulk delete API tokens
+      tags:
+      - Tokens
+  /backend/v1/tokens/{tokenId}:
+    delete:
+      description: Deletes an api token by its ID.
+      operationId: delete_tokens_tokenId
+      parameters:
+      - in: path
+        name: tokenId
+        required: true
+        schema:
+          format: uuid
+          title: Tokenid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Delete API token
+      tags:
+      - Tokens
+components:
+  schemas:
+    TokenScope:
+      enum:
+      - personal
+      - organization
+      - project
+      title: TokenScope
+      type: string
+    ProjectType:
+      enum:
+      - app
+      - bot
+      - chat
+      - global
+      - agentic
+      - red_team
+      title: ProjectType
+      type: string
+    ProjectDeploymentStatus:
+      enum:
+      - live
+      - draft
+      title: ProjectDeploymentStatus
+      type: string
+    PostBulkDeleteBody:
+      properties:
+        tokenIds:
+          items:
+            format: uuid
+            type: string
+          maxItems: 100
+          minItems: 1
+          title: Tokenids
+          type: array
+      required:
+      - tokenIds
+      title: PostBulkDeleteBody
+      type: object
+    User:
+      properties:
+        admin:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Admin
+        blocked:
+          default: false
+          title: Blocked
+          type: boolean
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        email:
+          format: password
+          title: Email
+          type: string
+          writeOnly: true
+        id:
+          title: Id
+          type: string
+        lastInvitationSentAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Lastinvitationsentat
+        machine:
+          default: false
+          title: Machine
+          type: boolean
+        name:
+          format: password
+          title: Name
+          type: string
+          writeOnly: true
+        org:
+          title: Org
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+          uniqueItems: true
+        roleIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Roleids
+          type: array
+        roles:
+          default: []
+          items:
+            type: string
+          title: Roles
+          type: array
+        social:
+          default: false
+          title: Social
+          type: boolean
+        teams:
+          default: []
+          items:
+            type: string
+          title: Teams
+          type: array
+        verified:
+          default: true
+          title: Verified
+          type: boolean
+      required:
+      - id
+      - name
+      - email
+      - org
+      title: User
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    TokenStatus:
+      enum:
+      - active
+      - expired
+      - revoked
+      title: TokenStatus
+      type: string
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    ProjectConfig:
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        packages:
+          default: []
+          description: Packages configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Packages
+          type: array
+        providers:
+          default: []
+          description: Providers available to the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigProvider'
+          title: Providers
+          type: array
+        scanners:
+          default: []
+          description: Guardrails configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Scanners
+          type: array
+      title: ProjectConfig
+      type: object
+    ProjectConfigProvider:
+      properties:
+        capabilities:
+          anyOf:
+          - items:
+              anyOf:
+              - $ref: '#/components/schemas/ProviderCapability'
+              - type: string
+            type: array
+            uniqueItems: true
+          - type: 'null'
+          title: Capabilities
+        default:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Default
+        enabled:
+          title: Enabled
+          type: boolean
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+      required:
+      - enabled
+      title: ProjectConfigProvider
+      type: object
+    Token:
+      properties:
+        expiresAt:
+          format: date-time
+          title: Expiresat
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        machine:
+          title: Machine
+          type: boolean
+        name:
+          title: Name
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        revoked:
+          title: Revoked
+          type: boolean
+        scope:
+          $ref: '#/components/schemas/TokenScope'
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/TokenStatus'
+          readOnly: true
+        userId:
+          title: Userid
+          type: string
+        value:
+          format: password
+          title: Value
+          type: string
+          writeOnly: true
+      required:
+      - id
+      - name
+      - value
+      - expiresAt
+      - machine
+      - userId
+      - revoked
+      - scope
+      - status
+      title: Token
+      type: object
+    TokenSearchSortBy:
+      enum:
+      - name
+      - expires_at
+      - status
+      - id
+      title: TokenSearchSortBy
+      type: string
+    ProviderCapability:
+      enum:
+      - chat
+      - red_team
+      - siem
+      - openai_chat
+      - openai_responses
+      - anthropic_messages
+      - google_generate_content
+      title: ProviderCapability
+      type: string
+    PostTokensBody:
+      properties:
+        expiresAt:
+          description: Datetime in the future when the api key will no longer be valid
+          format: date-time
+          title: Expiresat
+          type: string
+        name:
+          description: Name of the api token
+          title: Name
+          type: string
+      required:
+      - name
+      - expiresAt
+      title: PostTokensBody
+      type: object
+    ScanMode:
+      enum:
+      - block
+      - audit
+      - redact
+      title: ScanMode
+      type: string
+    Project:
+      properties:
+        adminCount:
+          default: 0
+          title: Admincount
+          type: integer
+        adminRoleId:
+          format: uuid
+          title: Adminroleid
+          type: string
+        agentSessionCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Agentsessioncount
+        botType:
+          anyOf:
+          - $ref: '#/components/schemas/ChatbotType'
+          - type: 'null'
+        chatbotId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Chatbotid
+        config:
+          $ref: '#/components/schemas/ProjectConfig'
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          title: Createdby
+          type: string
+        deploymentStatus:
+          $ref: '#/components/schemas/ProjectDeploymentStatus'
+          default: draft
+        friendlyId:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          description: The name can be used to identify the project instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
+          title: Friendlyid
+        id:
+          format: uuid
+          title: Id
+          type: string
+        memberCount:
+          default: 0
+          title: Membercount
+          type: integer
+        memberRoleId:
+          format: uuid
+          title: Memberroleid
+          type: string
+        name:
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        providerCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Providercount
+        scannerCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Scannercount
+        tokenCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Tokencount
+        type:
+          $ref: '#/components/schemas/ProjectType'
+        updatedAt:
+          format: date-time
+          title: Updatedat
+          type: string
+      required:
+      - id
+      - name
+      - type
+      - config
+      - createdAt
+      - createdBy
+      - updatedAt
+      - adminRoleId
+      - memberRoleId
+      - tokenCount
+      - providerCount
+      - scannerCount
+      title: Project
+      type: object
+    PostTokensResponse:
+      properties:
+        token:
+          $ref: '#/components/schemas/Token'
+          description: Newly created token, with its value visible.
+      required:
+      - token
+      title: PostTokensResponse
+      type: object
+    GetTokensResponse:
+      properties:
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+        projects:
+          default: []
+          items:
+            $ref: '#/components/schemas/Project'
+          title: Projects
+          type: array
+        tokens:
+          items:
+            $ref: '#/components/schemas/Token'
+          title: Tokens
+          type: array
+        users:
+          additionalProperties:
+            $ref: '#/components/schemas/User'
+          default: {}
+          title: Users
+          type: object
+      required:
+      - tokens
+      title: GetTokensResponse
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ChatbotType:
+      enum:
+      - teams
+      - slack
+      title: ChatbotType
+      type: string
+    ScannerDirection:
+      enum:
+      - both
+      - request
+      - response
+      title: ScannerDirection
+      type: string
+    PostTokensMachineBody:
+      properties:
+        expiresAt:
+          description: Datetime in the future when the api key will no longer be valid
+          format: date-time
+          title: Expiresat
+          type: string
+        machine:
+          const: true
+          description: Can not be set to False
+          title: Machine
+          type: boolean
+        name:
+          description: Name of the api token
+          title: Name
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: If an id of a user group is past in, will create machine token for that user group
+          title: Projectid
+      required:
+      - name
+      - expiresAt
+      - machine
+      title: PostTokensMachineBody
+      type: object
+    ProjectConfigScanner:
+      properties:
+        blocking:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Blocking
+        direction:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - const: ''
+            type: string
+          - type: 'null'
+          title: Direction
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+        flagMessage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Flagmessage
+        force:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Force
+        id:
+          format: uuid
+          title: Id
+          type: string
+        mode:
+          anyOf:
+          - $ref: '#/components/schemas/ScanMode'
+          - type: 'null'
+        version:
+          anyOf:
+          - format: uuid
+            type: string
+          - format: date-time
+            type: string
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          title: Version
+      required:
+      - id
+      title: ProjectConfigScanner
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

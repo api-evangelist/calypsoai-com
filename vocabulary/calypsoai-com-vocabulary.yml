@@ -1,0 +1,420 @@
+generated: '2026-10-20'
+method: derived
+generator: derive-vocabulary.py
+source: openapi/calypsoai-com-openapi.json
+vocabulary:
+  name: CalypsoAI Domain Vocabulary
+  description: 'Terms declared by CalypsoAI''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-20'
+  terms:
+  - term: APIRequestBlock
+    definition: 'Object declared by the contract with fields: awsAuth, body, headers, json, method, ociAuth, outputs, queryParams, timeout, type,
+      url.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/APIRequestBlock
+  - term: APIRetryBlock
+    definition: 'Object declared by the contract with fields: attempts, backoff, block, type, when.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/APIRetryBlock
+  - term: APIWorkflowBlock
+    definition: 'Object declared by the contract with fields: outputs, stages, type.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/APIWorkflowBlock
+  - term: AWSAuth
+    definition: 'Object declared by the contract with fields: accessKey, region, secretKey, service, token.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AWSAuth
+  - term: AgentFingerprintStatus
+    definition: 'Enumeration declared by the contract with values: in_progress, failed, completed.'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AgentFingerprintStatus
+  - term: AgentFingerprintSummary
+    definition: 'Object declared by the contract with fields: agentCount, errors, status, toolCount, updatedAt.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AgentFingerprintSummary
+  - term: AgentSession
+    definition: 'Object declared by the contract with fields: fingerprints, firstPromptAt, id, lastPromptAt, peakOutcome, projectId, sessionId.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AgentSession
+  - term: AgentSessionCreatedEvent
+    definition: 'Object declared by the contract with fields: agentSessionId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AgentSessionCreatedEvent
+  - term: AgentSessionFingerprintsRequestedEvent
+    definition: 'Object declared by the contract with fields: agentSessionId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AgentSessionFingerprintsRequestedEvent
+  - term: AgentSessionSortBy
+    definition: 'Enumeration declared by the contract with values: updated_at, created_at.'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AgentSessionSortBy
+  - term: ApiTokenCreatedEvent
+    definition: 'Object declared by the contract with fields: createdAt, data, id, requestId, tokenId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/ApiTokenCreatedEvent
+  - term: ApiTokenRevokedEvent
+    definition: 'Object declared by the contract with fields: createdAt, data, id, requestId, tokenId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/ApiTokenRevokedEvent
+  - term: AttackErrorSummary
+    definition: 'Object declared by the contract with fields: message, type.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackErrorSummary
+  - term: AttackRun
+    definition: 'Object declared by the contract with fields: attack, errorCount, events, id, progress, providerId, providerName, results, total.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackRun
+  - term: AttackRunCancelledEvent
+    definition: 'Object declared by the contract with fields: createdAt, event.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackRunCancelledEvent
+  - term: AttackRunCancellingEvent
+    definition: 'Object declared by the contract with fields: createdAt, event.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackRunCancellingEvent
+  - term: AttackRunCompletedEvent
+    definition: 'Object declared by the contract with fields: createdAt, event.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackRunCompletedEvent
+  - term: AttackRunFailedEvent
+    definition: 'Object declared by the contract with fields: createdAt, event, message.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackRunFailedEvent
+  - term: AttackRunQueuedEvent
+    definition: 'Object declared by the contract with fields: createdAt, event.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackRunQueuedEvent
+  - term: AttackRunResult
+    definition: 'Object declared by the contract with fields: attackRunId, campaignRunId, conversation, conversationSteps, converter, error, errorSummary,
+      id, intent, intentCategory, intentType, providerId. (5 more)'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackRunResult
+  - term: AttackRunScheduleErrorEvent
+    definition: 'Object declared by the contract with fields: createdAt, event.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackRunScheduleErrorEvent
+  - term: AttackRunScheduledEvent
+    definition: 'Object declared by the contract with fields: createdAt, event, scheduledStartTime.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackRunScheduledEvent
+  - term: AttackRunStartedEvent
+    definition: 'Object declared by the contract with fields: createdAt, event.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackRunStartedEvent
+  - term: AttackTechnique
+    definition: 'Enumeration declared by the contract with values: static_content, dynamic_content, operational, custom.'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AttackTechnique
+  - term: AuditEventType
+    definition: 'Enumeration declared by the contract with values: api-token-created, api-token-revoked, agent-session-created, agent-session-fingerprints-requested,
+      branding-created, branding-updated, campaign-created, campaign-updated, campaign-deleted, campaign-run-created, campaign-run-updated, campaign-run-access-updated.
+      (95 more)'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/AuditEventType
+  - term: Body_post_files
+    definition: 'Object declared by the contract with fields: file, purposes.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/Body_post_files
+  - term: Body_post_scanners_import
+    definition: 'Object declared by the contract with fields: file, ids.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/Body_post_scanners_import
+  - term: BrandingConfig
+    definition: 'Object declared by the contract with fields: disablePoweredByCai, hasCustomLogo, productName, supportEmail.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/BrandingConfig
+  - term: BrandingCreatedEvent
+    definition: 'Object declared by the contract with fields: createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/BrandingCreatedEvent
+  - term: BrandingUpdatedEvent
+    definition: 'Object declared by the contract with fields: createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/BrandingUpdatedEvent
+  - term: Campaign
+    definition: 'Object declared by the contract with fields: attacks, createdAt, createdBy, description, id, lastRun, lastRunAt, name, runCount,
+      vendored.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/Campaign
+  - term: CampaignAttack
+    definition: 'Object declared by the contract with fields: attack, id.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignAttack
+  - term: CampaignCreatedEvent
+    definition: 'Object declared by the contract with fields: campaignId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignCreatedEvent
+  - term: CampaignDeletedEvent
+    definition: 'Object declared by the contract with fields: campaignId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignDeletedEvent
+  - term: CampaignRun
+    definition: 'Object declared by the contract with fields: CASIScore, actionsCount, attackRuns, averagePerformance, campaignId, casiScorePositionDelta,
+      completedAt, costOfSecurity, createdAt, createdBy, id, name. (16 more)'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRun
+  - term: CampaignRunAccessUpdatedEvent
+    definition: 'Object declared by the contract with fields: campaignRunId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunAccessUpdatedEvent
+  - term: CampaignRunCreatedEvent
+    definition: 'Object declared by the contract with fields: campaignId, campaignRunId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunCreatedEvent
+  - term: CampaignRunDeletedEvent
+    definition: 'Object declared by the contract with fields: campaignRunId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunDeletedEvent
+  - term: CampaignRunErrorType
+    definition: 'Enumeration declared by the contract with values: api_token, permission, not_found, validation, rate_limit, client_error, server_error,
+      timeout, service_unavailable, unknown, failure_limit_reached, bad_provider_configuration.'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunErrorType
+  - term: CampaignRunProjectAccess
+    definition: 'Object declared by the contract with fields: global, projectIds.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunProjectAccess
+  - term: CampaignRunProviderErrors
+    definition: 'Object declared by the contract with fields: errorCount, providerFailed, providerName, totalPrompts.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunProviderErrors
+  - term: CampaignRunRemediation
+    definition: 'Object declared by the contract with fields: available, id.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunRemediation
+  - term: CampaignRunRemediationSettings
+    definition: 'Object declared by the contract with fields: autorun.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunRemediationSettings
+  - term: CampaignRunRetriedEvent
+    definition: 'Object declared by the contract with fields: campaignRunId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunRetriedEvent
+  - term: CampaignRunScoreRating
+    definition: 'Enumeration declared by the contract with values: critical, warning, good, ideal, none.'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunScoreRating
+  - term: CampaignRunSearchSortBy
+    definition: 'Enumeration declared by the contract with values: name, created_at, start_at, score, average_performance, status, model.'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunSearchSortBy
+  - term: CampaignRunStatus
+    definition: 'Enumeration declared by the contract with values: scheduled, in_progress, complete, error, cancelling, cancelled, schedule_error.'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunStatus
+  - term: CampaignRunUpdatedEvent
+    definition: 'Object declared by the contract with fields: campaignRunId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignRunUpdatedEvent
+  - term: CampaignSchedule
+    definition: 'Object declared by the contract with fields: campaignId, count, createdAt, endAt, error, frequency, id, interval, name, providerIds,
+      remediationSettings, startAt.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignSchedule
+  - term: CampaignScheduleCreatedEvent
+    definition: 'Object declared by the contract with fields: campaignScheduleId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignScheduleCreatedEvent
+  - term: CampaignScheduleDeletedEvent
+    definition: 'Object declared by the contract with fields: campaignScheduleId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignScheduleDeletedEvent
+  - term: CampaignScheduleFrequency
+    definition: 'Enumeration declared by the contract with values: weeks, days.'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignScheduleFrequency
+  - term: CampaignScheduleUpdatedEvent
+    definition: 'Object declared by the contract with fields: campaignScheduleId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignScheduleUpdatedEvent
+  - term: CampaignSortBy
+    definition: 'Enumeration declared by the contract with values: name, created_at, last_run, num_of_runs.'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignSortBy
+  - term: CampaignUpdatedEvent
+    definition: 'Object declared by the contract with fields: campaignId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CampaignUpdatedEvent
+  - term: Chat
+    definition: 'Object declared by the contract with fields: access, createdAt, id, name, projectId, promptId, promptTemplateId, starred, updatedAt,
+      userId.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/Chat
+  - term: ChatAccess
+    definition: 'Object declared by the contract with fields: org, public, users.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/ChatAccess
+  - term: ChatbotCreatedEvent
+    definition: 'Object declared by the contract with fields: chatbotId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/ChatbotCreatedEvent
+  - term: ChatbotGroupCreatedEvent
+    definition: 'Object declared by the contract with fields: chatbotGroupId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/ChatbotGroupCreatedEvent
+  - term: ChatbotGroupUpdatedEvent
+    definition: 'Object declared by the contract with fields: chatbotGroupId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/ChatbotGroupUpdatedEvent
+  - term: ChatbotType
+    definition: 'Enumeration declared by the contract with values: teams, slack.'
+    tags:
+    - Enumeration
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/ChatbotType
+  - term: ChatbotUpdatedEvent
+    definition: 'Object declared by the contract with fields: chatbotId, createdAt, data, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/ChatbotUpdatedEvent
+  - term: CustomAttack
+    definition: 'Object declared by the contract with fields: fileId, name, severity, technique.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CustomAttack
+  - term: CustomIntentGenerationInput
+    definition: 'Object declared by the contract with fields: intent, type.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CustomIntentGenerationInput
+  - term: CustomIntentGenerationOutput
+    definition: 'Object declared by the contract with fields: intent.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/CustomIntentGenerationOutput
+  - term: DSAttackResult
+    definition: 'Object declared by the contract with fields: conversation, conversationSteps, converter, error, errorSummary, intent, intentCategory,
+      intentType, refusalCheck, severity, vulnerable.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/DSAttackResult
+  - term: Dataset
+    definition: 'Object declared by the contract with fields: createdAt, createdBy, fileId, filename, id, name, scannerPackageId.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/Dataset
+  - term: DatasetRun
+    definition: 'Object declared by the contract with fields: datasetId, fileId, id, result, scannerId, scannerPackageId, scannerVersionId, status.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/DatasetRun
+  - term: DatasetScores
+    definition: 'Object declared by the contract with fields: accuracy, f1Score, falseNegative, falsePositive, trueNegative, truePositive.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/DatasetScores
+  - term: DeleteAuthRoleBody
+    definition: 'Object declared by the contract with fields: reassignToRoleId.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/DeleteAuthRoleBody
+  - term: DeleteAuthRolePermissionsBody
+    definition: 'Object declared by the contract with fields: permissions.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/DeleteAuthRolePermissionsBody
+  - term: DeleteScannerPackageBody
+    definition: 'Object declared by the contract with fields: deleteScanners.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/DeleteScannerPackageBody
+  - term: DuplicateScannerRequest
+    definition: 'Object declared by the contract with fields: duplicate.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/DuplicateScannerRequest
+  - term: DynamicMultiTurnContentAttack
+    definition: 'Object declared by the contract with fields: converters, intents, multiTurn, severity, technique, vector.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/DynamicMultiTurnContentAttack
+  - term: DynamicSingleTurnContentAttack
+    definition: 'Object declared by the contract with fields: converters, intents, severity, technique, vector.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/DynamicSingleTurnContentAttack
+  - term: EntitlementGroupCreatedEvent
+    definition: 'Object declared by the contract with fields: createdAt, data, entitlementGroupId, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/EntitlementGroupCreatedEvent
+  - term: EntitlementGroupDeletedEvent
+    definition: 'Object declared by the contract with fields: createdAt, data, entitlementGroupId, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/EntitlementGroupDeletedEvent
+  - term: EntitlementGroupUpdatedEvent
+    definition: 'Object declared by the contract with fields: createdAt, data, entitlementGroupId, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/EntitlementGroupUpdatedEvent
+  - term: EntitlementOverrideCreatedEvent
+    definition: 'Object declared by the contract with fields: createdAt, data, entitlementId, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/EntitlementOverrideCreatedEvent
+  - term: EntitlementOverrideDeletedEvent
+    definition: 'Object declared by the contract with fields: createdAt, data, entitlementId, id, requestId, type, user.'
+    tags:
+    - Object
+    source: openapi/calypsoai-com-openapi.json#/components/schemas/EntitlementOverrideDeletedEvent

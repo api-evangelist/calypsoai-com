@@ -1,0 +1,4782 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Audit API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Audit
+paths:
+  /backend/v1/audit:
+    get:
+      description: Retrieves a paginated list of events that detail the configuration history of the app.
+      operationId: get_audit
+      parameters:
+      - description: "\n                Selects page for paginated results. Pass in the next or prev attribute in the response.\n            "
+        in: query
+        name: cursor
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: "\n                Selects page for paginated results. Pass in the next or prev attribute in the response.\n            "
+          title: Cursor
+      - description: Only return results that match the given text.
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Only return results that match the given text.
+          title: Search
+      - description: Limits the amount of results.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Limits the amount of results.
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - description: Whether results should be sorted in ascending order.
+        in: query
+        name: ascending
+        required: false
+        schema:
+          default: false
+          description: Whether results should be sorted in ascending order.
+          title: Ascending
+          type: boolean
+      - description: Only return results from before this timestamp.
+        in: query
+        name: before
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Only return results from before this timestamp.
+          title: Before
+      - description: Only return results from after this timestamp.
+        in: query
+        name: after
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Only return results from after this timestamp.
+          title: After
+      - description: Only return specific types of audit events.
+        in: query
+        name: type
+        required: false
+        schema:
+          default: []
+          description: Only return specific types of audit events.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/AuditEventType'
+            - type: string
+          title: Type
+          type: array
+      - description: Only return audit events created by specified user.
+        in: query
+        name: userId
+        required: false
+        schema:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: Only return audit events created by specified user.
+          title: Userid
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAuditResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get audit events
+      tags:
+      - Audit
+  /backend/v1/audit/{eventId}:
+    get:
+      description: Retrieves an event by its ID.
+      operationId: get_audit_eventId
+      parameters:
+      - in: path
+        name: eventId
+        required: true
+        schema:
+          format: uuid
+          title: Eventid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAuditEventResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get event
+      tags:
+      - Audit
+components:
+  schemas:
+    OAuthClientCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        oauthClientId:
+          title: Oauthclientid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: oauth_client_created
+          default: oauth_client_created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - oauthClientId
+      title: OAuthClientCreatedEvent
+      type: object
+    OrganizationUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        orgId:
+          title: Orgid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: organization-updated
+          default: organization-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - orgId
+      title: OrganizationUpdatedEvent
+      type: object
+    RoleUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        roleId:
+          format: uuid
+          title: Roleid
+          type: string
+        type:
+          const: role-updated
+          default: role-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - roleId
+      title: RoleUpdatedEvent
+      type: object
+    GetAuditEventResponse:
+      properties:
+        event:
+          $ref: '#/components/schemas/AuditEvent'
+          description: Data for requested event
+      required:
+      - event
+      title: GetAuditEventResponse
+      type: object
+    User:
+      properties:
+        admin:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Admin
+        blocked:
+          default: false
+          title: Blocked
+          type: boolean
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        email:
+          format: password
+          title: Email
+          type: string
+          writeOnly: true
+        id:
+          title: Id
+          type: string
+        lastInvitationSentAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Lastinvitationsentat
+        machine:
+          default: false
+          title: Machine
+          type: boolean
+        name:
+          format: password
+          title: Name
+          type: string
+          writeOnly: true
+        org:
+          title: Org
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+          uniqueItems: true
+        roleIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Roleids
+          type: array
+        roles:
+          default: []
+          items:
+            type: string
+          title: Roles
+          type: array
+        social:
+          default: false
+          title: Social
+          type: boolean
+        teams:
+          default: []
+          items:
+            type: string
+          title: Teams
+          type: array
+        verified:
+          default: true
+          title: Verified
+          type: boolean
+      required:
+      - id
+      - name
+      - email
+      - org
+      title: User
+      type: object
+    ChatbotCreatedEvent:
+      properties:
+        chatbotId:
+          format: uuid
+          title: Chatbotid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: chatbot-created
+          default: chatbot-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - chatbotId
+      title: ChatbotCreatedEvent
+      type: object
+    UserCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: user-created
+          default: user-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        userId:
+          title: Userid
+          type: string
+      required:
+      - user
+      - userId
+      title: UserCreatedEvent
+      type: object
+    ScannerUndeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: scanner-undeleted
+          default: scanner-undeleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ScannerUndeletedEvent
+      type: object
+    RemediationCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        remediationId:
+          format: uuid
+          title: Remediationid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: remediation-created
+          default: remediation-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - remediationId
+      title: RemediationCreatedEvent
+      type: object
+    ScannerPackageDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerPackageId:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+        type:
+          const: scanner-package-deleted
+          default: scanner-package-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerPackageId
+      title: ScannerPackageDeletedEvent
+      type: object
+    EntitlementGroupUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        entitlementGroupId:
+          format: uuid
+          title: Entitlementgroupid
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: entitlement-group-updated
+          default: entitlement-group-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - entitlementGroupId
+      title: EntitlementGroupUpdatedEvent
+      type: object
+    CampaignDeletedEvent:
+      properties:
+        campaignId:
+          format: uuid
+          title: Campaignid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-deleted
+          default: campaign-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - campaignId
+      title: CampaignDeletedEvent
+      type: object
+    ProjectScannerPackageAddedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerPackageId:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+        type:
+          const: project-scanner-package-added
+          default: project-scanner-package-added
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerPackageId
+      title: ProjectScannerPackageAddedEvent
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    ScannerDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: scanner-deleted
+          default: scanner-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ScannerDeletedEvent
+      type: object
+    ScannerDisabledEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: scanner-disabled
+          default: scanner-disabled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ScannerDisabledEvent
+      type: object
+    RemediationDeployedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        remediationId:
+          format: uuid
+          title: Remediationid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: remediation-deployed
+          default: remediation-deployed
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - remediationId
+      title: RemediationDeployedEvent
+      type: object
+    TaskCanceledEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        taskId:
+          format: uuid
+          title: Taskid
+          type: string
+        type:
+          const: task-canceled
+          default: task-canceled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - taskId
+      title: TaskCanceledEvent
+      type: object
+    OrganizationPromptRecordingDisabled:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        orgId:
+          title: Orgid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: organization-prompt-recording-disabled
+          default: organization-prompt-recording-disabled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - orgId
+      title: OrganizationPromptRecordingDisabled
+      type: object
+    ProjectScannerAddedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: project-scanner-added
+          default: project-scanner-added
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ProjectScannerAddedEvent
+      type: object
+    SecretCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        secretId:
+          format: uuid
+          title: Secretid
+          type: string
+        type:
+          const: secret-created
+          default: secret-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - secretId
+      title: SecretCreatedEvent
+      type: object
+    OrganizationCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        orgId:
+          title: Orgid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: organization-created
+          default: organization-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - orgId
+      title: OrganizationCreatedEvent
+      type: object
+    CampaignCreatedEvent:
+      properties:
+        campaignId:
+          format: uuid
+          title: Campaignid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-created
+          default: campaign-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - campaignId
+      title: CampaignCreatedEvent
+      type: object
+    RemediationRejectedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        remediationId:
+          format: uuid
+          title: Remediationid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: remediation-rejected
+          default: remediation-rejected
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - remediationId
+      title: RemediationRejectedEvent
+      type: object
+    RolePermissionsRemovedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        roleId:
+          format: uuid
+          title: Roleid
+          type: string
+        type:
+          const: role-permissions-removed
+          default: role-permissions-removed
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - roleId
+      title: RolePermissionsRemovedEvent
+      type: object
+    AuditEvent:
+      oneOf:
+      - discriminator:
+          mapping:
+            agent-session-created: '#/components/schemas/AgentSessionCreatedEvent'
+            agent-session-fingerprints-requested: '#/components/schemas/AgentSessionFingerprintsRequestedEvent'
+            api-token-created: '#/components/schemas/ApiTokenCreatedEvent'
+            api-token-revoked: '#/components/schemas/ApiTokenRevokedEvent'
+            branding-created: '#/components/schemas/BrandingCreatedEvent'
+            branding-updated: '#/components/schemas/BrandingUpdatedEvent'
+            campaign-created: '#/components/schemas/CampaignCreatedEvent'
+            campaign-deleted: '#/components/schemas/CampaignDeletedEvent'
+            campaign-run-access-updated: '#/components/schemas/CampaignRunAccessUpdatedEvent'
+            campaign-run-created: '#/components/schemas/CampaignRunCreatedEvent'
+            campaign-run-deleted: '#/components/schemas/CampaignRunDeletedEvent'
+            campaign-run-retried: '#/components/schemas/CampaignRunRetriedEvent'
+            campaign-run-updated: '#/components/schemas/CampaignRunUpdatedEvent'
+            campaign-schedule-created: '#/components/schemas/CampaignScheduleCreatedEvent'
+            campaign-schedule-deleted: '#/components/schemas/CampaignScheduleDeletedEvent'
+            campaign-schedule-updated: '#/components/schemas/CampaignScheduleUpdatedEvent'
+            campaign-updated: '#/components/schemas/CampaignUpdatedEvent'
+            chatbot-created: '#/components/schemas/ChatbotCreatedEvent'
+            chatbot-project-created: '#/components/schemas/ChatbotGroupCreatedEvent'
+            chatbot-project-updated: '#/components/schemas/ChatbotGroupUpdatedEvent'
+            chatbot-updated: '#/components/schemas/ChatbotUpdatedEvent'
+            entitlement-group-created: '#/components/schemas/EntitlementGroupCreatedEvent'
+            entitlement-group-deleted: '#/components/schemas/EntitlementGroupDeletedEvent'
+            entitlement-group-updated: '#/components/schemas/EntitlementGroupUpdatedEvent'
+            entitlement-override-created: '#/components/schemas/EntitlementOverrideCreatedEvent'
+            entitlement-override-deleted: '#/components/schemas/EntitlementOverrideDeletedEvent'
+            entitlement-usage-created: '#/components/schemas/EntitlementUsageCreatedEvent'
+            entitlement-usage-deleted: '#/components/schemas/EntitlementUsageDeletedEvent'
+            file-created: '#/components/schemas/FileCreatedEvent'
+            license-created: '#/components/schemas/LicenseCreatedEvent'
+            oauth_client_created: '#/components/schemas/OAuthClientCreatedEvent'
+            oauth_client_deleted: '#/components/schemas/OAuthClientDeletedEvent'
+            oauth_client_updated: '#/components/schemas/OAuthClientUpdatedEvent'
+            organization-created: '#/components/schemas/OrganizationCreatedEvent'
+            organization-data-deleted: '#/components/schemas/OrganizationDataDeleted'
+            organization-default-role-updated: '#/components/schemas/OrganizationDefaultRoleUpdatedEvent'
+            organization-disabled: '#/components/schemas/OrganizationDisabledEvent'
+            organization-enabled: '#/components/schemas/OrganizationEnabledEvent'
+            organization-entitlements-updated: '#/components/schemas/OrganizationEntitlementsUpdatedEvent'
+            organization-prompt-recording-disabled: '#/components/schemas/OrganizationPromptRecordingDisabled'
+            organization-prompt-recording-enabled: '#/components/schemas/OrganizationPromptRecordingEnabled'
+            organization-updated: '#/components/schemas/OrganizationUpdatedEvent'
+            project-created: '#/components/schemas/ProjectCreatedEvent'
+            project-default-provider-updated: '#/components/schemas/ProjectDefaultProviderUpdatedEvent'
+            project-deleted: '#/components/schemas/ProjectDeletedEvent'
+            project-member-added: '#/components/schemas/ProjectMemberAddedEvent'
+            project-member-removed: '#/components/schemas/ProjectMemberRemovedEvent'
+            project-provider-added: '#/components/schemas/ProjectProviderAddedEvent'
+            project-provider-removed: '#/components/schemas/ProjectProviderRemovedEvent'
+            project-scanner-added: '#/components/schemas/ProjectScannerAddedEvent'
+            project-scanner-package-added: '#/components/schemas/ProjectScannerPackageAddedEvent'
+            project-scanner-package-removed: '#/components/schemas/ProjectScannerPackageRemovedEvent'
+            project-scanner-removed: '#/components/schemas/ProjectScannerRemovedEvent'
+            project-undeleted: '#/components/schemas/ProjectUndeletedEvent'
+            project-updated: '#/components/schemas/ProjectUpdatedEvent'
+            provider-availability-updated: '#/components/schemas/ProviderAvailabilityUpdatedEvent'
+            provider-created: '#/components/schemas/ProviderCreatedEvent'
+            provider-deleted: '#/components/schemas/ProviderDeletedEvent'
+            provider-disabled: '#/components/schemas/ProviderDisabledEvent'
+            provider-enabled: '#/components/schemas/ProviderEnabledEvent'
+            provider-test: '#/components/schemas/ProviderTestEvent'
+            provider-undeleted: '#/components/schemas/ProviderUndeletedEvent'
+            provider-updated: '#/components/schemas/ProviderUpdatedEvent'
+            remediation-created: '#/components/schemas/RemediationCreatedEvent'
+            remediation-deleted: '#/components/schemas/RemediationDeletedEvent'
+            remediation-deployed: '#/components/schemas/RemediationDeployedEvent'
+            remediation-rejected: '#/components/schemas/RemediationRejectedEvent'
+            role-created: '#/components/schemas/RoleCreatedEvent'
+            role-deleted: '#/components/schemas/RoleDeletedEvent'
+            role-permissions-added: '#/components/schemas/RolePermissionsAddedEvent'
+            role-permissions-removed: '#/components/schemas/RolePermissionsRemovedEvent'
+            role-updated: '#/components/schemas/RoleUpdatedEvent'
+            scanner-availability-updated: '#/components/schemas/ScannerAvailabilityUpdatedEvent'
+            scanner-created: '#/components/schemas/ScannerCreatedEvent'
+            scanner-deleted: '#/components/schemas/ScannerDeletedEvent'
+            scanner-disabled: '#/components/schemas/ScannerDisabledEvent'
+            scanner-enabled: '#/components/schemas/ScannerEnabledEvent'
+            scanner-package-availability-updated: '#/components/schemas/ScannerPackageAvailabilityUpdatedEvent'
+            scanner-package-created: '#/components/schemas/ScannerPackageCreatedEvent'
+            scanner-package-deleted: '#/components/schemas/ScannerPackageDeletedEvent'
+            scanner-package-disabled: '#/components/schemas/ScannerPackageDisabledEvent'
+            scanner-package-enabled: '#/components/schemas/ScannerPackageEnabledEvent'
+            scanner-package-undeleted: '#/components/schemas/ScannerPackageUndeletedEvent'
+            scanner-package-updated: '#/components/schemas/ScannerPackageUpdatedEvent'
+            scanner-published: '#/components/schemas/ScannerPublishedEvent'
+            scanner-template-created: '#/components/schemas/ScannerTemplateCreatedEvent'
+            scanner-template-updated: '#/components/schemas/ScannerTemplateUpdatedEvent'
+            scanner-undeleted: '#/components/schemas/ScannerUndeletedEvent'
+            scanner-unpublished: '#/components/schemas/ScannerUnpublishedEvent'
+            scanner-updated: '#/components/schemas/ScannerUpdatedEvent'
+            scanner-version-published: '#/components/schemas/ScannerVersionPublishedEvent'
+            secret-created: '#/components/schemas/SecretCreatedEvent'
+            secret-deleted: '#/components/schemas/SecretDeletedEvent'
+            secret-updated: '#/components/schemas/SecretUpdatedEvent'
+            task-canceled: '#/components/schemas/TaskCanceledEvent'
+            task-created: '#/components/schemas/TaskCreatedEvent'
+            task-updated: '#/components/schemas/TaskUpdatedEvent'
+            user-auth-method-deleted: '#/components/schemas/UserAuthenticationMethodsDeleted'
+            user-blocked: '#/components/schemas/UserBlockedEvent'
+            user-created: '#/components/schemas/UserCreatedEvent'
+            user-deleted: '#/components/schemas/UserDeletedEvent'
+            user-role-granted: '#/components/schemas/UserRoleAssignedEvent'
+            user-role-retracted: '#/components/schemas/UserRoleRetractedEvent'
+            user-roles-updated: '#/components/schemas/UserRolesUpdatedEvent'
+            user-unblocked: '#/components/schemas/UserUnblockedEvent'
+            user-updated: '#/components/schemas/UserUpdatedEvent'
+            user-verified: '#/components/schemas/UserVerifiedEvent'
+          propertyName: type
+        oneOf:
+        - $ref: '#/components/schemas/AgentSessionCreatedEvent'
+        - $ref: '#/components/schemas/AgentSessionFingerprintsRequestedEvent'
+        - $ref: '#/components/schemas/ApiTokenCreatedEvent'
+        - $ref: '#/components/schemas/ApiTokenRevokedEvent'
+        - $ref: '#/components/schemas/BrandingCreatedEvent'
+        - $ref: '#/components/schemas/BrandingUpdatedEvent'
+        - $ref: '#/components/schemas/CampaignCreatedEvent'
+        - $ref: '#/components/schemas/CampaignDeletedEvent'
+        - $ref: '#/components/schemas/CampaignRunAccessUpdatedEvent'
+        - $ref: '#/components/schemas/CampaignRunCreatedEvent'
+        - $ref: '#/components/schemas/CampaignRunDeletedEvent'
+        - $ref: '#/components/schemas/CampaignRunRetriedEvent'
+        - $ref: '#/components/schemas/CampaignRunUpdatedEvent'
+        - $ref: '#/components/schemas/CampaignScheduleCreatedEvent'
+        - $ref: '#/components/schemas/CampaignScheduleDeletedEvent'
+        - $ref: '#/components/schemas/CampaignScheduleUpdatedEvent'
+        - $ref: '#/components/schemas/CampaignUpdatedEvent'
+        - $ref: '#/components/schemas/ChatbotCreatedEvent'
+        - $ref: '#/components/schemas/ChatbotGroupCreatedEvent'
+        - $ref: '#/components/schemas/ChatbotGroupUpdatedEvent'
+        - $ref: '#/components/schemas/ChatbotUpdatedEvent'
+        - $ref: '#/components/schemas/EntitlementGroupCreatedEvent'
+        - $ref: '#/components/schemas/EntitlementGroupDeletedEvent'
+        - $ref: '#/components/schemas/EntitlementGroupUpdatedEvent'
+        - $ref: '#/components/schemas/EntitlementOverrideCreatedEvent'
+        - $ref: '#/components/schemas/EntitlementOverrideDeletedEvent'
+        - $ref: '#/components/schemas/EntitlementUsageCreatedEvent'
+        - $ref: '#/components/schemas/EntitlementUsageDeletedEvent'
+        - $ref: '#/components/schemas/FileCreatedEvent'
+        - $ref: '#/components/schemas/LicenseCreatedEvent'
+        - $ref: '#/components/schemas/OAuthClientCreatedEvent'
+        - $ref: '#/components/schemas/OAuthClientDeletedEvent'
+        - $ref: '#/components/schemas/OAuthClientUpdatedEvent'
+        - $ref: '#/components/schemas/OrganizationCreatedEvent'
+        - $ref: '#/components/schemas/OrganizationDataDeleted'
+        - $ref: '#/components/schemas/OrganizationDefaultRoleUpdatedEvent'
+        - $ref: '#/components/schemas/OrganizationDisabledEvent'
+        - $ref: '#/components/schemas/OrganizationEnabledEvent'
+        - $ref: '#/components/schemas/OrganizationEntitlementsUpdatedEvent'
+        - $ref: '#/components/schemas/OrganizationPromptRecordingDisabled'
+        - $ref: '#/components/schemas/OrganizationPromptRecordingEnabled'
+        - $ref: '#/components/schemas/OrganizationUpdatedEvent'
+        - $ref: '#/components/schemas/ProjectCreatedEvent'
+        - $ref: '#/components/schemas/ProjectDefaultProviderUpdatedEvent'
+        - $ref: '#/components/schemas/ProjectDeletedEvent'
+        - $ref: '#/components/schemas/ProjectMemberAddedEvent'
+        - $ref: '#/components/schemas/ProjectMemberRemovedEvent'
+        - $ref: '#/components/schemas/ProjectProviderAddedEvent'
+        - $ref: '#/components/schemas/ProjectProviderRemovedEvent'
+        - $ref: '#/components/schemas/ProjectScannerAddedEvent'
+        - $ref: '#/components/schemas/ProjectScannerPackageAddedEvent'
+        - $ref: '#/components/schemas/ProjectScannerPackageRemovedEvent'
+        - $ref: '#/components/schemas/ProjectScannerRemovedEvent'
+        - $ref: '#/components/schemas/ProjectUndeletedEvent'
+        - $ref: '#/components/schemas/ProjectUpdatedEvent'
+        - $ref: '#/components/schemas/ProviderAvailabilityUpdatedEvent'
+        - $ref: '#/components/schemas/ProviderCreatedEvent'
+        - $ref: '#/components/schemas/ProviderDeletedEvent'
+        - $ref: '#/components/schemas/ProviderDisabledEvent'
+        - $ref: '#/components/schemas/ProviderEnabledEvent'
+        - $ref: '#/components/schemas/ProviderTestEvent'
+        - $ref: '#/components/schemas/ProviderUndeletedEvent'
+        - $ref: '#/components/schemas/ProviderUpdatedEvent'
+        - $ref: '#/components/schemas/RemediationCreatedEvent'
+        - $ref: '#/components/schemas/RemediationDeletedEvent'
+        - $ref: '#/components/schemas/RemediationDeployedEvent'
+        - $ref: '#/components/schemas/RemediationRejectedEvent'
+        - $ref: '#/components/schemas/RoleCreatedEvent'
+        - $ref: '#/components/schemas/RoleDeletedEvent'
+        - $ref: '#/components/schemas/RolePermissionsAddedEvent'
+        - $ref: '#/components/schemas/RolePermissionsRemovedEvent'
+        - $ref: '#/components/schemas/RoleUpdatedEvent'
+        - $ref: '#/components/schemas/ScannerAvailabilityUpdatedEvent'
+        - $ref: '#/components/schemas/ScannerCreatedEvent'
+        - $ref: '#/components/schemas/ScannerDeletedEvent'
+        - $ref: '#/components/schemas/ScannerDisabledEvent'
+        - $ref: '#/components/schemas/ScannerEnabledEvent'
+        - $ref: '#/components/schemas/ScannerPackageAvailabilityUpdatedEvent'
+        - $ref: '#/components/schemas/ScannerPackageCreatedEvent'
+        - $ref: '#/components/schemas/ScannerPackageDeletedEvent'
+        - $ref: '#/components/schemas/ScannerPackageDisabledEvent'
+        - $ref: '#/components/schemas/ScannerPackageEnabledEvent'
+        - $ref: '#/components/schemas/ScannerPackageUndeletedEvent'
+        - $ref: '#/components/schemas/ScannerPackageUpdatedEvent'
+        - $ref: '#/components/schemas/ScannerPublishedEvent'
+        - $ref: '#/components/schemas/ScannerTemplateCreatedEvent'
+        - $ref: '#/components/schemas/ScannerTemplateUpdatedEvent'
+        - $ref: '#/components/schemas/ScannerUndeletedEvent'
+        - $ref: '#/components/schemas/ScannerUnpublishedEvent'
+        - $ref: '#/components/schemas/ScannerUpdatedEvent'
+        - $ref: '#/components/schemas/ScannerVersionPublishedEvent'
+        - $ref: '#/components/schemas/SecretCreatedEvent'
+        - $ref: '#/components/schemas/SecretDeletedEvent'
+        - $ref: '#/components/schemas/SecretUpdatedEvent'
+        - $ref: '#/components/schemas/TaskCanceledEvent'
+        - $ref: '#/components/schemas/TaskCreatedEvent'
+        - $ref: '#/components/schemas/TaskUpdatedEvent'
+        - $ref: '#/components/schemas/UserAuthenticationMethodsDeleted'
+        - $ref: '#/components/schemas/UserBlockedEvent'
+        - $ref: '#/components/schemas/UserCreatedEvent'
+        - $ref: '#/components/schemas/UserDeletedEvent'
+        - $ref: '#/components/schemas/UserRoleAssignedEvent'
+        - $ref: '#/components/schemas/UserRoleRetractedEvent'
+        - $ref: '#/components/schemas/UserRolesUpdatedEvent'
+        - $ref: '#/components/schemas/UserUnblockedEvent'
+        - $ref: '#/components/schemas/UserUpdatedEvent'
+        - $ref: '#/components/schemas/UserVerifiedEvent'
+      - $ref: '#/components/schemas/LegacyAuditEvent'
+    ScannerEnabledEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: scanner-enabled
+          default: scanner-enabled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ScannerEnabledEvent
+      type: object
+    ProviderDisabledEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: provider-disabled
+          default: provider-disabled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - providerId
+      title: ProviderDisabledEvent
+      type: object
+    CampaignRunRetriedEvent:
+      properties:
+        campaignRunId:
+          format: uuid
+          title: Campaignrunid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-run-retried
+          default: campaign-run-retried
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - campaignRunId
+      title: CampaignRunRetriedEvent
+      type: object
+    LicenseCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: license-created
+          default: license-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      title: LicenseCreatedEvent
+      type: object
+    ProjectMemberRemovedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          format: uuid
+          title: Projectid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: project-member-removed
+          default: project-member-removed
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - projectId
+      title: ProjectMemberRemovedEvent
+      type: object
+    ProjectScannerRemovedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: project-scanner-removed
+          default: project-scanner-removed
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ProjectScannerRemovedEvent
+      type: object
+    ProviderEnabledEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: provider-enabled
+          default: provider-enabled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - providerId
+      title: ProviderEnabledEvent
+      type: object
+    ScannerPackageUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerPackageId:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+        type:
+          const: scanner-package-updated
+          default: scanner-package-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerPackageId
+      title: ScannerPackageUpdatedEvent
+      type: object
+    LegacyAuditEvent:
+      additionalProperties: true
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          anyOf:
+          - type: string
+          - {}
+          title: Type
+        user:
+          anyOf:
+          - $ref: '#/components/schemas/User'
+          - $ref: '#/components/schemas/LegacyUser'
+          title: User
+      required:
+      - type
+      - user
+      title: LegacyAuditEvent
+      type: object
+    ProjectDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          format: uuid
+          title: Projectid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: project-deleted
+          default: project-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - projectId
+      title: ProjectDeletedEvent
+      type: object
+    TaskCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        taskId:
+          format: uuid
+          title: Taskid
+          type: string
+        type:
+          const: task-created
+          default: task-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - taskId
+      title: TaskCreatedEvent
+      type: object
+    OrganizationEnabledEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        orgId:
+          title: Orgid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: organization-enabled
+          default: organization-enabled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - orgId
+      title: OrganizationEnabledEvent
+      type: object
+    ScannerPackageAvailabilityUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerPackageId:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+        type:
+          const: scanner-package-availability-updated
+          default: scanner-package-availability-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerPackageId
+      title: ScannerPackageAvailabilityUpdatedEvent
+      type: object
+    UserUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: user-updated
+          default: user-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        userId:
+          title: Userid
+          type: string
+      required:
+      - user
+      - userId
+      title: UserUpdatedEvent
+      type: object
+    CampaignRunCreatedEvent:
+      properties:
+        campaignId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          deprecated: true
+          description: Deprecated, use campaignRunId
+          title: Campaignid
+        campaignRunId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Campaignrunid
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-run-created
+          default: campaign-run-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      title: CampaignRunCreatedEvent
+      type: object
+    ProviderDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: provider-deleted
+          default: provider-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - providerId
+      title: ProviderDeletedEvent
+      type: object
+    BrandingUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: branding-updated
+          default: branding-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      title: BrandingUpdatedEvent
+      type: object
+    UserBlockedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: user-blocked
+          default: user-blocked
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        userId:
+          title: Userid
+          type: string
+      required:
+      - user
+      - userId
+      title: UserBlockedEvent
+      type: object
+    ProviderCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: provider-created
+          default: provider-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - providerId
+      title: ProviderCreatedEvent
+      type: object
+    ApiTokenRevokedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        tokenId:
+          format: uuid
+          title: Tokenid
+          type: string
+        type:
+          const: api-token-revoked
+          default: api-token-revoked
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - tokenId
+      title: ApiTokenRevokedEvent
+      type: object
+    RolePermissionsAddedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        roleId:
+          format: uuid
+          title: Roleid
+          type: string
+        type:
+          const: role-permissions-added
+          default: role-permissions-added
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - roleId
+      title: RolePermissionsAddedEvent
+      type: object
+    OrganizationPromptRecordingEnabled:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        orgId:
+          title: Orgid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: organization-prompt-recording-enabled
+          default: organization-prompt-recording-enabled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - orgId
+      title: OrganizationPromptRecordingEnabled
+      type: object
+    ScannerTemplateCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerTemplateId:
+          format: uuid
+          title: Scannertemplateid
+          type: string
+        type:
+          const: scanner-template-created
+          default: scanner-template-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerTemplateId
+      title: ScannerTemplateCreatedEvent
+      type: object
+    ProviderUndeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: provider-undeleted
+          default: provider-undeleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - providerId
+      title: ProviderUndeletedEvent
+      type: object
+    ProjectCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          format: uuid
+          title: Projectid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: project-created
+          default: project-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - projectId
+      title: ProjectCreatedEvent
+      type: object
+    OAuthClientUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        oauthClientId:
+          title: Oauthclientid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: oauth_client_updated
+          default: oauth_client_updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - oauthClientId
+      title: OAuthClientUpdatedEvent
+      type: object
+    ScannerUnpublishedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: scanner-unpublished
+          default: scanner-unpublished
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ScannerUnpublishedEvent
+      type: object
+    ProviderTestEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        testId:
+          format: uuid
+          title: Testid
+          type: string
+        type:
+          const: provider-test
+          default: provider-test
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - testId
+      title: ProviderTestEvent
+      type: object
+    UserDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: user-deleted
+          default: user-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        userId:
+          title: Userid
+          type: string
+      required:
+      - user
+      - userId
+      title: UserDeletedEvent
+      type: object
+    ScannerPackageUndeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerPackageId:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+        type:
+          const: scanner-package-undeleted
+          default: scanner-package-undeleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerPackageId
+      title: ScannerPackageUndeletedEvent
+      type: object
+    EntitlementGroupCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        entitlementGroupId:
+          format: uuid
+          title: Entitlementgroupid
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: entitlement-group-created
+          default: entitlement-group-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - entitlementGroupId
+      title: EntitlementGroupCreatedEvent
+      type: object
+    ProviderAvailabilityUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: provider-availability-updated
+          default: provider-availability-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - providerId
+      title: ProviderAvailabilityUpdatedEvent
+      type: object
+    EntitlementOverrideDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        entitlementId:
+          format: uuid
+          title: Entitlementid
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: entitlement-override-deleted
+          default: entitlement-override-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - entitlementId
+      title: EntitlementOverrideDeletedEvent
+      type: object
+    AgentSessionCreatedEvent:
+      properties:
+        agentSessionId:
+          format: uuid
+          title: Agentsessionid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: agent-session-created
+          default: agent-session-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - agentSessionId
+      title: AgentSessionCreatedEvent
+      type: object
+    EntitlementGroupDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        entitlementGroupId:
+          format: uuid
+          title: Entitlementgroupid
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: entitlement-group-deleted
+          default: entitlement-group-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - entitlementGroupId
+      title: EntitlementGroupDeletedEvent
+      type: object
+    AuditEventType:
+      enum:
+      - api-token-created
+      - api-token-revoked
+      - agent-session-created
+      - agent-session-fingerprints-requested
+      - branding-created
+      - branding-updated
+      - campaign-created
+      - campaign-updated
+      - campaign-deleted
+      - campaign-run-created
+      - campaign-run-updated
+      - campaign-run-access-updated
+      - campaign-run-retried
+      - campaign-run-deleted
+      - campaign-schedule-created
+      - campaign-schedule-updated
+      - campaign-schedule-deleted
+      - chatbot-created
+      - chatbot-updated
+      - chatbot-project-created
+      - chatbot-project-updated
+      - entitlement-group-created
+      - entitlement-group-updated
+      - entitlement-group-deleted
+      - entitlement-override-created
+      - entitlement-override-deleted
+      - entitlement-usage-created
+      - entitlement-usage-deleted
+      - file-created
+      - project-created
+      - project-deleted
+      - project-undeleted
+      - project-updated
+      - project-default-provider-updated
+      - project-provider-added
+      - project-provider-removed
+      - project-scanner-added
+      - project-scanner-removed
+      - project-scanner-package-added
+      - project-scanner-package-removed
+      - project-member-added
+      - project-member-removed
+      - organization-created
+      - organization-updated
+      - organization-prompt-recording-enabled
+      - organization-prompt-recording-disabled
+      - organization-disabled
+      - organization-enabled
+      - organization-data-deleted
+      - organization-entitlements-updated
+      - organization-default-role-updated
+      - provider-created
+      - provider-deleted
+      - provider-undeleted
+      - provider-updated
+      - provider-enabled
+      - provider-disabled
+      - provider-availability-updated
+      - scanner-created
+      - scanner-updated
+      - scanner-deleted
+      - scanner-undeleted
+      - scanner-published
+      - scanner-unpublished
+      - scanner-enabled
+      - scanner-disabled
+      - scanner-availability-updated
+      - scanner-version-published
+      - scanner-package-created
+      - scanner-package-updated
+      - scanner-package-deleted
+      - scanner-package-undeleted
+      - scanner-package-enabled
+      - scanner-package-disabled
+      - scanner-package-availability-updated
+      - scanner-template-created
+      - scanner-template-updated
+      - secret-created
+      - secret-updated
+      - secret-deleted
+      - task-created
+      - task-updated
+      - task-canceled
+      - provider-test
+      - user-auth-method-deleted
+      - user-created
+      - user-updated
+      - user-deleted
+      - user-verified
+      - user-blocked
+      - user-unblocked
+      - user-roles-updated
+      - user-role-granted
+      - user-role-retracted
+      - role-created
+      - role-updated
+      - role-permissions-added
+      - role-permissions-removed
+      - role-deleted
+      - license-created
+      - oauth_client_created
+      - oauth_client_deleted
+      - oauth_client_updated
+      - remediation-created
+      - remediation-deleted
+      - remediation-deployed
+      - remediation-rejected
+      title: AuditEventType
+      type: string
+    ChatbotGroupCreatedEvent:
+      properties:
+        chatbotGroupId:
+          format: uuid
+          title: Chatbotgroupid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: chatbot-project-created
+          default: chatbot-project-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - chatbotGroupId
+      title: ChatbotGroupCreatedEvent
+      type: object
+    ScannerPublishedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: scanner-published
+          default: scanner-published
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ScannerPublishedEvent
+      type: object
+    ScannerPackageEnabledEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerPackageId:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+        type:
+          const: scanner-package-enabled
+          default: scanner-package-enabled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerPackageId
+      title: ScannerPackageEnabledEvent
+      type: object
+    OrganizationDataDeleted:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        orgId:
+          title: Orgid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: organization-data-deleted
+          default: organization-data-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - orgId
+      title: OrganizationDataDeleted
+      type: object
+    CampaignRunUpdatedEvent:
+      properties:
+        campaignRunId:
+          format: uuid
+          title: Campaignrunid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-run-updated
+          default: campaign-run-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - campaignRunId
+      title: CampaignRunUpdatedEvent
+      type: object
+    OrganizationEntitlementsUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        orgId:
+          title: Orgid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: organization-entitlements-updated
+          default: organization-entitlements-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - orgId
+      title: OrganizationEntitlementsUpdatedEvent
+      type: object
+    EntitlementUsageCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        entitlementId:
+          format: uuid
+          title: Entitlementid
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: entitlement-usage-created
+          default: entitlement-usage-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - entitlementId
+      title: EntitlementUsageCreatedEvent
+      type: object
+    OAuthClientDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        oauthClientId:
+          title: Oauthclientid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: oauth_client_deleted
+          default: oauth_client_deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - oauthClientId
+      title: OAuthClientDeletedEvent
+      type: object
+    ProjectScannerPackageRemovedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerPackageId:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+        type:
+          const: project-scanner-package-removed
+          default: project-scanner-package-removed
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerPackageId
+      title: ProjectScannerPackageRemovedEvent
+      type: object
+    CampaignRunAccessUpdatedEvent:
+      properties:
+        campaignRunId:
+          format: uuid
+          title: Campaignrunid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-run-access-updated
+          default: campaign-run-access-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - campaignRunId
+      title: CampaignRunAccessUpdatedEvent
+      type: object
+    ScannerVersionPublishedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: scanner-version-published
+          default: scanner-version-published
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        versionId:
+          format: uuid
+          title: Versionid
+          type: string
+      required:
+      - user
+      - scannerId
+      - versionId
+      title: ScannerVersionPublishedEvent
+      type: object
+    CampaignRunDeletedEvent:
+      properties:
+        campaignRunId:
+          format: uuid
+          title: Campaignrunid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-run-deleted
+          default: campaign-run-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - campaignRunId
+      title: CampaignRunDeletedEvent
+      type: object
+    TaskUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        taskId:
+          format: uuid
+          title: Taskid
+          type: string
+        type:
+          const: task-updated
+          default: task-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - taskId
+      title: TaskUpdatedEvent
+      type: object
+    CampaignUpdatedEvent:
+      properties:
+        campaignId:
+          format: uuid
+          title: Campaignid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-updated
+          default: campaign-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - campaignId
+      title: CampaignUpdatedEvent
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ProjectMemberAddedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          format: uuid
+          title: Projectid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: project-member-added
+          default: project-member-added
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - projectId
+      title: ProjectMemberAddedEvent
+      type: object
+    AgentSessionFingerprintsRequestedEvent:
+      properties:
+        agentSessionId:
+          format: uuid
+          title: Agentsessionid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: agent-session-fingerprints-requested
+          default: agent-session-fingerprints-requested
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - agentSessionId
+      title: AgentSessionFingerprintsRequestedEvent
+      type: object
+    ProjectDefaultProviderUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          format: uuid
+          title: Projectid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: project-default-provider-updated
+          default: project-default-provider-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - projectId
+      title: ProjectDefaultProviderUpdatedEvent
+      type: object
+    CampaignScheduleCreatedEvent:
+      properties:
+        campaignScheduleId:
+          format: uuid
+          title: Campaignscheduleid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-schedule-created
+          default: campaign-schedule-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - campaignScheduleId
+      title: CampaignScheduleCreatedEvent
+      type: object
+    ChatbotGroupUpdatedEvent:
+      properties:
+        chatbotGroupId:
+          format: uuid
+          title: Chatbotgroupid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: chatbot-project-updated
+          default: chatbot-project-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - chatbotGroupId
+      title: ChatbotGroupUpdatedEvent
+      type: object
+    LegacyUser:
+      additionalProperties: true
+      properties:
+        id:
+          title: Id
+          type: string
+        org:
+          title: Org
+          type: string
+      required:
+      - id
+      - org
+      title: LegacyUser
+      type: object
+    UserVerifiedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: user-verified
+          default: user-verified
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        userId:
+          title: Userid
+          type: string
+      required:
+      - user
+      - userId
+      title: UserVerifiedEvent
+      type: object
+    UserRolesUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: user-roles-updated
+          default: user-roles-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        userId:
+          title: Userid
+          type: string
+      required:
+      - user
+      - userId
+      title: UserRolesUpdatedEvent
+      type: object
+    ScannerCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: scanner-created
+          default: scanner-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ScannerCreatedEvent
+      type: object
+    ProjectUndeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          format: uuid
+          title: Projectid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: project-undeleted
+          default: project-undeleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - projectId
+      title: ProjectUndeletedEvent
+      type: object
+    RoleCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        roleId:
+          format: uuid
+          title: Roleid
+          type: string
+        type:
+          const: role-created
+          default: role-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - roleId
+      title: RoleCreatedEvent
+      type: object
+    RoleDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        roleId:
+          format: uuid
+          title: Roleid
+          type: string
+        type:
+          const: role-deleted
+          default: role-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - roleId
+      title: RoleDeletedEvent
+      type: object
+    ScannerPackageDisabledEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerPackageId:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+        type:
+          const: scanner-package-disabled
+          default: scanner-package-disabled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerPackageId
+      title: ScannerPackageDisabledEvent
+      type: object
+    ScannerUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: scanner-updated
+          default: scanner-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ScannerUpdatedEvent
+      type: object
+    GetAuditResponse:
+      properties:
+        events:
+          description: Events matching the given filter criteria.
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+          title: Events
+          type: array
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+      required:
+      - events
+      title: GetAuditResponse
+      type: object
+    ScannerPackageCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerPackageId:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+        type:
+          const: scanner-package-created
+          default: scanner-package-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerPackageId
+      title: ScannerPackageCreatedEvent
+      type: object
+    RemediationDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        remediationId:
+          format: uuid
+          title: Remediationid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: remediation-deleted
+          default: remediation-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - remediationId
+      title: RemediationDeletedEvent
+      type: object
+    UserAuthenticationMethodsDeleted:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: user-auth-method-deleted
+          default: user-auth-method-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        userId:
+          title: Userid
+          type: string
+      required:
+      - user
+      - userId
+      title: UserAuthenticationMethodsDeleted
+      type: object
+    SecretUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        secretId:
+          format: uuid
+          title: Secretid
+          type: string
+        type:
+          const: secret-updated
+          default: secret-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - secretId
+      title: SecretUpdatedEvent
+      type: object
+    ScannerTemplateUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerTemplateId:
+          format: uuid
+          title: Scannertemplateid
+          type: string
+        type:
+          const: scanner-template-updated
+          default: scanner-template-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerTemplateId
+      title: ScannerTemplateUpdatedEvent
+      type: object
+    FileCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        fileId:
+          format: uuid
+          title: Fileid
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: file-created
+          default: file-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - fileId
+      title: FileCreatedEvent
+      type: object
+    ProviderUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: provider-updated
+          default: provider-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - providerId
+      title: ProviderUpdatedEvent
+      type: object
+    OrganizationDefaultRoleUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        orgId:
+          title: Orgid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        roleId:
+          format: uuid
+          title: Roleid
+          type: string
+        type:
+          const: organization-default-role-updated
+          default: organization-default-role-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - orgId
+      - roleId
+      title: OrganizationDefaultRoleUpdatedEvent
+      type: object
+    ScannerAvailabilityUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        scannerId:
+          format: uuid
+          title: Scannerid
+          type: string
+        type:
+          const: scanner-availability-updated
+          default: scanner-availability-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - scannerId
+      title: ScannerAvailabilityUpdatedEvent
+      type: object
+    UserRoleRetractedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: user-role-retracted
+          default: user-role-retracted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        userId:
+          title: Userid
+          type: string
+      required:
+      - user
+      - userId
+      title: UserRoleRetractedEvent
+      type: object
+    ProjectProviderAddedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: project-provider-added
+          default: project-provider-added
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - providerId
+      title: ProjectProviderAddedEvent
+      type: object
+    SecretDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        secretId:
+          format: uuid
+          title: Secretid
+          type: string
+        type:
+          const: secret-deleted
+          default: secret-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - secretId
+      title: SecretDeletedEvent
+      type: object
+    EntitlementUsageDeletedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        entitlementId:
+          format: uuid
+          title: Entitlementid
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: entitlement-usage-deleted
+          default: entitlement-usage-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - entitlementId
+      title: EntitlementUsageDeletedEvent
+      type: object
+    CampaignScheduleUpdatedEvent:
+      properties:
+        campaignScheduleId:
+          format: uuid
+          title: Campaignscheduleid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-schedule-updated
+          default: campaign-schedule-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - campaignScheduleId
+      title: CampaignScheduleUpdatedEvent
+      type: object
+    OrganizationDisabledEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        orgId:
+          title: Orgid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: organization-disabled
+          default: organization-disabled
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - orgId
+      title: OrganizationDisabledEvent
+      type: object
+    CampaignScheduleDeletedEvent:
+      properties:
+        campaignScheduleId:
+          format: uuid
+          title: Campaignscheduleid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: campaign-schedule-deleted
+          default: campaign-schedule-deleted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - campaignScheduleId
+      title: CampaignScheduleDeletedEvent
+      type: object
+    UserRoleAssignedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: user-role-granted
+          default: user-role-granted
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        userId:
+          title: Userid
+          type: string
+      required:
+      - user
+      - userId
+      title: UserRoleAssignedEvent
+      type: object
+    EntitlementOverrideCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        entitlementId:
+          format: uuid
+          title: Entitlementid
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: entitlement-override-created
+          default: entitlement-override-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - entitlementId
+      title: EntitlementOverrideCreatedEvent
+      type: object
+    ChatbotUpdatedEvent:
+      properties:
+        chatbotId:
+          format: uuid
+          title: Chatbotid
+          type: string
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: chatbot-updated
+          default: chatbot-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - chatbotId
+      title: ChatbotUpdatedEvent
+      type: object
+    ApiTokenCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        tokenId:
+          format: uuid
+          title: Tokenid
+          type: string
+        type:
+          const: api-token-created
+          default: api-token-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - tokenId
+      title: ApiTokenCreatedEvent
+      type: object
+    ProjectUpdatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        projectId:
+          format: uuid
+          title: Projectid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: project-updated
+          default: project-updated
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - projectId
+      title: ProjectUpdatedEvent
+      type: object
+    BrandingCreatedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: branding-created
+          default: branding-created
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      title: BrandingCreatedEvent
+      type: object
+    UserUnblockedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: user-unblocked
+          default: user-unblocked
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        userId:
+          title: Userid
+          type: string
+      required:
+      - user
+      - userId
+      title: UserUnblockedEvent
+      type: object
+    ProjectProviderRemovedEvent:
+      properties:
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        requestId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Requestid
+        type:
+          const: project-provider-removed
+          default: project-provider-removed
+          title: Type
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - user
+      - providerId
+      title: ProjectProviderRemovedEvent
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

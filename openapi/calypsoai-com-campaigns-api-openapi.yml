@@ -1,0 +1,904 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Campaigns API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Campaigns
+paths:
+  /backend/v1/campaigns:
+    get:
+      description: 'Retrieves a list of campaigns that match the given criteria,
+
+        with the option to adjust the limit for more results.'
+      operationId: get_campaigns
+      parameters:
+      - description: Selects page for paginated results. Pass in the next or prev attribute in the response
+        in: query
+        name: cursor
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Selects page for paginated results. Pass in the next or prev attribute in the response
+          title: Cursor
+      - description: Only return results that match the given text.
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Only return results that match the given text.
+          title: Search
+      - description: Limits the amount of results.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Limits the amount of results.
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - description: Whether results should be sorted in ascending order.
+        in: query
+        name: ascending
+        required: false
+        schema:
+          default: false
+          description: Whether results should be sorted in ascending order.
+          title: Ascending
+          type: boolean
+      - description: Only return results from before this timestamp.
+        in: query
+        name: before
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Only return results from before this timestamp.
+          title: Before
+      - description: Only return results from after this timestamp.
+        in: query
+        name: after
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Only return results from after this timestamp.
+          title: After
+      - description: If true, return vendored campaigns created by the system. If not set, returns both.
+        in: query
+        name: vendored
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          default: false
+          description: If true, return vendored campaigns created by the system. If not set, returns both.
+          title: Vendored
+      - description: Filter by campaigns that include an attack of these types.
+        in: query
+        name: attackTechnique
+        required: false
+        schema:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/AttackTechnique'
+            type: array
+          - type: 'null'
+          description: Filter by campaigns that include an attack of these types.
+          title: Attacktechnique
+      - description: Only return campaigns that last ran before this timestamp.
+        in: query
+        name: lastRunBefore
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          description: Only return campaigns that last ran before this timestamp.
+          title: Lastrunbefore
+      - description: Only return campaigns that last ran after this timestamp.
+        in: query
+        name: lastRunAfter
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          description: Only return campaigns that last ran after this timestamp.
+          title: Lastrunafter
+      - description: Sort results by the given parameter.
+        in: query
+        name: sortBy
+        required: false
+        schema:
+          $ref: '#/components/schemas/CampaignSortBy'
+          default: created_at
+          description: Sort results by the given parameter.
+      - description: Include users.
+        in: query
+        name: includeUsers
+        required: false
+        schema:
+          default: false
+          description: Include users.
+          title: Includeusers
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCampaignsResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get campaigns
+      tags:
+      - Campaigns
+    post:
+      description: Creates a new campaign. You can specify the campaign's name, description, and associated attacks.
+      operationId: post_campaigns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCampaignsBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostSuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Create campaign
+      tags:
+      - Campaigns
+  /backend/v1/campaigns/{campaignId}:
+    delete:
+      description: Deletes a campaign.
+      operationId: delete_campaigns_campaignId
+      parameters:
+      - in: path
+        name: campaignId
+        required: true
+        schema:
+          format: uuid
+          title: Campaignid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Delete a campaign
+      tags:
+      - Campaigns
+    get:
+      description: Retrieves a campaign by its ID.
+      operationId: get_campaigns_campaignId
+      parameters:
+      - in: path
+        name: campaignId
+        required: true
+        schema:
+          format: uuid
+          title: Campaignid
+          type: string
+      - description: Get the config at a given point in time.
+        in: query
+        name: configAt
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          description: Get the config at a given point in time.
+          title: Configat
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCampaignResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get campaign
+      tags:
+      - Campaigns
+    patch:
+      description: Updates a campaign. You can modify the campaign's name, description, and associated attacks.
+      operationId: patch_campaigns_campaignId
+      parameters:
+      - in: path
+        name: campaignId
+        required: true
+        schema:
+          format: uuid
+          title: Campaignid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchCampaignBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update campaign
+      tags:
+      - Campaigns
+components:
+  schemas:
+    User:
+      properties:
+        admin:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Admin
+        blocked:
+          default: false
+          title: Blocked
+          type: boolean
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        email:
+          format: password
+          title: Email
+          type: string
+          writeOnly: true
+        id:
+          title: Id
+          type: string
+        lastInvitationSentAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Lastinvitationsentat
+        machine:
+          default: false
+          title: Machine
+          type: boolean
+        name:
+          format: password
+          title: Name
+          type: string
+          writeOnly: true
+        org:
+          title: Org
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+          uniqueItems: true
+        roleIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Roleids
+          type: array
+        roles:
+          default: []
+          items:
+            type: string
+          title: Roles
+          type: array
+        social:
+          default: false
+          title: Social
+          type: boolean
+        teams:
+          default: []
+          items:
+            type: string
+          title: Teams
+          type: array
+        verified:
+          default: true
+          title: Verified
+          type: boolean
+      required:
+      - id
+      - name
+      - email
+      - org
+      title: User
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    CampaignSortBy:
+      enum:
+      - name
+      - created_at
+      - last_run
+      - num_of_runs
+      title: CampaignSortBy
+      type: string
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    InvalidAttack:
+      additionalProperties: true
+      properties:
+        technique:
+          title: Technique
+          type: string
+      required:
+      - technique
+      title: InvalidAttack
+      type: object
+    PostCampaignsBody:
+      properties:
+        attacks:
+          description: List of attacks to run as part of this campaign
+          items:
+            anyOf:
+            - oneOf:
+              - $ref: '#/components/schemas/StaticContentAttack'
+              - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
+              - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
+              - $ref: '#/components/schemas/OperationalAttack'
+              - $ref: '#/components/schemas/CustomAttack'
+            - enum:
+              - static_content
+              - operational
+              type: string
+          title: Attacks
+          type: array
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Description for the campaign
+          title: Description
+        name:
+          description: Name for the new campaign
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+      required:
+      - name
+      - attacks
+      title: PostCampaignsBody
+      type: object
+    Campaign:
+      properties:
+        attacks:
+          items:
+            anyOf:
+            - oneOf:
+              - $ref: '#/components/schemas/StaticContentAttack'
+              - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
+              - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
+              - $ref: '#/components/schemas/OperationalAttack'
+              - $ref: '#/components/schemas/CustomAttack'
+            - $ref: '#/components/schemas/InvalidAttack'
+          title: Attacks
+          type: array
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          title: Createdby
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          format: uuid
+          title: Id
+          type: string
+        lastRun:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Lastrun
+        lastRunAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Lastrunat
+        name:
+          title: Name
+          type: string
+        runCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: 0
+          title: Runcount
+        vendored:
+          default: false
+          title: Vendored
+          type: boolean
+      required:
+      - id
+      - name
+      - attacks
+      - createdBy
+      - createdAt
+      title: Campaign
+      type: object
+    GetCampaignResponse:
+      properties:
+        campaign:
+          $ref: '#/components/schemas/Campaign'
+          description: Requested campaign object
+      required:
+      - campaign
+      title: GetCampaignResponse
+      type: object
+    IntentType:
+      enum:
+      - custom
+      - system
+      title: IntentType
+      type: string
+    AttackTechnique:
+      enum:
+      - static_content
+      - dynamic_content
+      - operational
+      - custom
+      title: AttackTechnique
+      type: string
+    OperationalAttack:
+      properties:
+        severity:
+          const: 1
+          default: 1
+          title: Severity
+          type: integer
+        technique:
+          const: operational
+          default: operational
+          title: Technique
+          type: string
+        vector:
+          $ref: '#/components/schemas/OperationalAttackVector'
+      required:
+      - vector
+      title: OperationalAttack
+      type: object
+    DynamicSingleTurnContentAttack:
+      properties:
+        converters:
+          default:
+          - base64
+          - leetspeak
+          - unicode_confusable
+          - caesar
+          - repeat_token
+          - single_character
+          items:
+            $ref: '#/components/schemas/PromptConverter'
+          title: Converters
+          type: array
+        intents:
+          items:
+            anyOf:
+            - type: string
+            - $ref: '#/components/schemas/Intent'
+          title: Intents
+          type: array
+        severity:
+          default: 1
+          maximum: 4.0
+          minimum: 1.0
+          title: Severity
+          type: integer
+        technique:
+          const: dynamic_content
+          default: dynamic_content
+          title: Technique
+          type: string
+        vector:
+          enum:
+          - dan
+          - fictional_context_change
+          - conditional_context_change
+          - math_prompt
+          - flip
+          - persuasive_adversarial
+          - payload_splitting
+          - refusal_suppression
+          - scenario_nesting
+          - style_injection
+          - word_game
+          - fallacy_failure
+          - adversarial_metaphor
+          - persona_bullying
+          - invasive_context_engineering
+          - sugar_coated_poison
+          - developer_role_attack
+          - topic_steering
+          - bias_framing
+          - cyberpunk_stories
+          - crescendo
+          - morality_dilemma
+          - stylistic_reformulation
+          - involuntary_in_context_learning
+          - safety_paradox
+          title: Vector
+          type: string
+      required:
+      - vector
+      title: DynamicSingleTurnContentAttack
+      type: object
+    OperationalAttackVector:
+      enum:
+      - tls
+      - fuzzing
+      title: OperationalAttackVector
+      type: string
+    Intent:
+      properties:
+        severity:
+          default: 2
+          maximum: 4.0
+          minimum: 1.0
+          title: Severity
+          type: integer
+        text:
+          title: Text
+          type: string
+        type:
+          $ref: '#/components/schemas/IntentType'
+          default: custom
+      required:
+      - text
+      title: Intent
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    PatchCampaignBody:
+      properties:
+        attacks:
+          anyOf:
+          - items:
+              anyOf:
+              - oneOf:
+                - $ref: '#/components/schemas/StaticContentAttack'
+                - $ref: '#/components/schemas/DynamicSingleTurnContentAttack'
+                - $ref: '#/components/schemas/DynamicMultiTurnContentAttack'
+                - $ref: '#/components/schemas/OperationalAttack'
+                - $ref: '#/components/schemas/CustomAttack'
+              - enum:
+                - static_content
+                - operational
+                type: string
+            type: array
+          - type: 'null'
+          description: New list of attacks to run as part of this campaign
+          title: Attacks
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: New description for the campaign
+          title: Description
+        name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          description: New name for the campaign.
+          title: Name
+      title: PatchCampaignBody
+      type: object
+    CustomAttack:
+      properties:
+        fileId:
+          format: uuid
+          title: Fileid
+          type: string
+        name:
+          title: Name
+          type: string
+        severity:
+          anyOf:
+          - maximum: 4.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          default: 1
+          title: Severity
+        technique:
+          const: custom
+          default: custom
+          title: Technique
+          type: string
+      required:
+      - name
+      - fileId
+      title: CustomAttack
+      type: object
+    GetCampaignsResponse:
+      properties:
+        campaigns:
+          description: Campaigns matching the given criteria
+          items:
+            $ref: '#/components/schemas/Campaign'
+          title: Campaigns
+          type: array
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+        users:
+          additionalProperties:
+            $ref: '#/components/schemas/User'
+          default: {}
+          title: Users
+          type: object
+      required:
+      - campaigns
+      title: GetCampaignsResponse
+      type: object
+    StaticContentAttack:
+      properties:
+        converters:
+          default:
+          - base64
+          - leetspeak
+          - unicode_confusable
+          - caesar
+          - repeat_token
+          - single_character
+          items:
+            $ref: '#/components/schemas/PromptConverter'
+          title: Converters
+          type: array
+        pack:
+          default: 2026-11
+          title: Pack
+          type: string
+        severity:
+          const: 1
+          default: 1
+          title: Severity
+          type: integer
+        technique:
+          const: static_content
+          default: static_content
+          title: Technique
+          type: string
+        vector:
+          enum:
+          - dan
+          - fictional_context_change
+          - conditional_context_change
+          - math_prompt
+          - flip
+          - persuasive_adversarial
+          - payload_splitting
+          - refusal_suppression
+          - scenario_nesting
+          - style_injection
+          - word_game
+          - fallacy_failure
+          - adversarial_metaphor
+          - persona_bullying
+          - invasive_context_engineering
+          - sugar_coated_poison
+          - developer_role_attack
+          - topic_steering
+          - bias_framing
+          - cyberpunk_stories
+          - crescendo
+          - morality_dilemma
+          - stylistic_reformulation
+          - involuntary_in_context_learning
+          - safety_paradox
+          title: Vector
+          type: string
+      required:
+      - vector
+      title: StaticContentAttack
+      type: object
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    DynamicMultiTurnContentAttack:
+      properties:
+        converters:
+          default:
+          - base64
+          - leetspeak
+          - unicode_confusable
+          - caesar
+          - repeat_token
+          - single_character
+          items:
+            $ref: '#/components/schemas/PromptConverter'
+          title: Converters
+          type: array
+        intents:
+          items:
+            anyOf:
+            - type: string
+            - $ref: '#/components/schemas/Intent'
+          title: Intents
+          type: array
+        multiTurn:
+          const: true
+          default: true
+          title: Multiturn
+          type: boolean
+        severity:
+          default: 1
+          maximum: 4.0
+          minimum: 1.0
+          title: Severity
+          type: integer
+        technique:
+          const: dynamic_content
+          default: dynamic_content
+          title: Technique
+          type: string
+        vector:
+          enum:
+          - crescendo
+          - frame
+          - trolley
+          - echo_chamber
+          title: Vector
+          type: string
+      required:
+      - vector
+      title: DynamicMultiTurnContentAttack
+      type: object
+    PromptConverter:
+      enum:
+      - base64
+      - leetspeak
+      - unicode_confusable
+      - caesar
+      - repeat_token
+      - single_character
+      title: PromptConverter
+      type: string
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

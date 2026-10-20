@@ -1,0 +1,233 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Openai API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Openai
+paths:
+  /openai/{provider}/chat/completions:
+    post:
+      description: 'Send a chat completion request to the specified provider using OpenAI-compatible format.
+
+        The request will be processed through the configured guardrails and security policies before being forwarded to the provider.'
+      operationId: post_openai_provider_chat_completions
+      parameters:
+      - in: path
+        name: provider
+        required: true
+        schema:
+          title: Provider
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostChatCompletionBody'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Chat Completions
+      tags:
+      - Openai
+  /openai/{provider}/openai/deployments/{model}/chat/completions:
+    post:
+      description: 'Send a chat completion request to the specified provider using OpenAI-compatible format.
+
+        The request will be processed through the configured guardrails and security policies before being forwarded to the provider.'
+      operationId: post_openai_provider_openai_deployments_model_chat_completions
+      parameters:
+      - in: path
+        name: provider
+        required: true
+        schema:
+          title: Provider
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostChatCompletionBody'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Chat Completions
+      tags:
+      - Openai
+  /openai/{provider}/openai/responses:
+    post:
+      description: 'Send a responses request to the specified provider using OpenAI-compatible format.
+
+        The request will be processed through the configured guardrails and security policies
+
+        before being forwarded to the provider.'
+      operationId: post_openai_provider_openai_responses
+      parameters:
+      - in: path
+        name: provider
+        required: true
+        schema:
+          title: Provider
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostOpenAIResponsesBody'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: OpenAI responses API gateway
+      tags:
+      - Openai
+  /openai/{provider}/responses:
+    post:
+      description: 'Send a responses request to the specified provider using OpenAI-compatible format.
+
+        The request will be processed through the configured guardrails and security policies
+
+        before being forwarded to the provider.'
+      operationId: post_openai_provider_responses
+      parameters:
+      - in: path
+        name: provider
+        required: true
+        schema:
+          title: Provider
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostOpenAIResponsesBody'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: OpenAI responses API gateway
+      tags:
+      - Openai
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    PostOpenAIResponsesBody:
+      additionalProperties: true
+      properties:
+        input:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: string
+          title: Input
+        model:
+          title: Model
+          type: string
+        stream:
+          default: false
+          title: Stream
+          type: boolean
+      required:
+      - model
+      - input
+      title: PostOpenAIResponsesBody
+      type: object
+    PostChatCompletionBody:
+      additionalProperties: true
+      properties:
+        messages:
+          items:
+            additionalProperties: true
+            type: object
+          title: Messages
+          type: array
+        model:
+          title: Model
+          type: string
+        stream:
+          default: false
+          title: Stream
+          type: boolean
+      required:
+      - model
+      - messages
+      title: PostChatCompletionBody
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

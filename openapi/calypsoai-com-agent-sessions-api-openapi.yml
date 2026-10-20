@@ -1,0 +1,348 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Agent Sessions API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Agent-Sessions
+paths:
+  /backend/v1/agent-sessions:
+    get:
+      operationId: get_agent_sessions
+      parameters:
+      - description: Selects page for paginated results. Pass in the next or prev attribute in the response
+        in: query
+        name: cursor
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Selects page for paginated results. Pass in the next or prev attribute in the response
+          title: Cursor
+      - description: Number of results to return.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Number of results to return.
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - description: Sort results by the given parameter.
+        in: query
+        name: sortBy
+        required: false
+        schema:
+          $ref: '#/components/schemas/AgentSessionSortBy'
+          default: updated_at
+          description: Sort results by the given parameter.
+      - description: Project to retrieve agent sessions for.
+        in: query
+        name: project
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          - type: 'null'
+          description: Project to retrieve agent sessions for.
+          title: Project
+      - description: Whether results should be sorted in ascending order.
+        in: query
+        name: ascending
+        required: false
+        schema:
+          default: false
+          description: Whether results should be sorted in ascending order.
+          title: Ascending
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAgentSessionsResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get
+      tags:
+      - Agent-Sessions
+  /backend/v1/agent-sessions/{agentSessionId}:
+    get:
+      operationId: get_agent_sessions_agentSessionId
+      parameters:
+      - in: path
+        name: agentSessionId
+        required: true
+        schema:
+          format: uuid
+          title: Agentsessionid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAgentSessionResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get
+      tags:
+      - Agent-Sessions
+components:
+  schemas:
+    AgentFingerprintStatus:
+      enum:
+      - in_progress
+      - failed
+      - completed
+      title: AgentFingerprintStatus
+      type: string
+    AgentFingerprintSummary:
+      properties:
+        agentCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Agentcount
+        errors:
+          default: []
+          items:
+            discriminator:
+              mapping:
+                incompatible_format: '#/components/schemas/FingerprintUnsupportedError'
+                internal: '#/components/schemas/FingerprintInternalError'
+                provider: '#/components/schemas/FingerprintProviderError'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/FingerprintProviderError'
+            - $ref: '#/components/schemas/FingerprintInternalError'
+            - $ref: '#/components/schemas/FingerprintUnsupportedError'
+          title: Errors
+          type: array
+        status:
+          $ref: '#/components/schemas/AgentFingerprintStatus'
+        toolCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Toolcount
+        updatedAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Updatedat
+      required:
+      - status
+      title: AgentFingerprintSummary
+      type: object
+    GetAgentSessionResponse:
+      properties:
+        agentSession:
+          $ref: '#/components/schemas/AgentSession'
+      required:
+      - agentSession
+      title: GetAgentSessionResponse
+      type: object
+    PromptOutcome:
+      description: 'Outcome of a prompt after it has been processed by all guardrails and providers.
+
+
+        Cleared: All guardrails passed, and the prompt was sent to providers
+
+        Flagged: At least one guardrail failed, and the prompt was sent to providers
+
+        Blocked: At least one guardrail failed, and the prompt was not sent to providers.'
+      enum:
+      - cleared
+      - flagged
+      - redacted
+      - blocked
+      title: PromptOutcome
+      type: string
+    AgentSession:
+      properties:
+        fingerprints:
+          anyOf:
+          - $ref: '#/components/schemas/AgentFingerprintSummary'
+          - type: 'null'
+        firstPromptAt:
+          format: date-time
+          title: Firstpromptat
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        lastPromptAt:
+          format: date-time
+          title: Lastpromptat
+          type: string
+        peakOutcome:
+          $ref: '#/components/schemas/PromptOutcome'
+        projectId:
+          format: uuid
+          title: Projectid
+          type: string
+        sessionId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: ''
+          title: Sessionid
+      required:
+      - id
+      - firstPromptAt
+      - lastPromptAt
+      - peakOutcome
+      - projectId
+      title: AgentSession
+      type: object
+    AgentSessionSortBy:
+      enum:
+      - updated_at
+      - created_at
+      title: AgentSessionSortBy
+      type: string
+    FingerprintUnsupportedError:
+      properties:
+        message:
+          title: Message
+          type: string
+        providerId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Providerid
+        type:
+          const: incompatible_format
+          default: incompatible_format
+          title: Type
+          type: string
+      required:
+      - message
+      title: FingerprintUnsupportedError
+      type: object
+    FingerprintProviderError:
+      properties:
+        message:
+          title: Message
+          type: string
+        providerId:
+          format: uuid
+          title: Providerid
+          type: string
+        statusCode:
+          title: Statuscode
+          type: integer
+        type:
+          const: provider
+          default: provider
+          title: Type
+          type: string
+      required:
+      - message
+      - providerId
+      - statusCode
+      title: FingerprintProviderError
+      type: object
+    GetAgentSessionsResponse:
+      properties:
+        agentSessions:
+          items:
+            $ref: '#/components/schemas/AgentSession'
+          title: Agentsessions
+          type: array
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+      required:
+      - agentSessions
+      title: GetAgentSessionsResponse
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    FingerprintInternalError:
+      properties:
+        message:
+          title: Message
+          type: string
+        type:
+          const: internal
+          default: internal
+          title: Type
+          type: string
+      required:
+      - message
+      title: FingerprintInternalError
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

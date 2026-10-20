@@ -1,0 +1,540 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Auth API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Auth
+paths:
+  /backend/v1/auth/roles:
+    get:
+      description: 'Retrieves a list of available roles associated with a given resource,
+
+        with the option to adjust the limit for more results.'
+      operationId: get_auth_roles
+      parameters:
+      - description: Returns roles associated with the specified project. If not provided, organization roles are returned
+        in: query
+        name: projectId
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Returns roles associated with the specified project. If not provided, organization roles are returned
+          title: Projectid
+      - description: Max number of items to be returned.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Max number of items to be returned.
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - description: Pass cursor from response to get next or prev page.
+        in: query
+        name: cursor
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Pass cursor from response to get next or prev page.
+          title: Cursor
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAuthRolesResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get roles
+      tags:
+      - Auth
+    post:
+      description: 'Create a new role associated with a given resource.
+
+
+        Currently available resources to associate with a role are the organization and projects.'
+      operationId: post_auth_roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAuthRolesBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostSuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Create role
+      tags:
+      - Auth
+  /backend/v1/auth/roles/default:
+    get:
+      description: Requests the configured default role.
+      operationId: get_auth_roles_default
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAuthRoleDefaultResponse'
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Get the default role
+      tags:
+      - Auth
+  /backend/v1/auth/roles/{roleId}:
+    delete:
+      description: Deletes a role. If the role has assigned users, they can be moved to a new role if one is provided.
+      operationId: delete_auth_roles_roleId
+      parameters:
+      - in: path
+        name: roleId
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Roleid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/DeleteAuthRoleBody'
+              - type: 'null'
+              title: Body
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Delete role
+      tags:
+      - Auth
+    get:
+      description: Request a role by its ID.
+      operationId: get_auth_roles_roleId
+      parameters:
+      - in: path
+        name: roleId
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Roleid
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAuthRoleResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get role
+      tags:
+      - Auth
+    patch:
+      description: Modifies the role's name and/or permissions. If permissions are provided, they will replace the existing set.
+      operationId: patch_auth_roles_roleId
+      parameters:
+      - in: path
+        name: roleId
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Roleid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchAuthRoleBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update role
+      tags:
+      - Auth
+  /backend/v1/auth/roles/{roleId}/permissions:
+    delete:
+      description: Revokes one or more existing permissions from the specified role.
+      operationId: delete_auth_roles_roleId_permissions
+      parameters:
+      - in: path
+        name: roleId
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Roleid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAuthRolePermissionsBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Remove permissions
+      tags:
+      - Auth
+    patch:
+      description: Add new permissions to a role.
+      operationId: patch_auth_roles_roleId_permissions
+      parameters:
+      - in: path
+        name: roleId
+        required: true
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Roleid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchAuthRolePermissionsBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Add permissions
+      tags:
+      - Auth
+components:
+  schemas:
+    PatchAuthRolePermissionsBody:
+      properties:
+        permissions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: Permissions to add to the existing role permission set.
+          title: Permissions
+      title: PatchAuthRolePermissionsBody
+      type: object
+    GetAuthRolesResponse:
+      properties:
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+        roles:
+          description: Roles matching the given filter criteria.
+          items:
+            $ref: '#/components/schemas/Role'
+          title: Roles
+          type: array
+      required:
+      - roles
+      title: GetAuthRolesResponse
+      type: object
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    DeleteAuthRoleBody:
+      properties:
+        reassignToRoleId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          - type: 'null'
+          title: Reassigntoroleid
+      title: DeleteAuthRoleBody
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    DeleteAuthRolePermissionsBody:
+      properties:
+        permissions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: Permissions to remove from the existing role permission set.
+          title: Permissions
+      title: DeleteAuthRolePermissionsBody
+      type: object
+    GetAuthRoleDefaultResponse:
+      properties:
+        role:
+          $ref: '#/components/schemas/Role'
+          description: The requested role.
+      required:
+      - role
+      title: GetAuthRoleDefaultResponse
+      type: object
+    Role:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        isDefault:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          default: false
+          title: Isdefault
+        memberCount:
+          title: Membercount
+          type: integer
+        name:
+          title: Name
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        system:
+          title: System
+          type: boolean
+      required:
+      - id
+      - name
+      - system
+      - memberCount
+      title: Role
+      type: object
+    GetAuthRoleResponse:
+      properties:
+        role:
+          $ref: '#/components/schemas/Role'
+          description: The requested role.
+      required:
+      - role
+      title: GetAuthRoleResponse
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    PostAuthRolesBody:
+      properties:
+        isDefault:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Set the new role as the default.
+          title: Isdefault
+        name:
+          description: Name of the role. Requires case insensitive uniqueness.
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        permissions:
+          description: Permissions to grant to users with the created role.
+          items:
+            type: string
+          title: Permissions
+          type: array
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Assign the created role to a given project. If not provided, the role is associated with the organization.
+          title: Projectid
+      required:
+      - name
+      - permissions
+      title: PostAuthRolesBody
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    PatchAuthRoleBody:
+      properties:
+        isDefault:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Set the new role as the default.
+          title: Isdefault
+        name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          description: New name of the role. Requires case insensitive uniqueness.
+          title: Name
+        permissions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: 'New set of the permissions assigned by the role. Replaces existing set.
+
+
+            To add/remove roles use PATCH/DELETE `/auth/roles/{roleId}/permissions`'
+          title: Permissions
+      title: PatchAuthRoleBody
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

@@ -1,0 +1,366 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Project API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Project
+paths:
+  /backend/v1/project:
+    get:
+      description: Retrieves the default project for the specified group or chatbot, or the global settings if neither is provided.
+      operationId: get_project
+      parameters:
+      - description: ID of chatbot to get the project for.
+        in: query
+        name: chatbotId
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of chatbot to get the project for.
+          title: Chatbotid
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetGlobalProjectResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get default project
+      tags:
+      - Project
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    GetGlobalProjectResponse:
+      properties:
+        project:
+          $ref: '#/components/schemas/Project'
+          description: The default project for the group/chatbot specified or global settings if neither is given.
+      required:
+      - project
+      title: GetGlobalProjectResponse
+      type: object
+    ScannerDirection:
+      enum:
+      - both
+      - request
+      - response
+      title: ScannerDirection
+      type: string
+    ProjectConfig:
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        packages:
+          default: []
+          description: Packages configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Packages
+          type: array
+        providers:
+          default: []
+          description: Providers available to the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigProvider'
+          title: Providers
+          type: array
+        scanners:
+          default: []
+          description: Guardrails configured for the project
+          items:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          title: Scanners
+          type: array
+      title: ProjectConfig
+      type: object
+    ProjectConfigProvider:
+      properties:
+        capabilities:
+          anyOf:
+          - items:
+              anyOf:
+              - $ref: '#/components/schemas/ProviderCapability'
+              - type: string
+            type: array
+            uniqueItems: true
+          - type: 'null'
+          title: Capabilities
+        default:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Default
+        enabled:
+          title: Enabled
+          type: boolean
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+      required:
+      - enabled
+      title: ProjectConfigProvider
+      type: object
+    ProjectType:
+      enum:
+      - app
+      - bot
+      - chat
+      - global
+      - agentic
+      - red_team
+      title: ProjectType
+      type: string
+    ProjectDeploymentStatus:
+      enum:
+      - live
+      - draft
+      title: ProjectDeploymentStatus
+      type: string
+    ProviderCapability:
+      enum:
+      - chat
+      - red_team
+      - siem
+      - openai_chat
+      - openai_responses
+      - anthropic_messages
+      - google_generate_content
+      title: ProviderCapability
+      type: string
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    ProjectConfigScanner:
+      properties:
+        blocking:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Blocking
+        direction:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - const: ''
+            type: string
+          - type: 'null'
+          title: Direction
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+        flagMessage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Flagmessage
+        force:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Force
+        id:
+          format: uuid
+          title: Id
+          type: string
+        mode:
+          anyOf:
+          - $ref: '#/components/schemas/ScanMode'
+          - type: 'null'
+        version:
+          anyOf:
+          - format: uuid
+            type: string
+          - format: date-time
+            type: string
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          title: Version
+      required:
+      - id
+      title: ProjectConfigScanner
+      type: object
+    ChatbotType:
+      enum:
+      - teams
+      - slack
+      title: ChatbotType
+      type: string
+    ScanMode:
+      enum:
+      - block
+      - audit
+      - redact
+      title: ScanMode
+      type: string
+    Project:
+      properties:
+        adminCount:
+          default: 0
+          title: Admincount
+          type: integer
+        adminRoleId:
+          format: uuid
+          title: Adminroleid
+          type: string
+        agentSessionCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Agentsessioncount
+        botType:
+          anyOf:
+          - $ref: '#/components/schemas/ChatbotType'
+          - type: 'null'
+        chatbotId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Chatbotid
+        config:
+          $ref: '#/components/schemas/ProjectConfig'
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          title: Createdby
+          type: string
+        deploymentStatus:
+          $ref: '#/components/schemas/ProjectDeploymentStatus'
+          default: draft
+        friendlyId:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          description: The name can be used to identify the project instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
+          title: Friendlyid
+        id:
+          format: uuid
+          title: Id
+          type: string
+        memberCount:
+          default: 0
+          title: Membercount
+          type: integer
+        memberRoleId:
+          format: uuid
+          title: Memberroleid
+          type: string
+        name:
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        providerCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Providercount
+        scannerCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Scannercount
+        tokenCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Tokencount
+        type:
+          $ref: '#/components/schemas/ProjectType'
+        updatedAt:
+          format: date-time
+          title: Updatedat
+          type: string
+      required:
+      - id
+      - name
+      - type
+      - config
+      - createdAt
+      - createdBy
+      - updatedAt
+      - adminRoleId
+      - memberRoleId
+      - tokenCount
+      - providerCount
+      - scannerCount
+      title: Project
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

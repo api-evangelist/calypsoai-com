@@ -1,0 +1,493 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/calypsoai-com/main/json-schema/calypsoai-com-patch-provider-body-schema.json",
+  "title": "PatchProviderBody",
+  "x-generated": "2026-10-20",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/calypsoai-com-openapi.json#/components/schemas/PatchProviderBody",
+  "properties": {
+    "authTemplate": {
+      "anyOf": [
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/APIRequestBlock"
+            },
+            {
+              "$ref": "#/$defs/APIRetryBlock"
+            },
+            {
+              "$ref": "#/$defs/APIWorkflowBlock"
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "New provider auth template to use when sending prompts.",
+      "title": "Authtemplate"
+    },
+    "inputs": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "New input values that can be accessed in the template.",
+      "title": "Inputs"
+    },
+    "maxRequestsPerSecond": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Deprecated, use requestConcurrencyLimit instead.",
+      "title": "Maxrequestspersecond"
+    },
+    "name": {
+      "anyOf": [
+        {
+          "pattern": "^[a-zA-Z0-9-_]+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The name can be used to identify the provider instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.",
+      "title": "Name"
+    },
+    "requestConcurrencyLimit": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RequestConcurrencyLimit"
+        },
+        {
+          "const": false,
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Specifies concurrency limits for requests from campaign run attacks. Set to false to remove existing limit.",
+      "title": "Requestconcurrencylimit"
+    },
+    "secrets": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/NewSecret"
+              }
+            ]
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "New secrets that can be accessed in the template.",
+      "title": "Secrets"
+    },
+    "template": {
+      "anyOf": [
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/APIRequestBlock"
+            },
+            {
+              "$ref": "#/$defs/APIRetryBlock"
+            },
+            {
+              "$ref": "#/$defs/APIWorkflowBlock"
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "New provider template to use when sending prompts.",
+      "title": "Template"
+    },
+    "test": {
+      "default": false,
+      "description": "Whether to test the provider connection before updating.",
+      "title": "Test",
+      "type": "boolean"
+    }
+  },
+  "type": "object",
+  "$defs": {
+    "APIRequestBlock": {
+      "properties": {
+        "awsAuth": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AWSAuth"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "template": true
+        },
+        "body": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "template": true,
+          "title": "Body"
+        },
+        "headers": {
+          "additionalProperties": true,
+          "default": {},
+          "template": true,
+          "title": "Headers",
+          "type": "object"
+        },
+        "json": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "template": true,
+          "title": "Json"
+        },
+        "method": {
+          "$ref": "#/$defs/HTTPMethod"
+        },
+        "ociAuth": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OCIAuth"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "template": true
+        },
+        "outputs": {
+          "$ref": "#/$defs/APIScopeOutputs",
+          "default": {}
+        },
+        "queryParams": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "template": true,
+          "title": "Queryparams",
+          "type": "object"
+        },
+        "timeout": {
+          "default": 20,
+          "title": "Timeout",
+          "type": "integer"
+        },
+        "type": {
+          "const": "request",
+          "default": "request",
+          "title": "Type",
+          "type": "string"
+        },
+        "url": {
+          "template": true,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method",
+        "url"
+      ],
+      "title": "APIRequestBlock",
+      "type": "object"
+    },
+    "APIRetryBlock": {
+      "properties": {
+        "attempts": {
+          "title": "Attempts",
+          "type": "integer"
+        },
+        "backoff": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "default": 1,
+          "template": true,
+          "title": "Backoff"
+        },
+        "block": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/APIRequestBlock"
+            },
+            {
+              "$ref": "#/$defs/APIWorkflowBlock"
+            },
+            {
+              "$ref": "#/$defs/APIRetryBlock"
+            }
+          ],
+          "template": true,
+          "title": "Block"
+        },
+        "type": {
+          "const": "retry",
+          "default": "retry",
+          "title": "Type",
+          "type": "string"
+        },
+        "when": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "template": true,
+          "title": "When"
+        }
+      },
+      "required": [
+        "attempts",
+        "block"
+      ],
+      "title": "APIRetryBlock",
+      "type": "object"
+    },
+    "APIScopeOutputs": {
+      "patternProperties": {
+        "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+          "type": "string"
+        }
+      },
+      "template": true,
+      "title": "APIScopeOutputs",
+      "type": "object"
+    },
+    "APIWorkflowBlock": {
+      "properties": {
+        "outputs": {
+          "$ref": "#/$defs/APIScopeOutputs",
+          "default": {}
+        },
+        "stages": {
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/APIRequestBlock"
+              },
+              {
+                "$ref": "#/$defs/APIRetryBlock"
+              },
+              {
+                "$ref": "#/$defs/APIWorkflowBlock"
+              }
+            ]
+          },
+          "template": true,
+          "title": "Stages",
+          "type": "array"
+        },
+        "type": {
+          "const": "workflow",
+          "default": "workflow",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stages"
+      ],
+      "title": "APIWorkflowBlock",
+      "type": "object"
+    },
+    "AWSAuth": {
+      "properties": {
+        "accessKey": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "template": true,
+          "title": "Accesskey"
+        },
+        "region": {
+          "template": true,
+          "title": "Region",
+          "type": "string"
+        },
+        "secretKey": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "template": true,
+          "title": "Secretkey"
+        },
+        "service": {
+          "template": true,
+          "title": "Service",
+          "type": "string"
+        },
+        "token": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "template": true,
+          "title": "Token"
+        }
+      },
+      "required": [
+        "service",
+        "region"
+      ],
+      "title": "AWSAuth",
+      "type": "object"
+    },
+    "HTTPMethod": {
+      "enum": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "title": "HTTPMethod",
+      "type": "string"
+    },
+    "NewSecret": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "format": "password",
+          "title": "Value",
+          "type": "string",
+          "writeOnly": true
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "title": "NewSecret",
+      "type": "object"
+    },
+    "OCIAuth": {
+      "properties": {
+        "keyId": {
+          "template": true,
+          "title": "Keyid",
+          "type": "string"
+        },
+        "passphrase": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "template": true,
+          "title": "Passphrase"
+        },
+        "privateKeyPem": {
+          "template": true,
+          "title": "Privatekeypem",
+          "type": "string"
+        }
+      },
+      "required": [
+        "keyId",
+        "privateKeyPem"
+      ],
+      "title": "OCIAuth",
+      "type": "object"
+    },
+    "RequestConcurrencyLimit": {
+      "properties": {
+        "decayPerSecond": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Number of request slots that are opened per second.\n\nSet a value to use the concurrency limit as a rate limit.\n\nFor example, to set a rate limit of 5 requests per second set requests=5 and decayPerSecond=5",
+          "title": "Decaypersecond"
+        },
+        "requests": {
+          "description": "Max number of request slots that can be occupied at once.",
+          "exclusiveMinimum": 0.0,
+          "title": "Requests",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "requests"
+      ],
+      "title": "RequestConcurrencyLimit",
+      "type": "object"
+    }
+  }
+}

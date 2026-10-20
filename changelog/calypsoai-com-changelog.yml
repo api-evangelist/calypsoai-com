@@ -1,0 +1,59 @@
+generated: '2026-10-19'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://clouddocs.f5.com/api/irules/NAME.html
+sources:
+- https://clouddocs.f5.com/api/irules/NAME.html
+- https://docs.aisecurity.f5.com/release-notes/
+entries:
+- breaking: false
+  highlights:
+  - SaaS - v10.139.2
+  date: '2026-10-14'
+- breaking: false
+  highlights:
+  - SaaS - v10.122.0
+  date: '2026-09-30'
+- breaking: false
+  highlights:
+  - SaaS - v10.110.0.2
+  date: '2026-09-10'
+- breaking: false
+  highlights:
+  - SaaS - v10.98.4
+  date: '2026-08-26'
+- breaking: false
+  highlights:
+  - SaaS - v10.96.2
+  date: '2026-08-19'
+- breaking: false
+  highlights:
+  - SaaS - v10.81.3
+  date: '2026-07-28'
+- breaking: false
+  highlights:
+  - SaaS - v10.63.0
+  date: '2026-07-09'
+- breaking: false
+  highlights:
+  - SaaS - v10.42.6
+  date: '2026-06-17'
+- breaking: false
+  highlights:
+  - SaaS - v10.31.0
+  date: '2026-05-21'
+- breaking: false
+  highlights:
+  - SaaS - v10.10.4
+  date: '2026-04-16'
+- breaking: false
+  highlights:
+  - SaaS - v9.164.4
+  date: '2026-03-30'
+- breaking: false
+  highlights:
+  - SaaS - v9.164.4
+  date: '2026-03-03'
+current_version: v10.139.2
+note: Versioning scheme uses a leading 'v' followed by major.minor.patch numbers.
+docs: https://clouddocs.f5.com/api/irules/NAME.html

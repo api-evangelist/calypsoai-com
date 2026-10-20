@@ -1,0 +1,23 @@
+generated: '2026-10-19'
+method: generated
+generator: extract-docs-artifacts.py skills (local)
+source: openapi/calypsoai-com-openapi.json
+skills:
+- file: skills/calypsoai-com-create-project-with-members.md
+  name: calypsoai-com-create-project-with-members
+  api: openapi/calypsoai-com-openapi.json
+  operations:
+  - post_projects
+  - post_projects_project_members
+- file: skills/calypsoai-com-create-user-assign-role.md
+  name: calypsoai-com-create-user-assign-role
+  api: openapi/calypsoai-com-openapi.json
+  operations:
+  - post_users
+  - post_users_userId_roles_roleId
+- file: skills/calypsoai-com-create-chat.md
+  name: calypsoai-com-create-chat
+  api: openapi/calypsoai-com-openapi.json
+  operations:
+  - post_chats
+  - get_chats_chatId

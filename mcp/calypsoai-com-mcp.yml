@@ -1,0 +1,6 @@
+generated: '2026-10-19'
+method: derived
+source: openapi/calypsoai-com-openapi.json
+deployment:
+  mode: none
+  verified: derived

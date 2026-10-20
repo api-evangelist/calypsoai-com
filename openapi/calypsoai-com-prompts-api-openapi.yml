@@ -1,0 +1,1817 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Prompts API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Prompts
+paths:
+  /backend/v1/prompts:
+    get:
+      description: Retrieves a list of prompts that match the given criteria, with the option to adjust the limit for more results.
+      operationId: get_prompts
+      parameters:
+      - description: Pass cursor from response to get next or prev page.
+        in: query
+        name: cursor
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Pass cursor from response to get next or prev page.
+          title: Cursor
+      - description: Only return results that match the given text.
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Only return results that match the given text.
+          title: Search
+      - description: Limits the amount of results.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Limits the amount of results.
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - description: Whether results should be sorted in ascending order.
+        in: query
+        name: ascending
+        required: false
+        schema:
+          default: false
+          description: Whether results should be sorted in ascending order.
+          title: Ascending
+          type: boolean
+      - description: Only return results from before this timestamp.
+        in: query
+        name: before
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Only return results from before this timestamp.
+          title: Before
+      - description: Only return results from after this timestamp.
+        in: query
+        name: after
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Only return results from after this timestamp.
+          title: After
+      - description: 'Only return results that match the given external metadata
+
+          (as a stringified json e.g. ''{"key": "value"}'' would return only prompts with a "key" entry matching "value")'
+        in: query
+        name: externalMetadata
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Only return results that match the given external metadata
+
+            (as a stringified json e.g. ''{"key": "value"}'' would return only prompts with a "key" entry matching "value")'
+          title: Externalmetadata
+      - description: Only returns prompts belonging to the authenticated user.
+        in: query
+        name: onlyUser
+        required: false
+        schema:
+          default: true
+          description: Only returns prompts belonging to the authenticated user.
+          title: Onlyuser
+          type: boolean
+      - description: Repeated query parameters of outcomes. Filters results by these outcomes.
+        in: query
+        name: outcomes
+        required: false
+        schema:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/PromptOutcome'
+            type: array
+          - type: 'null'
+          default: []
+          description: Repeated query parameters of outcomes. Filters results by these outcomes.
+          title: Outcomes
+      - description: Only returns prompts sent to specified projects.
+        in: query
+        name: projectId
+        required: false
+        schema:
+          default: []
+          description: Only returns prompts sent to specified projects.
+          items:
+            format: uuid
+            type: string
+          title: Projectid
+          type: array
+      - description: Only returns prompts sent to specified providers.
+        in: query
+        name: providerId
+        required: false
+        schema:
+          default: []
+          description: Only returns prompts sent to specified providers.
+          items:
+            format: uuid
+            type: string
+          title: Providerid
+          type: array
+      - description: Only returns prompts that match the given types.
+        in: query
+        name: type
+        required: false
+        schema:
+          default: []
+          description: Only returns prompts that match the given types.
+          items:
+            $ref: '#/components/schemas/PromptType'
+          title: Type
+          type: array
+      - description: Only return prompts sent by the given user(s).
+        in: query
+        name: userId
+        required: false
+        schema:
+          default: []
+          description: Only return prompts sent by the given user(s).
+          items:
+            type: string
+          title: Userid
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPromptsResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get prompts
+      tags:
+      - Prompts
+    post:
+      description: Send a prompt to a provider, after being scanned with the chosen project configuration.
+      operationId: post_prompts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/PostPromptsBodyFromChat'
+              - $ref: '#/components/schemas/PostPromptsBody'
+              title: Body
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostPromptsResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Send prompt
+      tags:
+      - Prompts
+  /backend/v1/prompts/templates:
+    get:
+      description: 'Retrieves a list of prompt templates that match the given criteria,
+
+        with the option to adjust the limit for more results.'
+      operationId: get_prompts_templates
+      parameters:
+      - description: ID of an api token, only return results created before that token. Or if datetime instead of ID, will only return results before that datetime
+        in: query
+        name: before
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of an api token, only return results created before that token. Or if datetime instead of ID, will only return results before that datetime
+          title: Before
+      - description: ID of an api token, only return results created after that token. Or if datetime instead of ID, will only return results after that datetime
+        in: query
+        name: after
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of an api token, only return results created after that token. Or if datetime instead of ID, will only return results after that datetime
+          title: After
+      - description: Limits the amount of returned objects. Max 100, min 1
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Limits the amount of returned objects. Max 100, min 1
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - description: Filter by project ID or friendly ID.
+        in: query
+        name: project
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          - type: 'null'
+          description: Filter by project ID or friendly ID.
+          title: Project
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPromptTemplatesResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get prompt templates
+      tags:
+      - Prompts
+    post:
+      description: Create a new prompt template.
+      operationId: post_prompts_templates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostPromptTemplatesBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostSuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Create prompt template
+      tags:
+      - Prompts
+  /backend/v1/prompts/templates/{promptTemplateId}:
+    delete:
+      description: Delete a prompt template.
+      operationId: delete_prompts_templates_promptTemplateId
+      parameters:
+      - in: path
+        name: promptTemplateId
+        required: true
+        schema:
+          format: uuid
+          title: Prompttemplateid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Delete a prompt template
+      tags:
+      - Prompts
+    get:
+      description: Retrieves a prompt template by its ID.
+      operationId: get_prompts_templates_promptTemplateId
+      parameters:
+      - in: path
+        name: promptTemplateId
+        required: true
+        schema:
+          format: uuid
+          title: Prompttemplateid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPromptTemplateResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get prompt template
+      tags:
+      - Prompts
+    patch:
+      description: Modifies a prompt template, allowing you to update the name.
+      operationId: patch_prompts_templates_promptTemplateId
+      parameters:
+      - in: path
+        name: promptTemplateId
+        required: true
+        schema:
+          format: uuid
+          title: Prompttemplateid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchPromptTemplateBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update prompt template
+      tags:
+      - Prompts
+  /backend/v1/prompts/{promptId}:
+    get:
+      description: Retrieves a prompt by its ID.
+      operationId: get_prompts_promptId
+      parameters:
+      - in: path
+        name: promptId
+        required: true
+        schema:
+          format: uuid
+          title: Promptid
+          type: string
+      - description: Return the guardrails and their configuration that were run on the prompt.
+        in: query
+        name: fetchScanners
+        required: false
+        schema:
+          default: false
+          description: Return the guardrails and their configuration that were run on the prompt.
+          title: Fetchscanners
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPromptResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get prompt
+      tags:
+      - Prompts
+    patch:
+      description: 'Modifies a prompt by its ID.
+
+        This endpoint allows you to mark the prompt for preservation when deleting prompts periodically.'
+      operationId: patch_prompts_promptId
+      parameters:
+      - in: path
+        name: promptId
+        required: true
+        schema:
+          format: uuid
+          title: Promptid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchPromptBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update prompt
+      tags:
+      - Prompts
+components:
+  schemas:
+    ScannerAvailability:
+      properties:
+        global:
+          default: false
+          description: If True guardrail can be used by all projects
+          title: Global
+          type: boolean
+        projectIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Projectids
+          type: array
+          uniqueItems: true
+      title: ScannerAvailability
+      type: object
+    ScannerVersionMeta:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Createdby
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        direction:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - type: 'null'
+        f1Score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: F1Score
+        id:
+          format: uuid
+          title: Id
+          type: string
+        latestDatasetResult:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDatasetResult'
+          - type: 'null'
+        name:
+          maxLength: 100
+          minLength: 1
+          pattern: ^[a-zA-Z0-9-_]+$
+          title: Name
+          type: string
+        published:
+          title: Published
+          type: boolean
+      required:
+      - id
+      - createdAt
+      - name
+      - published
+      title: ScannerVersionMeta
+      type: object
+    PromptOutcome:
+      description: 'Outcome of a prompt after it has been processed by all guardrails and providers.
+
+
+        Cleared: All guardrails passed, and the prompt was sent to providers
+
+        Flagged: At least one guardrail failed, and the prompt was sent to providers
+
+        Blocked: At least one guardrail failed, and the prompt was not sent to providers.'
+      enum:
+      - cleared
+      - flagged
+      - redacted
+      - blocked
+      title: PromptOutcome
+      type: string
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    MLTextScannerConfig:
+      properties:
+        type:
+          const: ml_text
+          default: ml_text
+          title: Type
+          type: string
+      required: []
+      title: MLTextScannerConfig
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    RegexScannerConfig:
+      properties:
+        pattern:
+          description: Python Flavored Regular Expression (RegEx) to check for in the prompt or response. Case insensitive.
+          title: Pattern
+          type: string
+        type:
+          const: regex
+          default: regex
+          title: Type
+          type: string
+      required:
+      - pattern
+      title: RegexScannerConfig
+      type: object
+    ZipScannerSource:
+      properties:
+        type:
+          const: zip
+          default: zip
+          title: Type
+          type: string
+      title: ZipScannerSource
+      type: object
+    PatchPromptTemplateBody:
+      properties:
+        name:
+          description: New name for the prompt template.
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+      required:
+      - name
+      title: PatchPromptTemplateBody
+      type: object
+    PostPromptsResponse:
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of prompt that was created, if prompt recording is enabled
+          title: Id
+        result:
+          $ref: '#/components/schemas/PromptResult'
+          description: Result of prompt that was created
+        scanners:
+          anyOf:
+          - $ref: '#/components/schemas/ProjectScanners'
+          - type: 'null'
+          description: Details on the guardrails that ran on the input
+      required:
+      - result
+      title: PostPromptsResponse
+      type: object
+    ProjectScanners:
+      properties:
+        configs:
+          additionalProperties:
+            $ref: '#/components/schemas/ProjectConfigScanner'
+          default: {}
+          description: Behaviour of each guardrails specific to the project, such as whether to block flagged prompts
+          propertyNames:
+            format: uuid
+          title: Configs
+          type: object
+        forcedScanners:
+          additionalProperties:
+            anyOf:
+            - $ref: '#/components/schemas/Scanner'
+            - items:
+                $ref: '#/components/schemas/Scanner'
+              type: array
+          default: {}
+          description: 'Guardrails enabled for the project which were enabled by the global setting''s admin.
+
+            A list value indicates multiple versions of a guardrail that were enabled (Playground prompts only).'
+          propertyNames:
+            format: uuid
+          title: Forcedscanners
+          type: object
+        scanners:
+          additionalProperties:
+            $ref: '#/components/schemas/Scanner'
+          default: {}
+          description: Guardrails enabled for the project which were enabled by the project's admin.
+          propertyNames:
+            format: uuid
+          title: Scanners
+          type: object
+      title: ProjectScanners
+      type: object
+    PromptTemplate:
+      examples:
+      - createdAt: '2023-10-04T14:06:13.779733Z'
+        id: 018fe3e6-e87d-702f-85d5-933bab2a6d4d
+        name: Example_Template
+        projectId: 018fe3e6-e87d-702f-85d5-933bab2a6d4d
+        promptId: 018fe3e6-e87d-702f-85d5-933bab2a6d4d
+        userId: 018fe3e6-e87d-702f-85d5-933bab2a6d4d
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of a group or None if top level
+          title: Projectid
+        promptId:
+          format: uuid
+          title: Promptid
+          type: string
+        userId:
+          title: Userid
+          type: string
+      required:
+      - id
+      - name
+      - createdAt
+      - promptId
+      - userId
+      title: PromptTemplate
+      type: object
+    RemediationScannerSource:
+      properties:
+        sourceId:
+          format: uuid
+          title: Sourceid
+          type: string
+        type:
+          const: remediation
+          default: remediation
+          title: Type
+          type: string
+      required:
+      - sourceId
+      title: RemediationScannerSource
+      type: object
+    VendorScannerSource:
+      properties:
+        type:
+          const: vendor
+          default: vendor
+          title: Type
+          type: string
+      title: VendorScannerSource
+      type: object
+    LegacyScannerResult:
+      additionalProperties: true
+      properties: {}
+      title: LegacyScannerResult
+      type: object
+    PostPromptTemplatesBody:
+      properties:
+        name:
+          description: Name of the prompt template.
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        project:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          - type: 'null'
+          description: 'ID or friendly ID of a project to allow access to other users to the newly created template with
+
+            access to the project. If not provided, the new template will only be accessible by the owner.'
+          title: Project
+        promptId:
+          description: ID of prompt to create template from.
+          format: uuid
+          title: Promptid
+          type: string
+      required:
+      - promptId
+      - name
+      title: PostPromptTemplatesBody
+      type: object
+    ScanRequest:
+      properties:
+        externalMetadata:
+          anyOf:
+          - maxProperties: 10
+            patternProperties:
+              ^[a-zA-Z0-9_\-]*$:
+                maxLength: 255
+                type: string
+            propertyNames:
+              maxLength: 50
+            type: object
+          - type: 'null'
+          title: Externalmetadata
+        extraInputs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Extrainputs
+        id:
+          format: uuid
+          title: Id
+          type: string
+        input:
+          anyOf:
+          - type: string
+          - additionalProperties: true
+            type: object
+          - items: {}
+            type: array
+          - type: integer
+          - type: number
+          - type: boolean
+          title: Input
+        preserve:
+          default: false
+          title: Preserve
+          type: boolean
+        projectId:
+          format: uuid
+          title: Projectid
+          type: string
+        receivedAt:
+          format: date-time
+          title: Receivedat
+          type: string
+        result:
+          $ref: '#/components/schemas/ScanRequestResult'
+        type:
+          const: scan
+          default: scan
+          title: Type
+          type: string
+        userId:
+          title: Userid
+          type: string
+      required:
+      - id
+      - projectId
+      - input
+      - receivedAt
+      - result
+      - userId
+      title: ScanRequest
+      type: object
+    ScanMode:
+      enum:
+      - block
+      - audit
+      - redact
+      title: ScanMode
+      type: string
+    RegexScannerResult:
+      properties:
+        matches:
+          items:
+            maxItems: 2
+            minItems: 2
+            prefixItems:
+            - type: integer
+            - type: integer
+            type: array
+          title: Matches
+          type: array
+        type:
+          const: regex
+          default: regex
+          title: Type
+          type: string
+      required:
+      - matches
+      title: RegexScannerResult
+      type: object
+    ScanRequestResult:
+      properties:
+        outcome:
+          $ref: '#/components/schemas/PromptOutcome'
+          description: One of 'cleared' or 'flagged'
+        response:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: The response of the prompt from the llm after processing by guardrails, in case it is a response scan
+          title: Response
+        scannerResults:
+          description: Result for each guardrail that ran on the prompt
+          items:
+            $ref: '#/components/schemas/Scan'
+          title: Scannerresults
+          type: array
+      required:
+      - scannerResults
+      - outcome
+      title: ScanRequestResult
+      type: object
+    Scanner:
+      properties:
+        availability:
+          $ref: '#/components/schemas/ScannerAvailability'
+          default:
+            global: false
+            projectIds: []
+        config:
+          anyOf:
+          - discriminator:
+              mapping:
+                custom: '#/components/schemas/GenAIScannerConfig'
+                genai: '#/components/schemas/GenAIScannerConfig'
+                keyword: '#/components/schemas/KeywordScannerConfig'
+                ml_text: '#/components/schemas/MLTextScannerConfig'
+                regex: '#/components/schemas/RegexScannerConfig'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/RegexScannerConfig'
+            - $ref: '#/components/schemas/KeywordScannerConfig'
+            - $ref: '#/components/schemas/GenAIScannerConfig'
+            - $ref: '#/components/schemas/MLTextScannerConfig'
+          - $ref: '#/components/schemas/LegacyScannerConfig'
+          - type: 'null'
+          title: Config
+        direction:
+          $ref: '#/components/schemas/ScannerDirection'
+          default: request
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        packageId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Packageid
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        scannerTemplateId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Scannertemplateid
+        source:
+          default:
+            type: internal
+          discriminator:
+            mapping:
+              internal: '#/components/schemas/InternalScannerSource'
+              remediation: '#/components/schemas/RemediationScannerSource'
+              vendor: '#/components/schemas/VendorScannerSource'
+              zip: '#/components/schemas/ZipScannerSource'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/InternalScannerSource'
+          - $ref: '#/components/schemas/ZipScannerSource'
+          - $ref: '#/components/schemas/VendorScannerSource'
+          - $ref: '#/components/schemas/RemediationScannerSource'
+          title: Source
+        tags:
+          default: []
+          items:
+            maxLength: 50
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          title: Tags
+          type: array
+        vendored:
+          anyOf:
+          - type: boolean
+          - items:
+              type: string
+            type: array
+          default: false
+          title: Vendored
+        versionMeta:
+          $ref: '#/components/schemas/ScannerVersionMeta'
+      required:
+      - name
+      - id
+      - versionMeta
+      title: Scanner
+      type: object
+    KeywordScannerResult:
+      properties:
+        matches:
+          additionalProperties:
+            items:
+              maxItems: 2
+              minItems: 2
+              prefixItems:
+              - type: integer
+              - type: integer
+              type: array
+            type: array
+          title: Matches
+          type: object
+        type:
+          const: keyword
+          default: keyword
+          title: Type
+          type: string
+      required:
+      - matches
+      title: KeywordScannerResult
+      type: object
+    PatchPromptBody:
+      properties:
+        preserve:
+          description: Whether or not to preserve this prompt when deleting prompts periodically
+          title: Preserve
+          type: boolean
+      required:
+      - preserve
+      title: PatchPromptBody
+      type: object
+    LegacyScannerConfig:
+      additionalProperties: true
+      properties: {}
+      title: LegacyScannerConfig
+      type: object
+    InternalScannerSource:
+      properties:
+        type:
+          const: internal
+          default: internal
+          title: Type
+          type: string
+      title: InternalScannerSource
+      type: object
+    ScanOutcome:
+      description: The outcome of a single scan on a prompt.
+      enum:
+      - failed
+      - passed
+      title: ScanOutcome
+      type: string
+    MLTextScannerResult:
+      properties:
+        type:
+          const: ml_text
+          default: ml_text
+          title: Type
+          type: string
+      title: MLTextScannerResult
+      type: object
+    KeywordScannerConfig:
+      properties:
+        type:
+          const: keyword
+          default: keyword
+          title: Type
+          type: string
+        words:
+          description: Words to check for in the prompt or response. Case insensitive. Empty strings will be removed.
+          items:
+            type: string
+          title: Words
+          type: array
+      required:
+      - words
+      title: KeywordScannerConfig
+      type: object
+    Scan:
+      properties:
+        completedDate:
+          format: date-time
+          title: Completeddate
+          type: string
+        customConfig:
+          default: false
+          title: Customconfig
+          type: boolean
+        data:
+          anyOf:
+          - discriminator:
+              mapping:
+                custom: '#/components/schemas/GenAIScannerResult'
+                error: '#/components/schemas/ErrorScanResult'
+                genai: '#/components/schemas/GenAIScannerResult'
+                keyword: '#/components/schemas/KeywordScannerResult'
+                ml_text: '#/components/schemas/MLTextScannerResult'
+                regex: '#/components/schemas/RegexScannerResult'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/RegexScannerResult'
+            - $ref: '#/components/schemas/KeywordScannerResult'
+            - $ref: '#/components/schemas/GenAIScannerResult'
+            - $ref: '#/components/schemas/MLTextScannerResult'
+            - $ref: '#/components/schemas/ErrorScanResult'
+          - $ref: '#/components/schemas/LegacyScannerResult'
+          title: Data
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+        outcome:
+          $ref: '#/components/schemas/ScanOutcome'
+        scanDirection:
+          $ref: '#/components/schemas/ScanDirection'
+        scannerId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Scannerid
+        scannerName:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Scannername
+        scannerVersionMeta:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerVersionMeta'
+          - type: 'null'
+        startedDate:
+          format: date-time
+          title: Starteddate
+          type: string
+      required:
+      - outcome
+      - data
+      - startedDate
+      - completedDate
+      - scanDirection
+      title: Scan
+      type: object
+    ScannerDatasetResult:
+      properties:
+        datasetRunId:
+          format: uuid
+          title: Datasetrunid
+          type: string
+        f1Score:
+          title: F1Score
+          type: number
+      required:
+      - datasetRunId
+      - f1Score
+      title: ScannerDatasetResult
+      type: object
+    GetPromptTemplatesResponse:
+      properties:
+        promptTemplates:
+          description: Prompt templates matching the given filter criteria.
+          items:
+            $ref: '#/components/schemas/PromptTemplate'
+          title: Prompttemplates
+          type: array
+      required:
+      - promptTemplates
+      title: GetPromptTemplatesResponse
+      type: object
+    PromptResult:
+      examples:
+      - files: []
+        outcome: flagged
+        providerResult:
+          data: I'm sorry, but I can't assist with that.
+          receivedDate: '2023-10-04T14:06:17.779733Z'
+          sentDate: '2023-10-04T14:06:16.779733Z'
+          statusCode: 200
+        response: I'm sorry, but I can't assist with that.
+        scannerResults:
+        - completedDate: '2023-10-04T14:06:13.940393Z'
+          customConfig: false
+          data:
+            tokenUsage: 0
+            type: custom
+          outcome: passed
+          scanDirection: request
+          scannerId: 018d6579-dd47-70ac-99f8-5623e48cdeba
+          scannerName: Prompt injection guardrail
+          startedDate: '2023-10-04T14:06:13.779733Z'
+      properties:
+        files:
+          default: []
+          items:
+            $ref: '#/components/schemas/PromptResultFile'
+          title: Files
+          type: array
+        outcome:
+          $ref: '#/components/schemas/PromptOutcome'
+          description: One of 'cleared', 'flagged' or 'blocked'
+        providerResult:
+          anyOf:
+          - $ref: '#/components/schemas/ProviderPromptResult'
+          - type: 'null'
+        response:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: The response to the prompt from the LLM
+          title: Response
+        scannerResults:
+          description: Result for each guardrail that ran on the prompt
+          items:
+            $ref: '#/components/schemas/Scan'
+          title: Scannerresults
+          type: array
+      required:
+      - scannerResults
+      - outcome
+      title: PromptResult
+      type: object
+    GetPromptResponse:
+      properties:
+        memory:
+          description: Parent prompts of the request prompt
+          items:
+            $ref: '#/components/schemas/Prompt'
+          title: Memory
+          type: array
+        prompt:
+          anyOf:
+          - $ref: '#/components/schemas/Prompt'
+          - $ref: '#/components/schemas/ScanRequest'
+          description: Data for requested prompt
+          title: Prompt
+        promptScanners:
+          anyOf:
+          - $ref: '#/components/schemas/ProjectScanners'
+          - type: 'null'
+          description: Data for guardrails that run on the prompt
+      required:
+      - prompt
+      - memory
+      title: GetPromptResponse
+      type: object
+    ErrorScanResult:
+      properties:
+        msg:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Msg
+        type:
+          const: error
+          default: error
+          title: Type
+          type: string
+      title: ErrorScanResult
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    PostPromptsBody:
+      examples:
+      - input: '
+
+          See any credit card number in this email?
+
+          Dear Customer Support,
+
+
+          I am reaching out regarding a recent purchase with Order #8901. It appears that the payment has not been processed yet. Here are the payment details I used:
+
+
+          Random Number: 5200a@1234a@5678a@9013
+
+          Expiration: 11/24
+
+          Cardholder Name: Jane Doe
+
+
+          Could you please check and confirm if there''s been any issue with the payment?
+
+
+          Best regards,
+
+
+          Jane Doe
+
+          '
+        verbose: false
+      properties:
+        externalMetadata:
+          anyOf:
+          - maxProperties: 10
+            patternProperties:
+              ^[a-zA-Z0-9_\-]*$:
+                maxLength: 255
+                type: string
+            propertyNames:
+              maxLength: 50
+            type: object
+          - type: 'null'
+          description: 'A json string for users to attach any data to the prompt for their own use,
+
+            For example to tag certain prompts for tracking
+
+            (Limited to 10 items, keys of up to 50 characters and values of up to 255 characters).'
+          title: Externalmetadata
+        input:
+          anyOf:
+          - type: string
+          - additionalProperties: true
+            type: object
+          - items: {}
+            type: array
+          - type: integer
+          - type: number
+          - type: boolean
+          description: Prompt data to send to provider
+          title: Input
+        parentId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Parent ID to set on child prompts
+          title: Parentid
+        project:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          - type: 'null'
+          description: Project ID or name to send prompt to, defaults to global project
+          title: Project
+        provider:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          - type: 'null'
+          description: Provider ID or name to send prompt to, defaults to chosen project's default provider
+          title: Provider
+        skipScanning:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Skipscanning
+        verbose:
+          default: false
+          description: If true, return details on each guardrail that ran against the input data
+          title: Verbose
+          type: boolean
+      required:
+      - input
+      title: PostPromptsBody
+      type: object
+    GetPromptTemplateResponse:
+      properties:
+        promptTemplate:
+          $ref: '#/components/schemas/PromptTemplate'
+          description: Requested prompt template object.
+        prompts:
+          description: Prompts contained in the prompt template.
+          items:
+            $ref: '#/components/schemas/Prompt'
+          title: Prompts
+          type: array
+      required:
+      - promptTemplate
+      - prompts
+      title: GetPromptTemplateResponse
+      type: object
+    ScannerDirection:
+      enum:
+      - both
+      - request
+      - response
+      title: ScannerDirection
+      type: string
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    ScanDirection:
+      enum:
+      - request
+      - response
+      title: ScanDirection
+      type: string
+    GenAIScannerResult:
+      properties:
+        tokenUsage:
+          default: 0
+          title: Tokenusage
+          type: integer
+        type:
+          default: custom
+          enum:
+          - genai
+          - custom
+          title: Type
+          type: string
+      title: GenAIScannerResult
+      type: object
+    PostPromptsBodyFromChat:
+      examples:
+      - input: '
+
+          See any credit card number in this email?
+
+          Dear Customer Support,
+
+
+          I am reaching out regarding a recent purchase with Order #8901. It appears that the payment has not been processed yet. Here are the payment details I used:
+
+
+          Random Number: 5200a@1234a@5678a@9013
+
+          Expiration: 11/24
+
+          Cardholder Name: Jane Doe
+
+
+          Could you please check and confirm if there''s been any issue with the payment?
+
+
+          Best regards,
+
+
+          Jane Doe
+
+          '
+        verbose: false
+      properties:
+        chatId:
+          description: Chat ID to add prompt to
+          format: uuid
+          title: Chatid
+          type: string
+        externalMetadata:
+          anyOf:
+          - maxProperties: 10
+            patternProperties:
+              ^[a-zA-Z0-9_\-]*$:
+                maxLength: 255
+                type: string
+            propertyNames:
+              maxLength: 50
+            type: object
+          - type: 'null'
+          description: 'A json string for users to attach any data to the prompt for their own use,
+
+            For example to tag certain prompts for tracking
+
+            (Limited to 10 items, keys of up to 50 characters and values of up to 255 characters).'
+          title: Externalmetadata
+        input:
+          anyOf:
+          - type: string
+          - additionalProperties: true
+            type: object
+          - items: {}
+            type: array
+          - type: integer
+          - type: number
+          - type: boolean
+          description: Prompt data to send to provider
+          title: Input
+        verbose:
+          default: false
+          description: If true, return details on each guardrail that ran against the input data
+          title: Verbose
+          type: boolean
+      required:
+      - chatId
+      - input
+      title: PostPromptsBodyFromChat
+      type: object
+    PromptType:
+      enum:
+      - prompt
+      - scan
+      - test
+      title: PromptType
+      type: string
+    ProviderPromptResult:
+      properties:
+        data:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Response contents from LLM
+          title: Data
+        receivedDate:
+          description: Time response was received from the LLM
+          format: date-time
+          title: Receiveddate
+          type: string
+        sentDate:
+          description: Time prompt was sent to the LLM
+          format: date-time
+          title: Sentdate
+          type: string
+        statusCode:
+          description: Status code returned from request to provider
+          title: Statuscode
+          type: integer
+      required:
+      - statusCode
+      - sentDate
+      - receivedDate
+      title: ProviderPromptResult
+      type: object
+    GetPromptsResponse:
+      properties:
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+        prompts:
+          description: Prompts matching the given filter criteria.
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/Prompt'
+            - $ref: '#/components/schemas/ScanRequest'
+          title: Prompts
+          type: array
+      required:
+      - prompts
+      title: GetPromptsResponse
+      type: object
+    PromptResultFile:
+      properties:
+        contentType:
+          title: Contenttype
+          type: string
+        data:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: File data, optionally base64 encoded if isBase64 is true
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        isBase64:
+          title: Isbase64
+          type: boolean
+        name:
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      - contentType
+      - isBase64
+      title: PromptResultFile
+      type: object
+    ProjectConfigScanner:
+      properties:
+        blocking:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Blocking
+        direction:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - const: ''
+            type: string
+          - type: 'null'
+          title: Direction
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+        flagMessage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Flagmessage
+        force:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Force
+        id:
+          format: uuid
+          title: Id
+          type: string
+        mode:
+          anyOf:
+          - $ref: '#/components/schemas/ScanMode'
+          - type: 'null'
+        version:
+          anyOf:
+          - format: uuid
+            type: string
+          - format: date-time
+            type: string
+          - maxLength: 100
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          - type: 'null'
+          title: Version
+      required:
+      - id
+      title: ProjectConfigScanner
+      type: object
+    Prompt:
+      examples:
+      - fromTemplate: false
+        id: 018fe3e9-1944-705a-9d09-f8e5e3bc1833
+        input: Test Input
+        parentId: 018fe3e9-1944-705a-9d09-f8e5e3bc1833
+        preserve: false
+        projectId: 018fe3e9-1944-705a-9d09-f8e5e3bc1833
+        receivedAt: '2023-10-04T14:06:13.779733Z'
+        result:
+          files: []
+          outcome: flagged
+          providerResult:
+            data: I'm sorry, but I can't assist with that.
+            receivedDate: '2023-10-04T14:06:18.779733Z'
+            sentDate: '2023-10-04T14:06:15.779733Z'
+            statusCode: 200
+          response: I'm sorry, but I can't assist with that.
+          scannerResults:
+          - completedDate: '2023-10-04T14:06:13.940393Z'
+            customConfig: false
+            data:
+              tokenUsage: 0
+              type: custom
+            outcome: passed
+            scanDirection: request
+            scannerId: 018d6579-dd47-70ac-99f8-5623e48cdeba
+            scannerName: Prompt injection guardrail
+            startedDate: '2023-10-04T14:06:13.779733Z'
+        type: prompt
+        userId: 018fe3e9-1944-705a-9d09-f8e5e3bc1833
+      properties:
+        externalMetadata:
+          anyOf:
+          - maxProperties: 10
+            patternProperties:
+              ^[a-zA-Z0-9_\-]*$:
+                maxLength: 255
+                type: string
+            propertyNames:
+              maxLength: 50
+            type: object
+          - type: 'null'
+          title: Externalmetadata
+        extraInputs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Extrainputs
+        fromTemplate:
+          default: false
+          description: If the prompt is from a template
+          title: Fromtemplate
+          type: boolean
+        id:
+          format: uuid
+          title: Id
+          type: string
+        input:
+          anyOf:
+          - type: string
+          - additionalProperties: true
+            type: object
+          - items: {}
+            type: array
+          - type: integer
+          - type: number
+          - type: boolean
+          title: Input
+        memory:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          description: IDs of prev prompts in the conversation
+          title: Memory
+        parentId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of the last prompt in the conversation
+          title: Parentid
+        preserve:
+          default: false
+          description: If the prompt should not be purged on data clean
+          title: Preserve
+          type: boolean
+        projectId:
+          description: ID of group prompt was used with
+          format: uuid
+          title: Projectid
+          type: string
+        provider:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of LLM provider use for the prompt
+          title: Provider
+        receivedAt:
+          format: date-time
+          title: Receivedat
+          type: string
+        result:
+          $ref: '#/components/schemas/PromptResult'
+        type:
+          default: prompt
+          enum:
+          - prompt
+          - test
+          title: Type
+          type: string
+        userId:
+          title: Userid
+          type: string
+      required:
+      - id
+      - projectId
+      - input
+      - receivedAt
+      - userId
+      - result
+      title: Prompt
+      type: object
+    GenAIScannerConfig:
+      properties:
+        input:
+          default: ''
+          title: Input
+          type: string
+        scanContext:
+          default: directional
+          description: 'Describes the context that is provided to the scanner
+
+            individual: Scan only the latest message
+
+            directional: Scan all messages in the conversation in the same direction as the latest message'
+          enum:
+          - individual
+          - directional
+          title: Scancontext
+          type: string
+        type:
+          default: custom
+          enum:
+          - genai
+          - custom
+          title: Type
+          type: string
+      title: GenAIScannerConfig
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

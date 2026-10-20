@@ -1,0 +1,182 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Generations API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Generations
+paths:
+  /backend/v1/generations:
+    post:
+      operationId: post_generations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostGenerationsBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostGenerationResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Post
+      tags:
+      - Generations
+components:
+  schemas:
+    CustomIntentGenerationOutput:
+      properties:
+        intent:
+          title: Intent
+          type: string
+      required:
+      - intent
+      title: CustomIntentGenerationOutput
+      type: object
+    SystemIntentsGenerationOutput:
+      properties:
+        intents:
+          items:
+            type: string
+          title: Intents
+          type: array
+      required:
+      - intents
+      title: SystemIntentsGenerationOutput
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    SystemIntentsGenerationInput:
+      properties:
+        systemPrompt:
+          maxLength: 50000
+          title: Systemprompt
+          type: string
+        type:
+          const: system_intents
+          default: system_intents
+          title: Type
+          type: string
+      required:
+      - systemPrompt
+      title: SystemIntentsGenerationInput
+      type: object
+    PostGenerationsBody:
+      properties:
+        input:
+          discriminator:
+            mapping:
+              custom_intent: '#/components/schemas/CustomIntentGenerationInput'
+              scanner_description: '#/components/schemas/ScannerDescriptionGenerationInput'
+              system_intents: '#/components/schemas/SystemIntentsGenerationInput'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/ScannerDescriptionGenerationInput'
+          - $ref: '#/components/schemas/CustomIntentGenerationInput'
+          - $ref: '#/components/schemas/SystemIntentsGenerationInput'
+          title: Input
+      required:
+      - input
+      title: PostGenerationsBody
+      type: object
+    CustomIntentGenerationInput:
+      properties:
+        intent:
+          title: Intent
+          type: string
+        type:
+          const: custom_intent
+          default: custom_intent
+          title: Type
+          type: string
+      required:
+      - intent
+      title: CustomIntentGenerationInput
+      type: object
+    PostGenerationResponse:
+      properties:
+        output:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDescriptionGenerationOutput'
+          - $ref: '#/components/schemas/CustomIntentGenerationOutput'
+          - $ref: '#/components/schemas/SystemIntentsGenerationOutput'
+          title: Output
+      required:
+      - output
+      title: PostGenerationResponse
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    ScannerDescriptionGenerationOutput:
+      properties:
+        description:
+          title: Description
+          type: string
+      required:
+      - description
+      title: ScannerDescriptionGenerationOutput
+      type: object
+    ScannerDescriptionGenerationInput:
+      properties:
+        description:
+          title: Description
+          type: string
+        type:
+          const: scanner_description
+          default: scanner_description
+          title: Type
+          type: string
+      required:
+      - description
+      title: ScannerDescriptionGenerationInput
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

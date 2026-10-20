@@ -1,23 +1,698 @@
 aid: calypsoai-com
 name: CalypsoAI
-description: 'CalypsoAI is a company surfaced via the API Evangelist harvest backlog (source: g2-catalog)
-  and added to the network as a stub for full-pipeline profiling.'
+image: https://cdn.studio.f5.com/images/k6fem79d/translations-production/b3785ede2a21477c82a9a88551b7cf6ba39a9df9-1200x675.png
+description: CalypsoAI is an AI security and compliance platform that provides advanced guardrails for large enterprises to safely deploy and
+  manage generative AI models. The company focuses on policy enforcement, risk monitoring, and compliance automation across AI workloads, helping
+  organizations mitigate threats such as prompt injection, data leakage, and model misuse. CalypsoAI was acquired by F5 Networks, integrating
+  its technology into F5’s AI Guardrails offering.
 url: https://raw.githubusercontent.com/api-evangelist/calypsoai-com/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:g2-catalog
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-10-19 (modular-v1; was harvest)
 specificationVersion: '0.20'
 created: '2026-10-19'
 modified: '2026-10-19'
 tags:
-- Company
-apis: []
+- AI
+- Security
+- Compliance
+- Enterprise
+- GenerativeAI
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: AgenticAccess
+  url: agentic-access/calypsoai-com-agentic-access.yml
+- type: Spectral
+  url: rules/calypsoai-com-rules.yml
+- type: JSONLD
+  url: json-ld/calypsoai-com-context.jsonld
+- type: Vocabulary
+  url: vocabulary/calypsoai-com-vocabulary.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: DataModel
+  url: data-model/calypsoai-com-data-model.yml
+- type: ChangeLog
+  url: changelog/calypsoai-com-changelog.yml
+- type: ErrorCatalog
+  url: errors/calypsoai-com-problem-types.yml
+- type: Conformance
+  url: conformance/calypsoai-com-conformance.yml
+- type: Overlay
+  url: overlays/calypsoai-com-openapi-overlay.yml
+- type: SecurityTxt
+  url: well-known/calypsoai-com-www-security.txt
+- type: WellKnown
+  url: well-known/calypsoai-com-well-known.yml
+- type: Hosts
+  url: hosts/calypsoai-com-hosts.yml
+- type: TrustCenter
+  url: https://www.f5.com/company/trust-center
+- type: Support
+  url: https://www.f5.com/support
+- type: Security
+  url: https://www.f5.com/security
+- type: PrivacyPolicy
+  url: https://www.f5.com/company/policies/privacy-compliance-and-practices
+- type: Newsroom
+  url: https://www.f5.com/company/news
+- type: Leadership
+  url: https://www.f5.com/company/leadership
+- type: Blog
+  url: https://www.f5.com/company/blog
+- type: Documentation
+  url: https://docs.calypsoai.com/
+- type: Authentication
+  url: authentication/calypsoai-com-authentication.yml
+- type: DomainSecurity
+  url: security/calypsoai-com-domain-security.yml
 - type: Website
   url: https://calypsoai.com/
+apis:
+- aid: calypsoai-com:calypsoai-com-admin-api
+  name: CalypsoAI Admin API
+  description: The Admin API from CalypsoAI — 2 operation(s) for admin.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Admin
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-admin-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-agent-sessions-api
+  name: CalypsoAI Agent Sessions API
+  description: The Agent-Sessions API from CalypsoAI — 2 operation(s) for agent-sessions.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Agent-Sessions
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-agent-sessions-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-anthropic-api
+  name: CalypsoAI Anthropic API
+  description: The Anthropic API from CalypsoAI — 1 operation(s) for anthropic.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Anthropic
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-anthropic-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-audit-api
+  name: CalypsoAI Audit API
+  description: The Audit API from CalypsoAI — 2 operation(s) for audit.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Audit
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-audit-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-auth-api
+  name: CalypsoAI Auth API
+  description: The Auth API from CalypsoAI — 4 operation(s) for auth.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Auth
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-auth-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-branding-api
+  name: CalypsoAI Branding API
+  description: The Branding API from CalypsoAI — 3 operation(s) for branding.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Branding
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-branding-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-campaign-runs-api
+  name: CalypsoAI Campaign Runs API
+  description: The Campaign-Runs API from CalypsoAI — 5 operation(s) for campaign-runs.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Campaign-Runs
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-campaign-runs-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-campaign-schedules-api
+  name: CalypsoAI Campaign Schedules API
+  description: The Campaign-Schedules API from CalypsoAI — 2 operation(s) for campaign-schedules.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Campaign-Schedules
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-campaign-schedules-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-campaigns-api
+  name: CalypsoAI Campaigns API
+  description: The Campaigns API from CalypsoAI — 2 operation(s) for campaigns.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Campaigns
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-campaigns-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-chats-api
+  name: CalypsoAI Chats API
+  description: The Chats API from CalypsoAI — 3 operation(s) for chats.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Chats
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-chats-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-datasets-api
+  name: CalypsoAI Datasets API
+  description: The Datasets API from CalypsoAI — 5 operation(s) for datasets.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Datasets
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-datasets-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-files-api
+  name: CalypsoAI Files API
+  description: The Files API from CalypsoAI — 2 operation(s) for files.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Files
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-files-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-generations-api
+  name: CalypsoAI Generations API
+  description: The Generations API from CalypsoAI — 1 operation(s) for generations.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Generations
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-generations-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-google-api
+  name: CalypsoAI Google API
+  description: The Google API from CalypsoAI — 1 operation(s) for google.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Google
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-google-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-license-api
+  name: CalypsoAI License API
+  description: The License API from CalypsoAI — 1 operation(s) for license.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - License
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-license-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-openai-api
+  name: CalypsoAI Openai API
+  description: The Openai API from CalypsoAI — 4 operation(s) for openai.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Openai
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-openai-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-org-api
+  name: CalypsoAI Org API
+  description: The Org API from CalypsoAI — 2 operation(s) for org.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Org
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-org-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-project-api
+  name: CalypsoAI Project API
+  description: The Project API from CalypsoAI — 1 operation(s) for project.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Project
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-project-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-projects-api
+  name: CalypsoAI Projects API
+  description: The Projects API from CalypsoAI — 8 operation(s) for projects.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Projects
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-projects-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-prompts-api
+  name: CalypsoAI Prompts API
+  description: The Prompts API from CalypsoAI — 4 operation(s) for prompts.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Prompts
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-prompts-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-providers-api
+  name: CalypsoAI Providers API
+  description: The Providers API from CalypsoAI — 6 operation(s) for providers.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Providers
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-providers-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-refusal-catalogs-api
+  name: CalypsoAI Refusal Catalogs API
+  description: The Refusal-Catalogs API from CalypsoAI — 3 operation(s) for refusal-catalogs.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Refusal-Catalogs
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-refusal-catalogs-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-scanner-packages-api
+  name: CalypsoAI Scanner Packages API
+  description: The Scanner-Packages API from CalypsoAI — 3 operation(s) for scanner-packages.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Scanner-Packages
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-scanner-packages-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-scanners-api
+  name: CalypsoAI Scanners API
+  description: The Scanners API from CalypsoAI — 7 operation(s) for scanners.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Scanners
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-scanners-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-scans-api
+  name: CalypsoAI Scans API
+  description: The Scans API from CalypsoAI — 3 operation(s) for scans.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Scans
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-scans-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-secrets-api
+  name: CalypsoAI Secrets API
+  description: The Secrets API from CalypsoAI — 2 operation(s) for secrets.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Secrets
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-secrets-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-tokens-api
+  name: CalypsoAI Tokens API
+  description: The Tokens API from CalypsoAI — 3 operation(s) for tokens.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Tokens
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-tokens-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+- aid: calypsoai-com:calypsoai-com-users-api
+  name: CalypsoAI Users API
+  description: The Users API from CalypsoAI — 8 operation(s) for users.
+  humanURL: https://docs.calypsoai.com
+  baseURL: https://api.calypsoai.com
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/calypsoai-com-users-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-with-template-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-scans-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-providers-from-system-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-patch-provider-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-prompts-body-schema.json
+  - type: JSONSchema
+    url: json-schema/calypsoai-com-post-campaign-schedule-body-schema.json
+x-enrichment:
+  date: '2026-10-19'
+  status: enriched
+  artifacts_added: 23
+  pass: modular-v1
+  engine: identity=local,contract=local,surfaces=local,docs=local,regulatory=local

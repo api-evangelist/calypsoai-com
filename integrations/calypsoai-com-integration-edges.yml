@@ -1,0 +1,20 @@
+generated: '2026-10-19'
+method: none
+source:
+- https://zapier.com/apps/calypsoai-com/integrations
+- https://zapier.com/apps/calypsoai/integrations
+- https://n8n.io/integrations/calypsoai-com/
+- https://n8n.io/integrations/calypsoai/
+- https://composio.dev/toolkits/calypsoai-com
+- https://monid.ai/tools/calypsoai-com
+checked:
+- https://composio.dev/toolkits/calypsoai-com
+- https://monid.ai/tools/calypsoai-com
+- https://n8n.io/integrations/calypsoai-com/
+- https://n8n.io/integrations/calypsoai/
+- https://zapier.com/apps/calypsoai-com/integrations
+- https://zapier.com/apps/calypsoai/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []

@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/calypsoai-com/main/json-schema/calypsoai-com-post-prompts-body-schema.json",
+  "title": "PostPromptsBody",
+  "x-generated": "2026-10-20",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/calypsoai-com-openapi.json#/components/schemas/PostPromptsBody",
+  "properties": {
+    "externalMetadata": {
+      "anyOf": [
+        {
+          "maxProperties": 10,
+          "patternProperties": {
+            "^[a-zA-Z0-9_\\-]*$": {
+              "maxLength": 255,
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 50
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "A json string for users to attach any data to the prompt for their own use,\nFor example to tag certain prompts for tracking\n(Limited to 10 items, keys of up to 50 characters and values of up to 255 characters).",
+      "title": "Externalmetadata"
+    },
+    "input": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "items": {},
+          "type": "array"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "description": "Prompt data to send to provider",
+      "title": "Input"
+    },
+    "parentId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Parent ID to set on child prompts",
+      "title": "Parentid"
+    },
+    "project": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Project ID or name to send prompt to, defaults to global project",
+      "title": "Project"
+    },
+    "provider": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Provider ID or name to send prompt to, defaults to chosen project's default provider",
+      "title": "Provider"
+    },
+    "skipScanning": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Skipscanning"
+    },
+    "verbose": {
+      "default": false,
+      "description": "If true, return details on each guardrail that ran against the input data",
+      "title": "Verbose",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "input"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,1531 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Chats API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Chats
+paths:
+  /backend/v1/chats:
+    get:
+      description: 'Retrieves a list of chats that match the given criteria, with the option to adjust the limit for more results.
+
+
+        Chats contain details of user interactions with a LLM.'
+      operationId: get_chats
+      parameters:
+      - description: Only return results that match the given text.
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Only return results that match the given text.
+          title: Search
+      - description: Limits the amount of results.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Limits the amount of results.
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - description: Whether results should be sorted in ascending order.
+        in: query
+        name: ascending
+        required: false
+        schema:
+          default: false
+          description: Whether results should be sorted in ascending order.
+          title: Ascending
+          type: boolean
+      - description: Only return results from before this timestamp.
+        in: query
+        name: before
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Only return results from before this timestamp.
+          title: Before
+      - description: Only return results from after this timestamp.
+        in: query
+        name: after
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Only return results from after this timestamp.
+          title: After
+      - description: If true return only chats that have been marked 'starred'.
+        in: query
+        name: starred
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: If true return only chats that have been marked 'starred'.
+          title: Starred
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetChatsResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get chats
+      tags:
+      - Chats
+    post:
+      description: 'Create a new chat with an LLM.
+
+
+        Accepts two types of request bodies, allowing you to create chats from prompts or prompt templates.'
+      operationId: post_chats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/PostChatsFromPromptBody'
+              - $ref: '#/components/schemas/PostChatsFromTemplateBody'
+              title: Body
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostSuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Create chat
+      tags:
+      - Chats
+  /backend/v1/chats/public/{accessId}:
+    get:
+      description: 'Retrieves a chat using a public access ID, including its prompts and other relevant data.
+
+
+        The chat must be publicly accessible.'
+      operationId: get_chats_public_accessId
+      parameters:
+      - in: path
+        name: accessId
+        required: true
+        schema:
+          format: uuid
+          title: Accessid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPublicChatResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get chat by access ID
+      tags:
+      - Chats
+  /backend/v1/chats/{chatId}:
+    delete:
+      description: Deletes a chat. Only the chat's owner can delete it.
+      operationId: delete_chats_chatId
+      parameters:
+      - in: path
+        name: chatId
+        required: true
+        schema:
+          format: uuid
+          title: Chatid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Delete chat
+      tags:
+      - Chats
+    get:
+      description: 'Retrieves a chat by its ID, including its associated prompts.
+
+
+        The user must have access to the chat.
+
+
+        Access is automatically granted to the creator and can be manually assigned to others by the owner.'
+      operationId: get_chats_chatId
+      parameters:
+      - in: path
+        name: chatId
+        required: true
+        schema:
+          format: uuid
+          title: Chatid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetChatResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get chat
+      tags:
+      - Chats
+    patch:
+      description: 'Only the chat''s owner can perform updates.
+
+        You can modify the chat name, public access, organization access, user access, remove user access,
+
+        and mark the chat as starred.'
+      operationId: patch_chats_chatId
+      parameters:
+      - in: path
+        name: chatId
+        required: true
+        schema:
+          format: uuid
+          title: Chatid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchChatBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update chat
+      tags:
+      - Chats
+components:
+  schemas:
+    ScannerVersionMeta:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Createdby
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        direction:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - type: 'null'
+        f1Score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: F1Score
+        id:
+          format: uuid
+          title: Id
+          type: string
+        latestDatasetResult:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDatasetResult'
+          - type: 'null'
+        name:
+          maxLength: 100
+          minLength: 1
+          pattern: ^[a-zA-Z0-9-_]+$
+          title: Name
+          type: string
+        published:
+          title: Published
+          type: boolean
+      required:
+      - id
+      - createdAt
+      - name
+      - published
+      title: ScannerVersionMeta
+      type: object
+    PostChatsFromTemplateBody:
+      description: 'Use this if you wish to create a new chat from a prompt template.
+
+
+        The newly created chat will duplicate all prompts in the prompt template.'
+      properties:
+        name:
+          description: Name of the new chat.
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        promptTemplateId:
+          description: ID of the prompt template you wish to use
+          format: uuid
+          title: Prompttemplateid
+          type: string
+      required:
+      - name
+      - promptTemplateId
+      title: PostChatsFromTemplateBody
+      type: object
+    PromptOutcome:
+      description: 'Outcome of a prompt after it has been processed by all guardrails and providers.
+
+
+        Cleared: All guardrails passed, and the prompt was sent to providers
+
+        Flagged: At least one guardrail failed, and the prompt was sent to providers
+
+        Blocked: At least one guardrail failed, and the prompt was not sent to providers.'
+      enum:
+      - cleared
+      - flagged
+      - redacted
+      - blocked
+      title: PromptOutcome
+      type: string
+    User:
+      properties:
+        admin:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Admin
+        blocked:
+          default: false
+          title: Blocked
+          type: boolean
+        createdAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Createdat
+        email:
+          format: password
+          title: Email
+          type: string
+          writeOnly: true
+        id:
+          title: Id
+          type: string
+        lastInvitationSentAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Lastinvitationsentat
+        machine:
+          default: false
+          title: Machine
+          type: boolean
+        name:
+          format: password
+          title: Name
+          type: string
+          writeOnly: true
+        org:
+          title: Org
+          type: string
+        permissions:
+          default: []
+          items:
+            type: string
+          title: Permissions
+          type: array
+          uniqueItems: true
+        roleIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Roleids
+          type: array
+        roles:
+          default: []
+          items:
+            type: string
+          title: Roles
+          type: array
+        social:
+          default: false
+          title: Social
+          type: boolean
+        teams:
+          default: []
+          items:
+            type: string
+          title: Teams
+          type: array
+        verified:
+          default: true
+          title: Verified
+          type: boolean
+      required:
+      - id
+      - name
+      - email
+      - org
+      title: User
+      type: object
+    APIScopeOutputs:
+      patternProperties:
+        ^[a-zA-Z_][a-zA-Z0-9_]*$:
+          type: string
+      template: true
+      title: APIScopeOutputs
+      type: object
+    PublicPrompt:
+      properties:
+        externalMetadata:
+          anyOf:
+          - maxProperties: 10
+            patternProperties:
+              ^[a-zA-Z0-9_\-]*$:
+                maxLength: 255
+                type: string
+            propertyNames:
+              maxLength: 50
+            type: object
+          - type: 'null'
+          title: Externalmetadata
+        extraInputs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Extrainputs
+        id:
+          format: uuid
+          title: Id
+          type: string
+        input:
+          anyOf:
+          - type: string
+          - additionalProperties: true
+            type: object
+          - items: {}
+            type: array
+          - type: integer
+          - type: number
+          - type: boolean
+          title: Input
+        memory:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          description: IDs of prev prompts in the conversation
+          title: Memory
+        parentId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of the last prompt in the conversation
+          title: Parentid
+        preserve:
+          default: false
+          title: Preserve
+          type: boolean
+        projectId:
+          format: uuid
+          title: Projectid
+          type: string
+        provider:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of LLM provider use for the prompt
+          title: Provider
+        receivedAt:
+          format: date-time
+          title: Receivedat
+          type: string
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/ScanRequestResult'
+          - $ref: '#/components/schemas/PublicPromptResult'
+          - type: 'null'
+          title: Result
+        type:
+          anyOf:
+          - enum:
+            - prompt
+            - scan
+            type: string
+          - type: 'null'
+          title: Type
+        userId:
+          title: Userid
+          type: string
+      required:
+      - id
+      - projectId
+      - input
+      - receivedAt
+      - userId
+      title: PublicPrompt
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    APIWorkflowBlock:
+      properties:
+        outputs:
+          $ref: '#/components/schemas/APIScopeOutputs'
+          default: {}
+        stages:
+          items:
+            discriminator:
+              mapping:
+                request: '#/components/schemas/APIRequestBlock'
+                retry: '#/components/schemas/APIRetryBlock'
+                workflow: '#/components/schemas/APIWorkflowBlock'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/APIRequestBlock'
+            - $ref: '#/components/schemas/APIRetryBlock'
+            - $ref: '#/components/schemas/APIWorkflowBlock'
+          template: true
+          title: Stages
+          type: array
+        type:
+          const: workflow
+          default: workflow
+          title: Type
+          type: string
+      required:
+      - stages
+      title: APIWorkflowBlock
+      type: object
+    PublicProvider:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          description: The name can be used to identify the provider instead of the id. It is case-sensitive, unique and can only contain letters, numbers and dashes.
+          pattern: ^[a-zA-Z0-9-_]+$
+          title: Name
+          type: string
+        systemProviderId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Systemproviderid
+        template:
+          discriminator:
+            mapping:
+              request: '#/components/schemas/APIRequestBlock'
+              retry: '#/components/schemas/APIRetryBlock'
+              workflow: '#/components/schemas/APIWorkflowBlock'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/APIRequestBlock'
+          - $ref: '#/components/schemas/APIRetryBlock'
+          - $ref: '#/components/schemas/APIWorkflowBlock'
+          title: Template
+        type:
+          $ref: '#/components/schemas/ProviderType'
+      required:
+      - id
+      - name
+      - type
+      - template
+      title: PublicProvider
+      type: object
+    ProviderType:
+      enum:
+      - ibm
+      - openai
+      - azure
+      - cohere
+      - ai21
+      - custom
+      - anthropic
+      - groq
+      - openai-compatible
+      - huggingface
+      - siem
+      - google
+      - bedrock
+      title: ProviderType
+      type: string
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    PatchChatBody:
+      properties:
+        name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name
+        orgAccess:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Allow the chat to be access by anyone in the org
+          title: Orgaccess
+        publicAccess:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Make the chat publicly shareable
+          title: Publicaccess
+        removeUserAccess:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: Remove a users access if they have been given user_access
+          title: Removeuseraccess
+        starred:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Use starred to bookmark chat
+          title: Starred
+        userAccess:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: Give specific users access by adding their user ID to the list
+          title: Useraccess
+      title: PatchChatBody
+      type: object
+    PublicPromptResult:
+      properties:
+        files:
+          default: []
+          items:
+            $ref: '#/components/schemas/PromptResultFile'
+          title: Files
+          type: array
+        outcome:
+          $ref: '#/components/schemas/PromptOutcome'
+          description: One of 'cleared', 'flagged' or 'blocked'
+        providerResult:
+          anyOf:
+          - $ref: '#/components/schemas/ProviderPromptResult'
+          - type: 'null'
+        response:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: The response to the prompt from the LLM
+          title: Response
+      required:
+      - outcome
+      title: PublicPromptResult
+      type: object
+    GetPublicChatResponse:
+      properties:
+        chat:
+          $ref: '#/components/schemas/Chat'
+          description: Requested chat object.
+        prompts:
+          description: Prompts contained in the chat.
+          items:
+            $ref: '#/components/schemas/PublicPrompt'
+          title: Prompts
+          type: array
+        provider:
+          anyOf:
+          - $ref: '#/components/schemas/PublicProvider'
+          - type: 'null'
+          description: Provider the chat was sent to, if any.
+        user:
+          $ref: '#/components/schemas/User'
+          description: Details of the user who owns the chat.
+      required:
+      - chat
+      - prompts
+      - user
+      title: GetPublicChatResponse
+      type: object
+    LegacyScannerResult:
+      additionalProperties: true
+      properties: {}
+      title: LegacyScannerResult
+      type: object
+    ChatAccess:
+      properties:
+        org:
+          description: If True, is accessible to anyone in the same org as the user that created the chat
+          title: Org
+          type: boolean
+        public:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: If is not None, Chat is publicly accessible to anyone with the access ID
+          title: Public
+        users:
+          description: list of users ID of users with access to the chat
+          items:
+            type: string
+          title: Users
+          type: array
+      required:
+      - org
+      - users
+      title: ChatAccess
+      type: object
+    OCIAuth:
+      properties:
+        keyId:
+          template: true
+          title: Keyid
+          type: string
+        passphrase:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Passphrase
+        privateKeyPem:
+          template: true
+          title: Privatekeypem
+          type: string
+      required:
+      - keyId
+      - privateKeyPem
+      title: OCIAuth
+      type: object
+    RegexScannerResult:
+      properties:
+        matches:
+          items:
+            maxItems: 2
+            minItems: 2
+            prefixItems:
+            - type: integer
+            - type: integer
+            type: array
+          title: Matches
+          type: array
+        type:
+          const: regex
+          default: regex
+          title: Type
+          type: string
+      required:
+      - matches
+      title: RegexScannerResult
+      type: object
+    ScanRequestResult:
+      properties:
+        outcome:
+          $ref: '#/components/schemas/PromptOutcome'
+          description: One of 'cleared' or 'flagged'
+        response:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: The response of the prompt from the llm after processing by guardrails, in case it is a response scan
+          title: Response
+        scannerResults:
+          description: Result for each guardrail that ran on the prompt
+          items:
+            $ref: '#/components/schemas/Scan'
+          title: Scannerresults
+          type: array
+      required:
+      - scannerResults
+      - outcome
+      title: ScanRequestResult
+      type: object
+    KeywordScannerResult:
+      properties:
+        matches:
+          additionalProperties:
+            items:
+              maxItems: 2
+              minItems: 2
+              prefixItems:
+              - type: integer
+              - type: integer
+              type: array
+            type: array
+          title: Matches
+          type: object
+        type:
+          const: keyword
+          default: keyword
+          title: Type
+          type: string
+      required:
+      - matches
+      title: KeywordScannerResult
+      type: object
+    ScanOutcome:
+      description: The outcome of a single scan on a prompt.
+      enum:
+      - failed
+      - passed
+      title: ScanOutcome
+      type: string
+    MLTextScannerResult:
+      properties:
+        type:
+          const: ml_text
+          default: ml_text
+          title: Type
+          type: string
+      title: MLTextScannerResult
+      type: object
+    Scan:
+      properties:
+        completedDate:
+          format: date-time
+          title: Completeddate
+          type: string
+        customConfig:
+          default: false
+          title: Customconfig
+          type: boolean
+        data:
+          anyOf:
+          - discriminator:
+              mapping:
+                custom: '#/components/schemas/GenAIScannerResult'
+                error: '#/components/schemas/ErrorScanResult'
+                genai: '#/components/schemas/GenAIScannerResult'
+                keyword: '#/components/schemas/KeywordScannerResult'
+                ml_text: '#/components/schemas/MLTextScannerResult'
+                regex: '#/components/schemas/RegexScannerResult'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/RegexScannerResult'
+            - $ref: '#/components/schemas/KeywordScannerResult'
+            - $ref: '#/components/schemas/GenAIScannerResult'
+            - $ref: '#/components/schemas/MLTextScannerResult'
+            - $ref: '#/components/schemas/ErrorScanResult'
+          - $ref: '#/components/schemas/LegacyScannerResult'
+          title: Data
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+        outcome:
+          $ref: '#/components/schemas/ScanOutcome'
+        scanDirection:
+          $ref: '#/components/schemas/ScanDirection'
+        scannerId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Scannerid
+        scannerName:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Scannername
+        scannerVersionMeta:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerVersionMeta'
+          - type: 'null'
+        startedDate:
+          format: date-time
+          title: Starteddate
+          type: string
+      required:
+      - outcome
+      - data
+      - startedDate
+      - completedDate
+      - scanDirection
+      title: Scan
+      type: object
+    ScannerDatasetResult:
+      properties:
+        datasetRunId:
+          format: uuid
+          title: Datasetrunid
+          type: string
+        f1Score:
+          title: F1Score
+          type: number
+      required:
+      - datasetRunId
+      - f1Score
+      title: ScannerDatasetResult
+      type: object
+    AWSAuth:
+      properties:
+        accessKey:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Accesskey
+        region:
+          template: true
+          title: Region
+          type: string
+        secretKey:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Secretkey
+        service:
+          template: true
+          title: Service
+          type: string
+        token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Token
+      required:
+      - service
+      - region
+      title: AWSAuth
+      type: object
+    PromptResult:
+      examples:
+      - files: []
+        outcome: flagged
+        providerResult:
+          data: I'm sorry, but I can't assist with that.
+          receivedDate: '2023-10-04T14:06:17.779733Z'
+          sentDate: '2023-10-04T14:06:16.779733Z'
+          statusCode: 200
+        response: I'm sorry, but I can't assist with that.
+        scannerResults:
+        - completedDate: '2023-10-04T14:06:13.940393Z'
+          customConfig: false
+          data:
+            tokenUsage: 0
+            type: custom
+          outcome: passed
+          scanDirection: request
+          scannerId: 018d6579-dd47-70ac-99f8-5623e48cdeba
+          scannerName: Prompt injection guardrail
+          startedDate: '2023-10-04T14:06:13.779733Z'
+      properties:
+        files:
+          default: []
+          items:
+            $ref: '#/components/schemas/PromptResultFile'
+          title: Files
+          type: array
+        outcome:
+          $ref: '#/components/schemas/PromptOutcome'
+          description: One of 'cleared', 'flagged' or 'blocked'
+        providerResult:
+          anyOf:
+          - $ref: '#/components/schemas/ProviderPromptResult'
+          - type: 'null'
+        response:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: The response to the prompt from the LLM
+          title: Response
+        scannerResults:
+          description: Result for each guardrail that ran on the prompt
+          items:
+            $ref: '#/components/schemas/Scan'
+          title: Scannerresults
+          type: array
+      required:
+      - scannerResults
+      - outcome
+      title: PromptResult
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ErrorScanResult:
+      properties:
+        msg:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Msg
+        type:
+          const: error
+          default: error
+          title: Type
+          type: string
+      title: ErrorScanResult
+      type: object
+    APIRetryBlock:
+      properties:
+        attempts:
+          title: Attempts
+          type: integer
+        backoff:
+          anyOf:
+          - type: integer
+          - type: string
+          default: 1
+          template: true
+          title: Backoff
+        block:
+          discriminator:
+            mapping:
+              request: '#/components/schemas/APIRequestBlock'
+              retry: '#/components/schemas/APIRetryBlock'
+              workflow: '#/components/schemas/APIWorkflowBlock'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/APIRequestBlock'
+          - $ref: '#/components/schemas/APIWorkflowBlock'
+          - $ref: '#/components/schemas/APIRetryBlock'
+          template: true
+          title: Block
+        type:
+          const: retry
+          default: retry
+          title: Type
+          type: string
+        when:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: When
+      required:
+      - attempts
+      - block
+      title: APIRetryBlock
+      type: object
+    GetChatResponse:
+      properties:
+        chat:
+          $ref: '#/components/schemas/Chat'
+          description: Requested chat object.
+        prompts:
+          description: Prompts contained in the chat.
+          items:
+            $ref: '#/components/schemas/Prompt'
+          title: Prompts
+          type: array
+      required:
+      - chat
+      - prompts
+      title: GetChatResponse
+      type: object
+    HTTPMethod:
+      enum:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - HEAD
+      - OPTIONS
+      title: HTTPMethod
+      type: string
+    ScannerDirection:
+      enum:
+      - both
+      - request
+      - response
+      title: ScannerDirection
+      type: string
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    ScanDirection:
+      enum:
+      - request
+      - response
+      title: ScanDirection
+      type: string
+    GenAIScannerResult:
+      properties:
+        tokenUsage:
+          default: 0
+          title: Tokenusage
+          type: integer
+        type:
+          default: custom
+          enum:
+          - genai
+          - custom
+          title: Type
+          type: string
+      title: GenAIScannerResult
+      type: object
+    GetChatsResponse:
+      properties:
+        chats:
+          description: Chats matching the given filter criteria.
+          items:
+            $ref: '#/components/schemas/Chat'
+          title: Chats
+          type: array
+      required:
+      - chats
+      title: GetChatsResponse
+      type: object
+    PostChatsFromPromptBody:
+      description: 'Use this if you wish to create a chat out of a prompt.
+
+
+        The newly created chat will use the existing prompts referred to instead of duplicating.'
+      properties:
+        name:
+          description: Name of the new chat.
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        promptId:
+          description: ID of the prompt you wish to use in the chat
+          format: uuid
+          title: Promptid
+          type: string
+      required:
+      - name
+      - promptId
+      title: PostChatsFromPromptBody
+      type: object
+    ProviderPromptResult:
+      properties:
+        data:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Response contents from LLM
+          title: Data
+        receivedDate:
+          description: Time response was received from the LLM
+          format: date-time
+          title: Receiveddate
+          type: string
+        sentDate:
+          description: Time prompt was sent to the LLM
+          format: date-time
+          title: Sentdate
+          type: string
+        statusCode:
+          description: Status code returned from request to provider
+          title: Statuscode
+          type: integer
+      required:
+      - statusCode
+      - sentDate
+      - receivedDate
+      title: ProviderPromptResult
+      type: object
+    APIRequestBlock:
+      properties:
+        awsAuth:
+          anyOf:
+          - $ref: '#/components/schemas/AWSAuth'
+          - type: 'null'
+          template: true
+        body:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Body
+        headers:
+          additionalProperties: true
+          default: {}
+          template: true
+          title: Headers
+          type: object
+        json:
+          anyOf:
+          - type: string
+          - type: 'null'
+          template: true
+          title: Json
+        method:
+          $ref: '#/components/schemas/HTTPMethod'
+        ociAuth:
+          anyOf:
+          - $ref: '#/components/schemas/OCIAuth'
+          - type: 'null'
+          template: true
+        outputs:
+          $ref: '#/components/schemas/APIScopeOutputs'
+          default: {}
+        queryParams:
+          additionalProperties:
+            type: string
+          default: {}
+          template: true
+          title: Queryparams
+          type: object
+        timeout:
+          default: 20
+          title: Timeout
+          type: integer
+        type:
+          const: request
+          default: request
+          title: Type
+          type: string
+        url:
+          template: true
+          title: Url
+          type: string
+      required:
+      - method
+      - url
+      title: APIRequestBlock
+      type: object
+    Chat:
+      properties:
+        access:
+          $ref: '#/components/schemas/ChatAccess'
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of the project this chat belongs to
+          title: Projectid
+        promptId:
+          description: ID of the first prompt in the chat, can be used to retrieve all prompts in the chat
+          format: uuid
+          title: Promptid
+          type: string
+        promptTemplateId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of the prompt template this chat was created from.
+          title: Prompttemplateid
+        starred:
+          description: Starred means the chat has been bookmarked or 'starred' to find later
+          title: Starred
+          type: boolean
+        updatedAt:
+          format: date-time
+          title: Updatedat
+          type: string
+        userId:
+          description: User who created the chat
+          title: Userid
+          type: string
+      required:
+      - id
+      - name
+      - promptId
+      - userId
+      - starred
+      - createdAt
+      - updatedAt
+      - access
+      title: Chat
+      type: object
+    PromptResultFile:
+      properties:
+        contentType:
+          title: Contenttype
+          type: string
+        data:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: File data, optionally base64 encoded if isBase64 is true
+          title: Data
+        id:
+          format: uuid
+          title: Id
+          type: string
+        isBase64:
+          title: Isbase64
+          type: boolean
+        name:
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      - contentType
+      - isBase64
+      title: PromptResultFile
+      type: object
+    Prompt:
+      examples:
+      - fromTemplate: false
+        id: 018fe3e9-1944-705a-9d09-f8e5e3bc1833
+        input: Test Input
+        parentId: 018fe3e9-1944-705a-9d09-f8e5e3bc1833
+        preserve: false
+        projectId: 018fe3e9-1944-705a-9d09-f8e5e3bc1833
+        receivedAt: '2023-10-04T14:06:13.779733Z'
+        result:
+          files: []
+          outcome: flagged
+          providerResult:
+            data: I'm sorry, but I can't assist with that.
+            receivedDate: '2023-10-04T14:06:18.779733Z'
+            sentDate: '2023-10-04T14:06:15.779733Z'
+            statusCode: 200
+          response: I'm sorry, but I can't assist with that.
+          scannerResults:
+          - completedDate: '2023-10-04T14:06:13.940393Z'
+            customConfig: false
+            data:
+              tokenUsage: 0
+              type: custom
+            outcome: passed
+            scanDirection: request
+            scannerId: 018d6579-dd47-70ac-99f8-5623e48cdeba
+            scannerName: Prompt injection guardrail
+            startedDate: '2023-10-04T14:06:13.779733Z'
+        type: prompt
+        userId: 018fe3e9-1944-705a-9d09-f8e5e3bc1833
+      properties:
+        externalMetadata:
+          anyOf:
+          - maxProperties: 10
+            patternProperties:
+              ^[a-zA-Z0-9_\-]*$:
+                maxLength: 255
+                type: string
+            propertyNames:
+              maxLength: 50
+            type: object
+          - type: 'null'
+          title: Externalmetadata
+        extraInputs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Extrainputs
+        fromTemplate:
+          default: false
+          description: If the prompt is from a template
+          title: Fromtemplate
+          type: boolean
+        id:
+          format: uuid
+          title: Id
+          type: string
+        input:
+          anyOf:
+          - type: string
+          - additionalProperties: true
+            type: object
+          - items: {}
+            type: array
+          - type: integer
+          - type: number
+          - type: boolean
+          title: Input
+        memory:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          description: IDs of prev prompts in the conversation
+          title: Memory
+        parentId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of the last prompt in the conversation
+          title: Parentid
+        preserve:
+          default: false
+          description: If the prompt should not be purged on data clean
+          title: Preserve
+          type: boolean
+        projectId:
+          description: ID of group prompt was used with
+          format: uuid
+          title: Projectid
+          type: string
+        provider:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: ID of LLM provider use for the prompt
+          title: Provider
+        receivedAt:
+          format: date-time
+          title: Receivedat
+          type: string
+        result:
+          $ref: '#/components/schemas/PromptResult'
+        type:
+          default: prompt
+          enum:
+          - prompt
+          - test
+          title: Type
+          type: string
+        userId:
+          title: Userid
+          type: string
+      required:
+      - id
+      - projectId
+      - input
+      - receivedAt
+      - userId
+      - result
+      title: Prompt
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

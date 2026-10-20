@@ -1,0 +1,485 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Campaign Schedules API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Campaign-Schedules
+paths:
+  /backend/v1/campaign-schedules:
+    get:
+      description: 'Retrieves a list of campaign schedules that match the given criteria,
+
+        with the option to adjust the limit for more results.'
+      operationId: get_campaign_schedules
+      parameters:
+      - description: Selects page for paginated results. Pass in the next or prev attribute in the response
+        in: query
+        name: cursor
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Selects page for paginated results. Pass in the next or prev attribute in the response
+          title: Cursor
+      - description: If specified, will only return schedules that run the specified campaign.
+        in: query
+        name: campaignId
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: If specified, will only return schedules that run the specified campaign.
+          title: Campaignid
+      - description: Limits the amount of returned objects. Max 100, min 1.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Limits the amount of returned objects. Max 100, min 1.
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCampaignSchedulesResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get campaign schedules
+      tags:
+      - Campaign-Schedules
+    post:
+      description: 'Schedules a campaign run by its ID.
+
+        You can specify the interval time, start time, end time, frequency, number of occurrences, providers and name.'
+      operationId: post_campaign_schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCampaignScheduleBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostCampaignScheduleResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Run campaigns on a schedule
+      tags:
+      - Campaign-Schedules
+  /backend/v1/campaign-schedules/{campaignScheduleId}:
+    delete:
+      description: This will cancel any scheduled campaign runs created by the schedule
+      operationId: delete_campaign_schedules_campaignScheduleId
+      parameters:
+      - in: path
+        name: campaignScheduleId
+        required: true
+        schema:
+          format: uuid
+          title: Campaignscheduleid
+          type: string
+      - description: Also cancel campaign runs in the schedule that are in progress, defaults to False
+        in: query
+        name: cancelRunningAttacks
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Also cancel campaign runs in the schedule that are in progress, defaults to False
+          title: Cancelrunningattacks
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Delete a campaign run schedule
+      tags:
+      - Campaign-Schedules
+    get:
+      description: Retrieves a scheduled campaign run by its ID.
+      operationId: get_campaign_schedules_campaignScheduleId
+      parameters:
+      - in: path
+        name: campaignScheduleId
+        required: true
+        schema:
+          format: uuid
+          title: Campaignscheduleid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignSchedule'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get scheduled campaign run
+      tags:
+      - Campaign-Schedules
+    patch:
+      description: 'Updates a scheduled campaign run.
+
+        You can modify the interval time, start time, end time, frequency, number of occurrences, and name.'
+      operationId: patch_campaign_schedules_campaignScheduleId
+      parameters:
+      - in: path
+        name: campaignScheduleId
+        required: true
+        schema:
+          format: uuid
+          title: Campaignscheduleid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScheduleParams'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update a scheduled campaign run
+      tags:
+      - Campaign-Schedules
+components:
+  schemas:
+    CampaignSchedule:
+      properties:
+        campaignId:
+          format: uuid
+          title: Campaignid
+          type: string
+        count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Count
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        endAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Endat
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        frequency:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignScheduleFrequency'
+          - type: 'null'
+        id:
+          format: uuid
+          title: Id
+          type: string
+        interval:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Interval
+        name:
+          title: Name
+          type: string
+        providerIds:
+          items:
+            format: uuid
+            type: string
+          title: Providerids
+          type: array
+        remediationSettings:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignRunRemediationSettings'
+          - type: 'null'
+        startAt:
+          format: date-time
+          title: Startat
+          type: string
+      required:
+      - id
+      - name
+      - campaignId
+      - providerIds
+      - startAt
+      - createdAt
+      title: CampaignSchedule
+      type: object
+    PostCampaignScheduleResponse:
+      properties:
+        campaignRunId:
+          format: uuid
+          title: Campaignrunid
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      - campaignRunId
+      title: PostCampaignScheduleResponse
+      type: object
+    GetCampaignSchedulesResponse:
+      properties:
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+        schedules:
+          description: Campaign schedules matching the given criteria
+          items:
+            $ref: '#/components/schemas/CampaignSchedule'
+          title: Schedules
+          type: array
+      required:
+      - schedules
+      title: GetCampaignSchedulesResponse
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    UpdateScheduleParams:
+      properties:
+        count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Determines how many occurrences will be generated. Cannot specify both count and end_at.
+          title: Count
+        endAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          description: Target time after which no future occurrences will be generated.
+          title: Endat
+        frequency:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignScheduleFrequency'
+          - type: 'null'
+          description: How often the schedule should run.
+        interval:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: The interval between each frequency iteration. For example, when using DAYS, an interval of 2 means once every two days. The default interval is 1.
+          title: Interval
+        name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name
+        remediationSettings:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignRunRemediationSettings'
+          - type: 'null'
+          description: Determines if the campaign run will automatically create a remediation for vulnerabilities found.
+        startAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          description: Target time to start the first campaign run. If this does not match the previous parameter, it must be in the future.
+          title: Startat
+      required:
+      - name
+      title: UpdateScheduleParams
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    CampaignScheduleFrequency:
+      enum:
+      - weeks
+      - days
+      title: CampaignScheduleFrequency
+      type: string
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    PostCampaignScheduleBody:
+      properties:
+        campaignId:
+          description: ID of the campaign to run. If empty, run all attacks.
+          format: uuid
+          title: Campaignid
+          type: string
+        count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: 4
+          description: Determines how many occurrences will be generated. Cannot specify both count and end_at.
+          title: Count
+        endAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          description: Target time after which no future occurrences will be generated.
+          title: Endat
+        frequency:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignScheduleFrequency'
+          - type: 'null'
+          description: How often the schedule should run.
+        interval:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: The interval between each frequency iteration. For example, when using DAYS, an interval of 2 means once every two days. The default interval is 1.
+          title: Interval
+        name:
+          description: Name to give the campaign runs in this schedule.
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        providerIds:
+          description: IDs of the providers to target for the campaign runs in this schedule
+          items:
+            format: uuid
+            type: string
+          maxItems: 5
+          minItems: 1
+          title: Providerids
+          type: array
+        remediationSettings:
+          anyOf:
+          - $ref: '#/components/schemas/CampaignRunRemediationSettings'
+          - type: 'null'
+          description: Remediation settings for campaign runs in this schedule.
+        startAt:
+          description: Target time to start the first campaign run.
+          format: date-time
+          title: Startat
+          type: string
+      required:
+      - name
+      - startAt
+      - campaignId
+      - providerIds
+      title: PostCampaignScheduleBody
+      type: object
+    CampaignRunRemediationSettings:
+      properties:
+        autorun:
+          default: false
+          description: Run remediation once available.
+          title: Autorun
+          type: boolean
+      title: CampaignRunRemediationSettings
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

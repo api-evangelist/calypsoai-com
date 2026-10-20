@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/calypsoai-com/main/json-schema/calypsoai-com-post-campaign-schedule-body-schema.json",
+  "title": "PostCampaignScheduleBody",
+  "x-generated": "2026-10-20",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/calypsoai-com-openapi.json#/components/schemas/PostCampaignScheduleBody",
+  "properties": {
+    "campaignId": {
+      "description": "ID of the campaign to run. If empty, run all attacks.",
+      "format": "uuid",
+      "title": "Campaignid",
+      "type": "string"
+    },
+    "count": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": 4,
+      "description": "Determines how many occurrences will be generated. Cannot specify both count and end_at.",
+      "title": "Count"
+    },
+    "endAt": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Target time after which no future occurrences will be generated.",
+      "title": "Endat"
+    },
+    "frequency": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CampaignScheduleFrequency"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "How often the schedule should run."
+    },
+    "interval": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The interval between each frequency iteration. For example, when using DAYS, an interval of 2 means once every two days. The default interval is 1.",
+      "title": "Interval"
+    },
+    "name": {
+      "description": "Name to give the campaign runs in this schedule.",
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "providerIds": {
+      "description": "IDs of the providers to target for the campaign runs in this schedule",
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "maxItems": 5,
+      "minItems": 1,
+      "title": "Providerids",
+      "type": "array"
+    },
+    "remediationSettings": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CampaignRunRemediationSettings"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Remediation settings for campaign runs in this schedule."
+    },
+    "startAt": {
+      "description": "Target time to start the first campaign run.",
+      "format": "date-time",
+      "title": "Startat",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "startAt",
+    "campaignId",
+    "providerIds"
+  ],
+  "type": "object",
+  "$defs": {
+    "CampaignRunRemediationSettings": {
+      "properties": {
+        "autorun": {
+          "default": false,
+          "description": "Run remediation once available.",
+          "title": "Autorun",
+          "type": "boolean"
+        }
+      },
+      "title": "CampaignRunRemediationSettings",
+      "type": "object"
+    },
+    "CampaignScheduleFrequency": {
+      "enum": [
+        "weeks",
+        "days"
+      ],
+      "title": "CampaignScheduleFrequency",
+      "type": "string"
+    }
+  }
+}

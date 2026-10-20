@@ -1,0 +1,226 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Files API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Files
+paths:
+  /backend/v1/files:
+    post:
+      description: Upload a file.
+      operationId: post_files
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_post_files'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostSuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Upload a file
+      tags:
+      - Files
+  /backend/v1/files/{fileId}:
+    get:
+      description: Get a file's metadata by the file ID.
+      operationId: get_files_fileId
+      parameters:
+      - in: path
+        name: fileId
+        required: true
+        schema:
+          format: uuid
+          title: Fileid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get a file's metadata by the file ID
+      tags:
+      - Files
+components:
+  schemas:
+    File:
+      properties:
+        content:
+          anyOf:
+          - format: binary
+            type: string
+          - type: 'null'
+          title: Content
+        contentType:
+          title: Contenttype
+          type: string
+        expiresAt:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Expiresat
+        id:
+          format: uuid
+          title: Id
+          type: string
+        metadata:
+          anyOf:
+          - $ref: '#/components/schemas/FileMetadata'
+          - type: 'null'
+        name:
+          title: Name
+          type: string
+        orgId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orgid
+        resourceId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Resourceid
+      required:
+      - id
+      - name
+      - contentType
+      title: File
+      type: object
+    PostSuccessMessage:
+      description: Contains the ID of an object after a successful POST operation.
+      properties:
+        id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          title: Id
+      required:
+      - id
+      title: PostSuccessMessage
+      type: object
+    Body_post_files:
+      properties:
+        file:
+          format: binary
+          title: File
+          type: string
+        purposes:
+          items:
+            enum:
+            - custom_attacks
+            - datasets
+            type: string
+          title: Purposes
+          type: array
+      required:
+      - file
+      - purposes
+      title: Body_post_files
+      type: object
+    FilePurpose:
+      enum:
+      - custom_attacks
+      - datasets
+      - dataset_runs
+      - remediation_result
+      title: FilePurpose
+      type: string
+    GetFileResponse:
+      properties:
+        file:
+          $ref: '#/components/schemas/File'
+          description: The requested file metadata.
+      required:
+      - file
+      title: GetFileResponse
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    FileMetadata:
+      properties:
+        purposes:
+          items:
+            $ref: '#/components/schemas/FilePurpose'
+          title: Purposes
+          type: array
+          uniqueItems: true
+        rowCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rowcount
+        size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size
+      required:
+      - purposes
+      title: FileMetadata
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

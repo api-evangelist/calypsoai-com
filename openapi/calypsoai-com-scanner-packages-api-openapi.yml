@@ -1,0 +1,965 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Scanner Packages API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Scanner-Packages
+paths:
+  /backend/v1/scanner-packages:
+    get:
+      description: 'Retrieves a list of guardrail packages that match the given criteria,
+
+        with the option to adjust the limit for more results.'
+      operationId: get_scanner_packages
+      parameters:
+      - description: Selects page for paginated results. Pass in the next or prev attribute in the response
+        in: query
+        name: cursor
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Selects page for paginated results. Pass in the next or prev attribute in the response
+          title: Cursor
+      - description: Only return results that match the given text.
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Only return results that match the given text.
+          title: Search
+      - description: Limits the amount of results.
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          description: Limits the amount of results.
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - description: Whether results should be sorted in ascending order.
+        in: query
+        name: ascending
+        required: false
+        schema:
+          default: false
+          description: Whether results should be sorted in ascending order.
+          title: Ascending
+          type: boolean
+      - description: Get guardrails that match the given published state.
+        in: query
+        name: published
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Get guardrails that match the given published state.
+          title: Published
+      - description: Get results that scan in the given direction.
+        in: query
+        name: direction
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - type: 'null'
+          description: Get results that scan in the given direction.
+          title: Direction
+      - description: Get results that were created from the given source.
+        in: query
+        name: source
+        required: false
+        schema:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ScannerSourceType'
+            type: array
+          - type: 'null'
+          description: Get results that were created from the given source.
+          title: Source
+      - description: Get results that are of the given scan type.
+        in: query
+        name: type
+        required: false
+        schema:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ScanType'
+            type: array
+          - type: 'null'
+          description: Get results that are of the given scan type.
+          title: Type
+      - description: 'Get results that are packaged or not. '
+        in: query
+        name: packaged
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: 'Get results that are packaged or not. '
+          title: Packaged
+      - description: Sort results by the given parameter.
+        in: query
+        name: sortBy
+        required: false
+        schema:
+          $ref: '#/components/schemas/ScannerSearchSortBy'
+          default: created_at
+          description: Sort results by the given parameter.
+      - description: Get results that are active/inactive. Only has an effect if addedToProjectId or availableToProjectId is provided.
+        in: query
+        name: active
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Get results that are active/inactive. Only has an effect if addedToProjectId or availableToProjectId is provided.
+          title: Active
+      - description: Get results match the chosen active state for the given project.
+        in: query
+        name: enabledForProject
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: string
+          - type: 'null'
+          description: Get results match the chosen active state for the given project.
+          title: Enabledforproject
+      - description: Get results with the given tags.
+        in: query
+        name: tags
+        required: false
+        schema:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: Get results with the given tags.
+          title: Tags
+      - description: Get guardrails added to project.
+        in: query
+        name: addedToProjectId
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Get guardrails added to project.
+          title: Addedtoprojectid
+      - description: Get guardrails accessible to project.
+        in: query
+        name: accessibleToProjectId
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Get guardrails accessible to project.
+          title: Accessibletoprojectid
+      - description: Get guardrails that belong to the specified packages.
+        in: query
+        name: packageId
+        required: false
+        schema:
+          default: []
+          description: Get guardrails that belong to the specified packages.
+          items:
+            format: uuid
+            type: string
+          title: Packageid
+          type: array
+      - description: Get guardrails that are set to given mode(s) for the chosen project.
+        in: query
+        name: mode
+        required: false
+        schema:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ScanMode'
+            type: array
+          - type: 'null'
+          description: Get guardrails that are set to given mode(s) for the chosen project.
+          title: Mode
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetScannerPackagesResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get guardrail packages
+      tags:
+      - Scanner-Packages
+    post:
+      description: Creates a new guardrail package.
+      operationId: post_scanner_packages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostPackageRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostIDResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Create guardrail package
+      tags:
+      - Scanner-Packages
+  /backend/v1/scanner-packages/{scannerPackageId}:
+    delete:
+      description: Deletes a guardrail package by ID. You can optionally delete the guardrails included in the package.
+      operationId: delete_scanner_packages_scannerPackageId
+      parameters:
+      - in: path
+        name: scannerPackageId
+        required: true
+        schema:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/DeleteScannerPackageBody'
+              - type: 'null'
+              title: Body
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Delete guardrail package
+      tags:
+      - Scanner-Packages
+    get:
+      description: Retrieves a guardrail package by ID.
+      operationId: get_scanner_packages_scannerPackageId
+      parameters:
+      - in: path
+        name: scannerPackageId
+        required: true
+        schema:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetScannerPackageResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get guardrail package
+      tags:
+      - Scanner-Packages
+    patch:
+      description: Updates a guardrail package by ID.
+      operationId: patch_scanner_packages_scannerPackageId
+      parameters:
+      - in: path
+        name: scannerPackageId
+        required: true
+        schema:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchScannerPackageBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update guardrail package
+      tags:
+      - Scanner-Packages
+  /backend/v1/scanner-packages/{scannerPackageId}/access:
+    patch:
+      description: Updates the availability of a guardrail package across projects.
+      operationId: patch_scanner_packages_scannerPackageId_access
+      parameters:
+      - in: path
+        name: scannerPackageId
+        required: true
+        schema:
+          format: uuid
+          title: Scannerpackageid
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchScannerPackageAccessBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update guardrail package availability
+      tags:
+      - Scanner-Packages
+components:
+  schemas:
+    ScannerAvailability:
+      properties:
+        global:
+          default: false
+          description: If True guardrail can be used by all projects
+          title: Global
+          type: boolean
+        projectIds:
+          default: []
+          items:
+            format: uuid
+            type: string
+          title: Projectids
+          type: array
+          uniqueItems: true
+      title: ScannerAvailability
+      type: object
+    ScannerVersionMeta:
+      properties:
+        createdAt:
+          format: date-time
+          title: Createdat
+          type: string
+        createdBy:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Createdby
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        direction:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDirection'
+          - type: 'null'
+        f1Score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: F1Score
+        id:
+          format: uuid
+          title: Id
+          type: string
+        latestDatasetResult:
+          anyOf:
+          - $ref: '#/components/schemas/ScannerDatasetResult'
+          - type: 'null'
+        name:
+          maxLength: 100
+          minLength: 1
+          pattern: ^[a-zA-Z0-9-_]+$
+          title: Name
+          type: string
+        published:
+          title: Published
+          type: boolean
+      required:
+      - id
+      - createdAt
+      - name
+      - published
+      title: ScannerVersionMeta
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    MLTextScannerConfig:
+      properties:
+        type:
+          const: ml_text
+          default: ml_text
+          title: Type
+          type: string
+      required: []
+      title: MLTextScannerConfig
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    ScannerPackage:
+      properties:
+        availability:
+          $ref: '#/components/schemas/ScannerAvailability'
+          default:
+            global: false
+            projectIds: []
+        direction:
+          $ref: '#/components/schemas/ScannerDirection'
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        performanceScannerIds:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          title: Performancescannerids
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        scannerCounts:
+          additionalProperties:
+            type: integer
+          default: {}
+          title: Scannercounts
+          type: object
+        scannerIds:
+          items:
+            format: uuid
+            type: string
+          title: Scannerids
+          type: array
+        source:
+          discriminator:
+            mapping:
+              internal: '#/components/schemas/InternalScannerSource'
+              remediation: '#/components/schemas/RemediationScannerSource'
+              vendor: '#/components/schemas/VendorScannerSource'
+              zip: '#/components/schemas/ZipScannerSource'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/InternalScannerSource'
+          - $ref: '#/components/schemas/ZipScannerSource'
+          - $ref: '#/components/schemas/VendorScannerSource'
+          - $ref: '#/components/schemas/RemediationScannerSource'
+          title: Source
+        vendored:
+          anyOf:
+          - type: boolean
+          - items:
+              type: string
+            type: array
+          default: false
+          title: Vendored
+      required:
+      - id
+      - name
+      - source
+      - direction
+      - scannerIds
+      title: ScannerPackage
+      type: object
+    RegexScannerConfig:
+      properties:
+        pattern:
+          description: Python Flavored Regular Expression (RegEx) to check for in the prompt or response. Case insensitive.
+          title: Pattern
+          type: string
+        type:
+          const: regex
+          default: regex
+          title: Type
+          type: string
+      required:
+      - pattern
+      title: RegexScannerConfig
+      type: object
+    ZipScannerSource:
+      properties:
+        type:
+          const: zip
+          default: zip
+          title: Type
+          type: string
+      title: ZipScannerSource
+      type: object
+    ScannerSourceType:
+      enum:
+      - internal
+      - zip
+      - vendor
+      - remediation
+      title: ScannerSourceType
+      type: string
+    DeleteScannerPackageBody:
+      properties:
+        deleteScanners:
+          default: false
+          description: 'Whether to delete the guardrails in the package.
+
+            If false, the guardrails will be available for use individually.'
+          title: Deletescanners
+          type: boolean
+      title: DeleteScannerPackageBody
+      type: object
+    PostPackageRequest:
+      properties:
+        global:
+          default: true
+          description: Whether this guardrail package is globally accessible.
+          title: Global
+          type: boolean
+        name:
+          description: Name for the new guardrail package.
+          maxLength: 70
+          minLength: 1
+          title: Name
+          type: string
+        scannerIds:
+          description: IDs of guardrails to add to the package.
+          items:
+            format: uuid
+            type: string
+          title: Scannerids
+          type: array
+        vendored:
+          default: false
+          title: Vendored
+          type: boolean
+      required:
+      - name
+      - scannerIds
+      title: PostPackageRequest
+      type: object
+    RemediationScannerSource:
+      properties:
+        sourceId:
+          format: uuid
+          title: Sourceid
+          type: string
+        type:
+          const: remediation
+          default: remediation
+          title: Type
+          type: string
+      required:
+      - sourceId
+      title: RemediationScannerSource
+      type: object
+    VendorScannerSource:
+      properties:
+        type:
+          const: vendor
+          default: vendor
+          title: Type
+          type: string
+      title: VendorScannerSource
+      type: object
+    ScanType:
+      enum:
+      - genai
+      - custom
+      - regex
+      - keyword
+      - ml_text
+      title: ScanType
+      type: string
+    ScanMode:
+      enum:
+      - block
+      - audit
+      - redact
+      title: ScanMode
+      type: string
+    GetScannerPackagesResponse:
+      properties:
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the next page, if any.
+          title: Next
+        packages:
+          description: Packages matching the given filter criteria.
+          items:
+            $ref: '#/components/schemas/ScannerPackage'
+          title: Packages
+          type: array
+        prev:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor to the previous page, if any.
+          title: Prev
+      required:
+      - packages
+      title: GetScannerPackagesResponse
+      type: object
+    Scanner:
+      properties:
+        availability:
+          $ref: '#/components/schemas/ScannerAvailability'
+          default:
+            global: false
+            projectIds: []
+        config:
+          anyOf:
+          - discriminator:
+              mapping:
+                custom: '#/components/schemas/GenAIScannerConfig'
+                genai: '#/components/schemas/GenAIScannerConfig'
+                keyword: '#/components/schemas/KeywordScannerConfig'
+                ml_text: '#/components/schemas/MLTextScannerConfig'
+                regex: '#/components/schemas/RegexScannerConfig'
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/RegexScannerConfig'
+            - $ref: '#/components/schemas/KeywordScannerConfig'
+            - $ref: '#/components/schemas/GenAIScannerConfig'
+            - $ref: '#/components/schemas/MLTextScannerConfig'
+          - $ref: '#/components/schemas/LegacyScannerConfig'
+          - type: 'null'
+          title: Config
+        direction:
+          $ref: '#/components/schemas/ScannerDirection'
+          default: request
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        packageId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Packageid
+        projectId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Projectid
+        scannerTemplateId:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Scannertemplateid
+        source:
+          default:
+            type: internal
+          discriminator:
+            mapping:
+              internal: '#/components/schemas/InternalScannerSource'
+              remediation: '#/components/schemas/RemediationScannerSource'
+              vendor: '#/components/schemas/VendorScannerSource'
+              zip: '#/components/schemas/ZipScannerSource'
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/InternalScannerSource'
+          - $ref: '#/components/schemas/ZipScannerSource'
+          - $ref: '#/components/schemas/VendorScannerSource'
+          - $ref: '#/components/schemas/RemediationScannerSource'
+          title: Source
+        tags:
+          default: []
+          items:
+            maxLength: 50
+            minLength: 1
+            pattern: ^[a-zA-Z0-9-_]+$
+            type: string
+          title: Tags
+          type: array
+        vendored:
+          anyOf:
+          - type: boolean
+          - items:
+              type: string
+            type: array
+          default: false
+          title: Vendored
+        versionMeta:
+          $ref: '#/components/schemas/ScannerVersionMeta'
+      required:
+      - name
+      - id
+      - versionMeta
+      title: Scanner
+      type: object
+    LegacyScannerConfig:
+      additionalProperties: true
+      properties: {}
+      title: LegacyScannerConfig
+      type: object
+    InternalScannerSource:
+      properties:
+        type:
+          const: internal
+          default: internal
+          title: Type
+          type: string
+      title: InternalScannerSource
+      type: object
+    KeywordScannerConfig:
+      properties:
+        type:
+          const: keyword
+          default: keyword
+          title: Type
+          type: string
+        words:
+          description: Words to check for in the prompt or response. Case insensitive. Empty strings will be removed.
+          items:
+            type: string
+          title: Words
+          type: array
+      required:
+      - words
+      title: KeywordScannerConfig
+      type: object
+    ScannerDatasetResult:
+      properties:
+        datasetRunId:
+          format: uuid
+          title: Datasetrunid
+          type: string
+        f1Score:
+          title: F1Score
+          type: number
+      required:
+      - datasetRunId
+      - f1Score
+      title: ScannerDatasetResult
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    PostIDResponse:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      title: PostIDResponse
+      type: object
+    PatchScannerPackageBody:
+      properties:
+        name:
+          anyOf:
+          - maxLength: 70
+            minLength: 1
+            type: string
+          - type: 'null'
+          description: New name for the guardrail package.
+          title: Name
+        scannerIds:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          description: IDs of guardrails to include in the package. If not provided, the package's guardrails will remain unchanged.
+          title: Scannerids
+      title: PatchScannerPackageBody
+      type: object
+    ScannerDirection:
+      enum:
+      - both
+      - request
+      - response
+      title: ScannerDirection
+      type: string
+    GetScannerPackageResponse:
+      properties:
+        package:
+          $ref: '#/components/schemas/ScannerPackage'
+          description: Requested guardrail package object.
+        scanners:
+          description: Guardrails contained in the package.
+          items:
+            $ref: '#/components/schemas/Scanner'
+          title: Scanners
+          type: array
+      required:
+      - package
+      - scanners
+      title: GetScannerPackageResponse
+      type: object
+    ScannerSearchSortBy:
+      enum:
+      - name
+      - updated_at
+      - created_at
+      title: ScannerSearchSortBy
+      type: string
+    PatchScannerPackageAccessBody:
+      properties:
+        global:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: If package should be available to all projects, set to True
+          title: Global
+        projectIds:
+          anyOf:
+          - items:
+              format: uuid
+              type: string
+            type: array
+          - type: 'null'
+          description: IDs of projects that should be available to use the package
+          title: Projectids
+      title: PatchScannerPackageAccessBody
+      type: object
+    GenAIScannerConfig:
+      properties:
+        input:
+          default: ''
+          title: Input
+          type: string
+        scanContext:
+          default: directional
+          description: 'Describes the context that is provided to the scanner
+
+            individual: Scan only the latest message
+
+            directional: Scan all messages in the conversation in the same direction as the latest message'
+          enum:
+          - individual
+          - directional
+          title: Scancontext
+          type: string
+        type:
+          default: custom
+          enum:
+          - genai
+          - custom
+          title: Type
+          type: string
+      title: GenAIScannerConfig
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

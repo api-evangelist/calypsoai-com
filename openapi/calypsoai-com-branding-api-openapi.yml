@@ -1,0 +1,241 @@
+openapi: 3.2.0
+info:
+  title: CalypsoAI Branding API
+  version: 1.0.0
+servers:
+- description: US1 availability zone
+  url: https://us1.calypsoai.app
+- description: EU1 availability zone
+  url: https://eu1.calypsoai.app
+tags:
+- name: Branding
+paths:
+  /backend/v1/branding:
+    get:
+      description: Return the branding config.
+      operationId: get_branding
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBrandingResponse'
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Get branding
+      tags:
+      - Branding
+    patch:
+      description: Edit the branding config.
+      operationId: patch_branding
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchBrandingBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Update branding
+      tags:
+      - Branding
+  /backend/v1/branding/favicon:
+    delete:
+      description: Reset the favicon to the first in the history, normally the CalypsoAI branding.
+      operationId: delete_branding_favicon
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Reset favicon
+      tags:
+      - Branding
+    get:
+      description: Return the favicon as raw bytes.
+      operationId: get_branding_favicon
+      responses:
+        '200':
+          content:
+            image/png:
+              schema:
+                type: string
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Get favicon
+      tags:
+      - Branding
+    post:
+      description: Upload a new favicon.
+      operationId: post_branding_favicon
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Upload favicon
+      tags:
+      - Branding
+  /backend/v1/branding/logo:
+    delete:
+      description: Reset the logo to the first in the history, normally the CalypsoAI branding.
+      operationId: delete_branding_logo
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Reset logo
+      tags:
+      - Branding
+    get:
+      description: Return the logo image as raw bytes.
+      operationId: get_branding_logo
+      responses:
+        '200':
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Get logo
+      tags:
+      - Branding
+    post:
+      description: Upload a new logo image.
+      operationId: post_branding_logo
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+          description: Successful Response
+      security:
+      - HTTPBearer: []
+      summary: Upload logo
+      tags:
+      - Branding
+components:
+  schemas:
+    BrandingConfig:
+      properties:
+        disablePoweredByCai:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Deprecated
+          title: Disablepoweredbycai
+        hasCustomLogo:
+          default: false
+          description: Does the organization have a custom logo
+          title: Hascustomlogo
+          type: boolean
+        productName:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Deprecated
+          title: Productname
+        supportEmail:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: The support email shown in the UI
+          title: Supportemail
+      title: BrandingConfig
+      type: object
+    PatchBrandingBody:
+      properties:
+        config:
+          $ref: '#/components/schemas/BrandingConfig'
+      required:
+      - config
+      title: PatchBrandingBody
+      type: object
+    ValidationError:
+      properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    SuccessMessage:
+      description: Confirms a successful operation.
+      properties:
+        message:
+          title: Message
+          type: string
+      required:
+      - message
+      title: SuccessMessage
+      type: object
+    GetBrandingResponse:
+      properties:
+        config:
+          $ref: '#/components/schemas/BrandingConfig'
+      required:
+      - config
+      title: GetBrandingResponse
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http

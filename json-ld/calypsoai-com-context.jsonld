@@ -1,0 +1,829 @@
+{
+  "@context": {
+    "@vocab": "https://calypsoai.com/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "calypsoai": "https://calypsoai.com/schema#",
+    "APIRequestBlock": "calypsoai:APIRequestBlock",
+    "awsAuth": {
+      "@id": "calypsoai:awsAuth"
+    },
+    "body": {
+      "@id": "calypsoai:body"
+    },
+    "headers": {
+      "@id": "calypsoai:headers"
+    },
+    "json": {
+      "@id": "calypsoai:json"
+    },
+    "method": {
+      "@id": "calypsoai:method",
+      "@type": "@id"
+    },
+    "ociAuth": {
+      "@id": "calypsoai:ociAuth"
+    },
+    "outputs": {
+      "@id": "calypsoai:outputs",
+      "@type": "@id"
+    },
+    "queryParams": {
+      "@id": "calypsoai:queryParams"
+    },
+    "timeout": {
+      "@id": "calypsoai:timeout",
+      "@type": "xsd:integer"
+    },
+    "type": {
+      "@id": "calypsoai:type",
+      "@type": "xsd:string"
+    },
+    "url": {
+      "@id": "calypsoai:url",
+      "@type": "xsd:string"
+    },
+    "APIRetryBlock": "calypsoai:APIRetryBlock",
+    "attempts": {
+      "@id": "calypsoai:attempts",
+      "@type": "xsd:integer"
+    },
+    "backoff": {
+      "@id": "calypsoai:backoff"
+    },
+    "block": {
+      "@id": "calypsoai:block"
+    },
+    "when": {
+      "@id": "calypsoai:when"
+    },
+    "APIWorkflowBlock": "calypsoai:APIWorkflowBlock",
+    "stages": {
+      "@id": "calypsoai:stages",
+      "@container": "@list"
+    },
+    "AWSAuth": "calypsoai:AWSAuth",
+    "accessKey": {
+      "@id": "calypsoai:accessKey"
+    },
+    "region": {
+      "@id": "calypsoai:region",
+      "@type": "xsd:string"
+    },
+    "secretKey": {
+      "@id": "calypsoai:secretKey"
+    },
+    "service": {
+      "@id": "calypsoai:service",
+      "@type": "xsd:string"
+    },
+    "token": {
+      "@id": "calypsoai:token"
+    },
+    "AgentFingerprintStatus": "calypsoai:AgentFingerprintStatus",
+    "AgentFingerprintSummary": "calypsoai:AgentFingerprintSummary",
+    "agentCount": {
+      "@id": "calypsoai:agentCount"
+    },
+    "errors": {
+      "@id": "calypsoai:errors",
+      "@container": "@list"
+    },
+    "status": {
+      "@id": "calypsoai:status",
+      "@type": "@id"
+    },
+    "toolCount": {
+      "@id": "calypsoai:toolCount"
+    },
+    "updatedAt": {
+      "@id": "calypsoai:updatedAt"
+    },
+    "AgentSession": "calypsoai:AgentSession",
+    "fingerprints": {
+      "@id": "calypsoai:fingerprints"
+    },
+    "firstPromptAt": {
+      "@id": "calypsoai:firstPromptAt",
+      "@type": "xsd:dateTime"
+    },
+    "id": {
+      "@id": "calypsoai:id",
+      "@type": "xsd:string"
+    },
+    "lastPromptAt": {
+      "@id": "calypsoai:lastPromptAt",
+      "@type": "xsd:dateTime"
+    },
+    "peakOutcome": {
+      "@id": "calypsoai:peakOutcome",
+      "@type": "@id"
+    },
+    "projectId": {
+      "@id": "calypsoai:projectId",
+      "@type": "xsd:string"
+    },
+    "sessionId": {
+      "@id": "calypsoai:sessionId"
+    },
+    "AgentSessionCreatedEvent": "calypsoai:AgentSessionCreatedEvent",
+    "agentSessionId": {
+      "@id": "calypsoai:agentSessionId",
+      "@type": "xsd:string"
+    },
+    "createdAt": {
+      "@id": "calypsoai:createdAt"
+    },
+    "data": {
+      "@id": "calypsoai:data"
+    },
+    "requestId": {
+      "@id": "calypsoai:requestId"
+    },
+    "user": {
+      "@id": "calypsoai:user",
+      "@type": "@id"
+    },
+    "AgentSessionFingerprintsRequestedEvent": "calypsoai:AgentSessionFingerprintsRequestedEvent",
+    "AgentSessionSortBy": "calypsoai:AgentSessionSortBy",
+    "ApiTokenCreatedEvent": "calypsoai:ApiTokenCreatedEvent",
+    "tokenId": {
+      "@id": "calypsoai:tokenId",
+      "@type": "xsd:string"
+    },
+    "ApiTokenRevokedEvent": "calypsoai:ApiTokenRevokedEvent",
+    "AttackErrorSummary": "calypsoai:AttackErrorSummary",
+    "message": {
+      "@id": "calypsoai:message",
+      "@type": "xsd:string"
+    },
+    "AttackRun": "calypsoai:AttackRun",
+    "attack": {
+      "@id": "calypsoai:attack"
+    },
+    "errorCount": {
+      "@id": "calypsoai:errorCount"
+    },
+    "events": {
+      "@id": "calypsoai:events",
+      "@container": "@list"
+    },
+    "progress": {
+      "@id": "calypsoai:progress"
+    },
+    "providerId": {
+      "@id": "calypsoai:providerId"
+    },
+    "providerName": {
+      "@id": "calypsoai:providerName"
+    },
+    "results": {
+      "@id": "calypsoai:results",
+      "@container": "@list"
+    },
+    "total": {
+      "@id": "calypsoai:total"
+    },
+    "AttackRunCancelledEvent": "calypsoai:AttackRunCancelledEvent",
+    "event": {
+      "@id": "calypsoai:event",
+      "@type": "xsd:string"
+    },
+    "AttackRunCancellingEvent": "calypsoai:AttackRunCancellingEvent",
+    "AttackRunCompletedEvent": "calypsoai:AttackRunCompletedEvent",
+    "AttackRunFailedEvent": "calypsoai:AttackRunFailedEvent",
+    "AttackRunQueuedEvent": "calypsoai:AttackRunQueuedEvent",
+    "AttackRunResult": "calypsoai:AttackRunResult",
+    "attackRunId": {
+      "@id": "calypsoai:attackRunId",
+      "@type": "xsd:string"
+    },
+    "campaignRunId": {
+      "@id": "calypsoai:campaignRunId",
+      "@type": "xsd:string"
+    },
+    "conversation": {
+      "@id": "calypsoai:conversation",
+      "@container": "@list"
+    },
+    "conversationSteps": {
+      "@id": "calypsoai:conversationSteps",
+      "@type": "xsd:integer"
+    },
+    "converter": {
+      "@id": "calypsoai:converter"
+    },
+    "error": {
+      "@id": "calypsoai:error"
+    },
+    "errorSummary": {
+      "@id": "calypsoai:errorSummary"
+    },
+    "intent": {
+      "@id": "calypsoai:intent"
+    },
+    "intentCategory": {
+      "@id": "calypsoai:intentCategory"
+    },
+    "intentType": {
+      "@id": "calypsoai:intentType"
+    },
+    "refusalCheck": {
+      "@id": "calypsoai:refusalCheck"
+    },
+    "severity": {
+      "@id": "calypsoai:severity"
+    },
+    "technique": {
+      "@id": "calypsoai:technique",
+      "@type": "@id"
+    },
+    "vector": {
+      "@id": "calypsoai:vector"
+    },
+    "vulnerable": {
+      "@id": "calypsoai:vulnerable",
+      "@type": "xsd:boolean"
+    },
+    "AttackRunScheduleErrorEvent": "calypsoai:AttackRunScheduleErrorEvent",
+    "AttackRunScheduledEvent": "calypsoai:AttackRunScheduledEvent",
+    "scheduledStartTime": {
+      "@id": "calypsoai:scheduledStartTime",
+      "@type": "xsd:dateTime"
+    },
+    "AttackRunStartedEvent": "calypsoai:AttackRunStartedEvent",
+    "AttackTechnique": "calypsoai:AttackTechnique",
+    "AuditEventType": "calypsoai:AuditEventType",
+    "Body_post_files": "calypsoai:Body_post_files",
+    "file": {
+      "@id": "calypsoai:file",
+      "@type": "xsd:string"
+    },
+    "purposes": {
+      "@id": "calypsoai:purposes",
+      "@container": "@list"
+    },
+    "Body_post_scanners_import": "calypsoai:Body_post_scanners_import",
+    "ids": {
+      "@id": "calypsoai:ids",
+      "@container": "@list"
+    },
+    "BrandingConfig": "calypsoai:BrandingConfig",
+    "disablePoweredByCai": {
+      "@id": "calypsoai:disablePoweredByCai"
+    },
+    "hasCustomLogo": {
+      "@id": "calypsoai:hasCustomLogo",
+      "@type": "xsd:boolean"
+    },
+    "productName": {
+      "@id": "calypsoai:productName"
+    },
+    "supportEmail": {
+      "@id": "calypsoai:supportEmail"
+    },
+    "BrandingCreatedEvent": "calypsoai:BrandingCreatedEvent",
+    "BrandingUpdatedEvent": "calypsoai:BrandingUpdatedEvent",
+    "Campaign": "calypsoai:Campaign",
+    "attacks": {
+      "@id": "calypsoai:attacks",
+      "@container": "@list"
+    },
+    "createdBy": {
+      "@id": "calypsoai:createdBy",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "calypsoai:description"
+    },
+    "lastRun": {
+      "@id": "calypsoai:lastRun"
+    },
+    "lastRunAt": {
+      "@id": "calypsoai:lastRunAt"
+    },
+    "name": {
+      "@id": "calypsoai:name",
+      "@type": "xsd:string"
+    },
+    "runCount": {
+      "@id": "calypsoai:runCount"
+    },
+    "vendored": {
+      "@id": "calypsoai:vendored",
+      "@type": "xsd:boolean"
+    },
+    "CampaignAttack": "calypsoai:CampaignAttack",
+    "CampaignCreatedEvent": "calypsoai:CampaignCreatedEvent",
+    "campaignId": {
+      "@id": "calypsoai:campaignId",
+      "@type": "xsd:string"
+    },
+    "CampaignDeletedEvent": "calypsoai:CampaignDeletedEvent",
+    "CampaignRun": "calypsoai:CampaignRun",
+    "CASIScore": {
+      "@id": "calypsoai:CASIScore"
+    },
+    "actionsCount": {
+      "@id": "calypsoai:actionsCount"
+    },
+    "attackRuns": {
+      "@id": "calypsoai:attackRuns",
+      "@container": "@list"
+    },
+    "averagePerformance": {
+      "@id": "calypsoai:averagePerformance"
+    },
+    "casiScorePositionDelta": {
+      "@id": "calypsoai:casiScorePositionDelta"
+    },
+    "completedAt": {
+      "@id": "calypsoai:completedAt"
+    },
+    "costOfSecurity": {
+      "@id": "calypsoai:costOfSecurity"
+    },
+    "preserve": {
+      "@id": "calypsoai:preserve",
+      "@type": "xsd:boolean"
+    },
+    "projectAccess": {
+      "@id": "calypsoai:projectAccess",
+      "@type": "@id"
+    },
+    "providerErrors": {
+      "@id": "calypsoai:providerErrors"
+    },
+    "purged": {
+      "@id": "calypsoai:purged",
+      "@type": "xsd:boolean"
+    },
+    "remediation": {
+      "@id": "calypsoai:remediation",
+      "@type": "@id"
+    },
+    "remediationSettings": {
+      "@id": "calypsoai:remediationSettings"
+    },
+    "retries": {
+      "@id": "calypsoai:retries",
+      "@type": "xsd:integer"
+    },
+    "retryable": {
+      "@id": "calypsoai:retryable",
+      "@type": "xsd:boolean"
+    },
+    "rtpRatio": {
+      "@id": "calypsoai:rtpRatio"
+    },
+    "runTime": {
+      "@id": "calypsoai:runTime"
+    },
+    "scheduleId": {
+      "@id": "calypsoai:scheduleId"
+    },
+    "startAt": {
+      "@id": "calypsoai:startAt",
+      "@type": "xsd:dateTime"
+    },
+    "CampaignRunAccessUpdatedEvent": "calypsoai:CampaignRunAccessUpdatedEvent",
+    "CampaignRunCreatedEvent": "calypsoai:CampaignRunCreatedEvent",
+    "CampaignRunDeletedEvent": "calypsoai:CampaignRunDeletedEvent",
+    "CampaignRunErrorType": "calypsoai:CampaignRunErrorType",
+    "CampaignRunProjectAccess": "calypsoai:CampaignRunProjectAccess",
+    "global": {
+      "@id": "calypsoai:global",
+      "@type": "xsd:boolean"
+    },
+    "projectIds": {
+      "@id": "calypsoai:projectIds",
+      "@container": "@list"
+    },
+    "CampaignRunProviderErrors": "calypsoai:CampaignRunProviderErrors",
+    "providerFailed": {
+      "@id": "calypsoai:providerFailed",
+      "@type": "xsd:boolean"
+    },
+    "totalPrompts": {
+      "@id": "calypsoai:totalPrompts",
+      "@type": "xsd:integer"
+    },
+    "CampaignRunRemediation": "calypsoai:CampaignRunRemediation",
+    "available": {
+      "@id": "calypsoai:available",
+      "@type": "xsd:boolean"
+    },
+    "CampaignRunRemediationSettings": "calypsoai:CampaignRunRemediationSettings",
+    "autorun": {
+      "@id": "calypsoai:autorun",
+      "@type": "xsd:boolean"
+    },
+    "CampaignRunRetriedEvent": "calypsoai:CampaignRunRetriedEvent",
+    "CampaignRunScoreRating": "calypsoai:CampaignRunScoreRating",
+    "CampaignRunSearchSortBy": "calypsoai:CampaignRunSearchSortBy",
+    "CampaignRunStatus": "calypsoai:CampaignRunStatus",
+    "CampaignRunUpdatedEvent": "calypsoai:CampaignRunUpdatedEvent",
+    "CampaignSchedule": "calypsoai:CampaignSchedule",
+    "count": {
+      "@id": "calypsoai:count"
+    },
+    "endAt": {
+      "@id": "calypsoai:endAt"
+    },
+    "frequency": {
+      "@id": "calypsoai:frequency"
+    },
+    "interval": {
+      "@id": "calypsoai:interval"
+    },
+    "providerIds": {
+      "@id": "calypsoai:providerIds",
+      "@container": "@list"
+    },
+    "CampaignScheduleCreatedEvent": "calypsoai:CampaignScheduleCreatedEvent",
+    "campaignScheduleId": {
+      "@id": "calypsoai:campaignScheduleId",
+      "@type": "xsd:string"
+    },
+    "CampaignScheduleDeletedEvent": "calypsoai:CampaignScheduleDeletedEvent",
+    "CampaignScheduleFrequency": "calypsoai:CampaignScheduleFrequency",
+    "CampaignScheduleUpdatedEvent": "calypsoai:CampaignScheduleUpdatedEvent",
+    "CampaignSortBy": "calypsoai:CampaignSortBy",
+    "CampaignUpdatedEvent": "calypsoai:CampaignUpdatedEvent",
+    "Chat": "calypsoai:Chat",
+    "access": {
+      "@id": "calypsoai:access",
+      "@type": "@id"
+    },
+    "promptId": {
+      "@id": "calypsoai:promptId",
+      "@type": "xsd:string"
+    },
+    "promptTemplateId": {
+      "@id": "calypsoai:promptTemplateId"
+    },
+    "starred": {
+      "@id": "calypsoai:starred",
+      "@type": "xsd:boolean"
+    },
+    "userId": {
+      "@id": "calypsoai:userId",
+      "@type": "xsd:string"
+    },
+    "ChatAccess": "calypsoai:ChatAccess",
+    "org": {
+      "@id": "calypsoai:org",
+      "@type": "xsd:boolean"
+    },
+    "public": {
+      "@id": "calypsoai:public"
+    },
+    "users": {
+      "@id": "calypsoai:users",
+      "@container": "@list"
+    },
+    "ChatbotCreatedEvent": "calypsoai:ChatbotCreatedEvent",
+    "chatbotId": {
+      "@id": "calypsoai:chatbotId",
+      "@type": "xsd:string"
+    },
+    "ChatbotGroupCreatedEvent": "calypsoai:ChatbotGroupCreatedEvent",
+    "chatbotGroupId": {
+      "@id": "calypsoai:chatbotGroupId",
+      "@type": "xsd:string"
+    },
+    "ChatbotGroupUpdatedEvent": "calypsoai:ChatbotGroupUpdatedEvent",
+    "ChatbotType": "calypsoai:ChatbotType",
+    "ChatbotUpdatedEvent": "calypsoai:ChatbotUpdatedEvent",
+    "CustomAttack": "calypsoai:CustomAttack",
+    "fileId": {
+      "@id": "calypsoai:fileId",
+      "@type": "xsd:string"
+    },
+    "CustomIntentGenerationInput": "calypsoai:CustomIntentGenerationInput",
+    "CustomIntentGenerationOutput": "calypsoai:CustomIntentGenerationOutput",
+    "DSAttackResult": "calypsoai:DSAttackResult",
+    "Dataset": "calypsoai:Dataset",
+    "filename": {
+      "@id": "calypsoai:filename"
+    },
+    "scannerPackageId": {
+      "@id": "calypsoai:scannerPackageId"
+    },
+    "DatasetRun": "calypsoai:DatasetRun",
+    "datasetId": {
+      "@id": "calypsoai:datasetId",
+      "@type": "xsd:string"
+    },
+    "result": {
+      "@id": "calypsoai:result"
+    },
+    "scannerId": {
+      "@id": "calypsoai:scannerId"
+    },
+    "scannerVersionId": {
+      "@id": "calypsoai:scannerVersionId"
+    },
+    "DatasetScores": "calypsoai:DatasetScores",
+    "accuracy": {
+      "@id": "calypsoai:accuracy",
+      "@type": "xsd:decimal"
+    },
+    "f1Score": {
+      "@id": "calypsoai:f1Score",
+      "@type": "xsd:decimal"
+    },
+    "falseNegative": {
+      "@id": "calypsoai:falseNegative",
+      "@type": "xsd:integer"
+    },
+    "falsePositive": {
+      "@id": "calypsoai:falsePositive",
+      "@type": "xsd:integer"
+    },
+    "trueNegative": {
+      "@id": "calypsoai:trueNegative",
+      "@type": "xsd:integer"
+    },
+    "truePositive": {
+      "@id": "calypsoai:truePositive",
+      "@type": "xsd:integer"
+    },
+    "DeleteAuthRoleBody": "calypsoai:DeleteAuthRoleBody",
+    "reassignToRoleId": {
+      "@id": "calypsoai:reassignToRoleId"
+    },
+    "DeleteAuthRolePermissionsBody": "calypsoai:DeleteAuthRolePermissionsBody",
+    "permissions": {
+      "@id": "calypsoai:permissions"
+    },
+    "DeleteScannerPackageBody": "calypsoai:DeleteScannerPackageBody",
+    "deleteScanners": {
+      "@id": "calypsoai:deleteScanners",
+      "@type": "xsd:boolean"
+    },
+    "DuplicateScannerRequest": "calypsoai:DuplicateScannerRequest",
+    "duplicate": {
+      "@id": "calypsoai:duplicate",
+      "@type": "xsd:string"
+    },
+    "DynamicMultiTurnContentAttack": "calypsoai:DynamicMultiTurnContentAttack",
+    "converters": {
+      "@id": "calypsoai:converters",
+      "@container": "@list"
+    },
+    "intents": {
+      "@id": "calypsoai:intents",
+      "@container": "@list"
+    },
+    "multiTurn": {
+      "@id": "calypsoai:multiTurn",
+      "@type": "xsd:boolean"
+    },
+    "DynamicSingleTurnContentAttack": "calypsoai:DynamicSingleTurnContentAttack",
+    "EntitlementGroupCreatedEvent": "calypsoai:EntitlementGroupCreatedEvent",
+    "entitlementGroupId": {
+      "@id": "calypsoai:entitlementGroupId",
+      "@type": "xsd:string"
+    },
+    "EntitlementGroupDeletedEvent": "calypsoai:EntitlementGroupDeletedEvent",
+    "EntitlementGroupUpdatedEvent": "calypsoai:EntitlementGroupUpdatedEvent",
+    "EntitlementOverrideCreatedEvent": "calypsoai:EntitlementOverrideCreatedEvent",
+    "entitlementId": {
+      "@id": "calypsoai:entitlementId",
+      "@type": "xsd:string"
+    },
+    "EntitlementOverrideDeletedEvent": "calypsoai:EntitlementOverrideDeletedEvent",
+    "EntitlementUsageCreatedEvent": "calypsoai:EntitlementUsageCreatedEvent",
+    "EntitlementUsageDeletedEvent": "calypsoai:EntitlementUsageDeletedEvent",
+    "ErrorScanResult": "calypsoai:ErrorScanResult",
+    "msg": {
+      "@id": "calypsoai:msg"
+    },
+    "ExportProjectSettings": "calypsoai:ExportProjectSettings",
+    "addedPackagesIds": {
+      "@id": "calypsoai:addedPackagesIds",
+      "@container": "@list"
+    },
+    "addedProviderIds": {
+      "@id": "calypsoai:addedProviderIds",
+      "@container": "@list"
+    },
+    "addedScannerIds": {
+      "@id": "calypsoai:addedScannerIds",
+      "@container": "@list"
+    },
+    "project": {
+      "@id": "calypsoai:project",
+      "@type": "@id"
+    },
+    "roles": {
+      "@id": "calypsoai:roles",
+      "@container": "@list"
+    },
+    "ExportScannersBody": "calypsoai:ExportScannersBody",
+    "packageIds": {
+      "@id": "calypsoai:packageIds"
+    },
+    "scannerIds": {
+      "@id": "calypsoai:scannerIds"
+    },
+    "ExportSettings": "calypsoai:ExportSettings",
+    "packages": {
+      "@id": "calypsoai:packages",
+      "@container": "@list"
+    },
+    "projects": {
+      "@id": "calypsoai:projects",
+      "@container": "@list"
+    },
+    "providers": {
+      "@id": "calypsoai:providers",
+      "@container": "@list"
+    },
+    "scanners": {
+      "@id": "calypsoai:scanners",
+      "@container": "@list"
+    },
+    "secrets": {
+      "@id": "calypsoai:secrets",
+      "@container": "@list"
+    },
+    "File": "calypsoai:File",
+    "content": {
+      "@id": "calypsoai:content"
+    },
+    "contentType": {
+      "@id": "calypsoai:contentType",
+      "@type": "xsd:string"
+    },
+    "expiresAt": {
+      "@id": "calypsoai:expiresAt"
+    },
+    "metadata": {
+      "@id": "calypsoai:metadata"
+    },
+    "orgId": {
+      "@id": "calypsoai:orgId"
+    },
+    "resourceId": {
+      "@id": "calypsoai:resourceId"
+    },
+    "FileCreatedEvent": "calypsoai:FileCreatedEvent",
+    "FileMetadata": "calypsoai:FileMetadata",
+    "rowCount": {
+      "@id": "calypsoai:rowCount"
+    },
+    "size": {
+      "@id": "calypsoai:size"
+    },
+    "FilePurpose": "calypsoai:FilePurpose",
+    "FingerprintInternalError": "calypsoai:FingerprintInternalError",
+    "FingerprintProviderError": "calypsoai:FingerprintProviderError",
+    "statusCode": {
+      "@id": "calypsoai:statusCode",
+      "@type": "xsd:integer"
+    },
+    "FingerprintUnsupportedError": "calypsoai:FingerprintUnsupportedError",
+    "FlaggedSpan": "calypsoai:FlaggedSpan",
+    "span": {
+      "@id": "calypsoai:span",
+      "@container": "@list"
+    },
+    "versionId": {
+      "@id": "calypsoai:versionId"
+    },
+    "GenAIScannerConfig": "calypsoai:GenAIScannerConfig",
+    "input": {
+      "@id": "calypsoai:input",
+      "@type": "xsd:string"
+    },
+    "scanContext": {
+      "@id": "calypsoai:scanContext",
+      "@type": "xsd:string"
+    },
+    "GenAIScannerResult": "calypsoai:GenAIScannerResult",
+    "tokenUsage": {
+      "@id": "calypsoai:tokenUsage",
+      "@type": "xsd:integer"
+    },
+    "GetAgentSessionResponse": "calypsoai:GetAgentSessionResponse",
+    "agentSession": {
+      "@id": "calypsoai:agentSession",
+      "@type": "@id"
+    },
+    "GetAgentSessionsResponse": "calypsoai:GetAgentSessionsResponse",
+    "agentSessions": {
+      "@id": "calypsoai:agentSessions",
+      "@container": "@list"
+    },
+    "next": {
+      "@id": "calypsoai:next"
+    },
+    "prev": {
+      "@id": "calypsoai:prev"
+    },
+    "GetAuditEventResponse": "calypsoai:GetAuditEventResponse",
+    "GetAuditResponse": "calypsoai:GetAuditResponse",
+    "GetAuthRoleDefaultResponse": "calypsoai:GetAuthRoleDefaultResponse",
+    "role": {
+      "@id": "calypsoai:role",
+      "@type": "@id"
+    },
+    "GetAuthRoleResponse": "calypsoai:GetAuthRoleResponse",
+    "GetAuthRolesResponse": "calypsoai:GetAuthRolesResponse",
+    "GetBrandingResponse": "calypsoai:GetBrandingResponse",
+    "config": {
+      "@id": "calypsoai:config",
+      "@type": "@id"
+    },
+    "GetCampaignResponse": "calypsoai:GetCampaignResponse",
+    "campaign": {
+      "@id": "calypsoai:campaign",
+      "@type": "@id"
+    },
+    "GetCampaignRunResponse": "calypsoai:GetCampaignRunResponse",
+    "campaignRun": {
+      "@id": "calypsoai:campaignRun",
+      "@type": "@id"
+    },
+    "schedule": {
+      "@id": "calypsoai:schedule"
+    },
+    "GetCampaignRunResultsResponse": "calypsoai:GetCampaignRunResultsResponse",
+    "GetCampaignRunsResponse": "calypsoai:GetCampaignRunsResponse",
+    "campaignRuns": {
+      "@id": "calypsoai:campaignRuns",
+      "@container": "@list"
+    },
+    "campaigns": {
+      "@id": "calypsoai:campaigns"
+    },
+    "remediations": {
+      "@id": "calypsoai:remediations"
+    },
+    "schedules": {
+      "@id": "calypsoai:schedules"
+    },
+    "GetCampaignSchedulesResponse": "calypsoai:GetCampaignSchedulesResponse",
+    "GetCampaignsResponse": "calypsoai:GetCampaignsResponse",
+    "GetChatResponse": "calypsoai:GetChatResponse",
+    "chat": {
+      "@id": "calypsoai:chat",
+      "@type": "@id"
+    },
+    "prompts": {
+      "@id": "calypsoai:prompts",
+      "@container": "@list"
+    },
+    "GetChatsResponse": "calypsoai:GetChatsResponse",
+    "chats": {
+      "@id": "calypsoai:chats",
+      "@container": "@list"
+    },
+    "GetDatasetResponse": "calypsoai:GetDatasetResponse",
+    "dataset": {
+      "@id": "calypsoai:dataset",
+      "@type": "@id"
+    },
+    "GetDatasetRunResponse": "calypsoai:GetDatasetRunResponse",
+    "run": {
+      "@id": "calypsoai:run",
+      "@type": "@id"
+    },
+    "scanner": {
+      "@id": "calypsoai:scanner"
+    },
+    "scannerPackage": {
+      "@id": "calypsoai:scannerPackage"
+    },
+    "GetDatasetRunsResponse": "calypsoai:GetDatasetRunsResponse",
+    "datasetRuns": {
+      "@id": "calypsoai:datasetRuns",
+      "@container": "@list"
+    },
+    "datasets": {
+      "@id": "calypsoai:datasets"
+    },
+    "scannerPackages": {
+      "@id": "calypsoai:scannerPackages"
+    },
+    "GetDatasetsResponse": "calypsoai:GetDatasetsResponse",
+    "GetFileResponse": "calypsoai:GetFileResponse",
+    "GetGlobalProjectResponse": "calypsoai:GetGlobalProjectResponse",
+    "GetLicenseResponse": "calypsoai:GetLicenseResponse",
+    "license": {
+      "@id": "calypsoai:license",
+      "@type": "@id"
+    },
+    "GetOrgResponse": "calypsoai:GetOrgResponse"
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "CalypsoAI API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects CalypsoAI's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-10-19) from openapi/calypsoai-com-openapi.json.",
+  "dcterms:created": "2026-10-19",
+  "dcterms:source": [
+    "openapi/calypsoai-com-openapi.json"
+  ]
+}
