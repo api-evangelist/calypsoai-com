@@ -14,6 +14,12 @@ specificationVersion: '0.20'
 created: '2026-10-19'
 modified: '2026-10-19'
 tags:
+- Artificial Intelligence
+- Security
+- Compliance
+- Enterprise
+- Generative AI
+tags_raw:
 - AI
 - Security
 - Compliance
@@ -102,6 +108,8 @@ apis:
   humanURL: https://docs.calypsoai.com
   baseURL: https://api.calypsoai.com
   tags:
+  - Agent Sessions
+  tags_raw:
   - Agent-Sessions
   properties:
   - type: OpenAPI
@@ -168,6 +176,8 @@ apis:
   humanURL: https://docs.calypsoai.com
   baseURL: https://api.calypsoai.com
   tags:
+  - Authentication
+  tags_raw:
   - Auth
   properties:
   - type: OpenAPI
@@ -322,6 +332,8 @@ apis:
   humanURL: https://docs.calypsoai.com
   baseURL: https://api.calypsoai.com
   tags:
+  - File
+  tags_raw:
   - Files
   properties:
   - type: OpenAPI
@@ -410,6 +422,8 @@ apis:
   humanURL: https://docs.calypsoai.com
   baseURL: https://api.calypsoai.com
   tags:
+  - OpenAI
+  tags_raw:
   - Openai
   properties:
   - type: OpenAPI
@@ -476,6 +490,8 @@ apis:
   humanURL: https://docs.calypsoai.com
   baseURL: https://api.calypsoai.com
   tags:
+  - Project
+  tags_raw:
   - Projects
   properties:
   - type: OpenAPI
@@ -674,6 +690,8 @@ apis:
   humanURL: https://docs.calypsoai.com
   baseURL: https://api.calypsoai.com
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
